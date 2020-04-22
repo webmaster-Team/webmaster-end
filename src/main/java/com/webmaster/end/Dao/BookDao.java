@@ -47,7 +47,7 @@ public class BookDao {
         String sql="insert into Book(name,author,isbn,publisher,price,version,typeid,summary,cover,state,entry_time) values (?,?,?,?,?,?,?,?,?,?,?)";
         Object[] params={book.getName(),book.getAuthor(),book.getISBN(),book.getPublisher(),book.getPrice(),
                         book.getVersion(),book.getTypeId(),book.getSummary(),book.getCover(),book.getState(),
-                        MyDateUtil.convertDateToStr(book.getEntry_time())};
+                        book.getEntry_time()};
         try {
             return queryRunner.update(sql,params)>=1?true:false;
         } catch (SQLException e) {
@@ -62,10 +62,10 @@ public class BookDao {
      * @param time 注销时间
      * @return 返回是否成功
      */
-    public boolean deleteBook(int id, Date time){
+    public boolean deleteBook(int id, String time){
         QueryRunner queryRunner=new QueryRunner(dataSource);
         String sql="update Book set delete_time= ? where id = ?";
-        Object[] params={MyDateUtil.convertDateToStr(time),id};
+        Object[] params={time,id};
         try {
             return queryRunner.update(sql,params)>=1?true:false;
         } catch (SQLException e) {
@@ -84,8 +84,8 @@ public class BookDao {
         String sql="update Book set name = ? , author = ? , isbn = ? , publisher = ? , price = ? , version = ? , typeid = ? , summary = ? , cover = ? , state = ? , entry_time = ? , delete_time = ? where id = ?";
         Object[] params={book.getName(),book.getAuthor(),book.getISBN(),book.getPublisher(),book.getPrice(),
                         book.getVersion(),book.getTypeId(),book.getSummary(),book.getCover(),book.getState(),
-                        MyDateUtil.convertDateToStr(book.getEntry_time()),
-                        MyDateUtil.convertDateToStr(book.getDelete_time()),book.getId()};
+                        book.getEntry_time(),
+                        book.getDelete_time(),book.getId()};
         try {
             return queryRunner.update(sql,params)>=1?true:false;
         } catch (SQLException e) {
@@ -127,4 +127,23 @@ public class BookDao {
             return null;
         }
     }
+
+    /**
+     * 查看书籍的状态
+     * @param id
+     * @return 0表示无法借阅，1表示可借阅，2表示已经借出,-1表示查询错误
+     */
+    public int getBookStateById(int id){
+        QueryRunner queryRunner = new QueryRunner(dataSource);
+        String sql="select state from book where id = ?";
+        Object[] params={id};
+        try {
+            return queryRunner.query(sql,new ScalarHandler<Integer>(),params);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+
 }

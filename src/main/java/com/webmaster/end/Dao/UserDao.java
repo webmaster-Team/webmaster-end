@@ -45,7 +45,7 @@ public class UserDao {
     public boolean addUser(User user){
         QueryRunner queryRunner=new QueryRunner(dataSource);
         String sql="insert into user(card,name,sex,email,phone,sign_time) values (?,?,?,?,?,?)";
-        Object[] params={user.getCard(),user.getName(),user.getSex(),user.getEmail(), user.getPhone(),MyDateUtil.convertDateToStr(user.getSign_time())};
+        Object[] params={user.getCard(),user.getName(),user.getSex(),user.getEmail(), user.getPhone(),user.getSign_time()};
         try {
             return queryRunner.update(sql,params)>=1?true:false;
         } catch (SQLException e) {
@@ -60,10 +60,10 @@ public class UserDao {
      * @param time 注销时间
      * @return 返回是否成功
      */
-    public boolean deleteUser(int id, Date time){
+    public boolean deleteUser(int id, String time){
         QueryRunner queryRunner=new QueryRunner(dataSource);
         String sql="update user set delete_time= ? where id = ?";
-        Object[] params={MyDateUtil.convertDateToStr(time),id};
+        Object[] params={time,id};
         try {
             return queryRunner.update(sql,params)>=1?true:false;
         } catch (SQLException e) {
@@ -80,7 +80,7 @@ public class UserDao {
     public boolean updateUser(User user){
         QueryRunner queryRunner=new QueryRunner(dataSource);
         String sql="update user set card = ? , name = ? , sex = ? , email = ? , phone = ? , sign_time = ? , delete_time = ? where id = ?";
-        Object[] params={user.getCard(),user.getName(),user.getSex(),user.getEmail(),user.getPhone(), MyDateUtil.convertDateToStr(user.getSign_time()),MyDateUtil.convertDateToStr(user.getDelete_time()),user.getId()};
+        Object[] params={user.getCard(),user.getName(),user.getSex(),user.getEmail(),user.getPhone(), user.getSign_time(),user.getDelete_time(),user.getId()};
         try {
             return queryRunner.update(sql,params)>=1?true:false;
         } catch (SQLException e) {

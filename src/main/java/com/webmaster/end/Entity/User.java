@@ -10,13 +10,13 @@ public class User {
     private int sex;
     private String email;
     private String phone;
-    private Date sign_time;
-    private Date delete_time;
+    private String sign_time;
+    private String delete_time;
 
     public User() {
     }
 
-    public User(int id, String card, String name, int sex, String email, String phone, Date sign_time, Date delete_time) {
+    public User(int id, String card, String name, int sex, String email, String phone, String sign_time, String delete_time) {
         this.id = id;
         this.card = card;
         this.name = name;
@@ -27,7 +27,7 @@ public class User {
         this.delete_time = delete_time;
     }
 
-    public User(String card, String name, int sex, String email, String phone, Date sign_time, Date delete_time) {
+    public User(String card, String name, int sex, String email, String phone, String sign_time, String delete_time) {
         this.card = card;
         this.name = name;
         this.sex = sex;
@@ -85,19 +85,19 @@ public class User {
         this.phone = phone;
     }
 
-    public Date getSign_time() {
+    public String getSign_time() {
         return sign_time;
     }
 
-    public void setSign_time(Date sign_time) {
+    public void setSign_time(String sign_time) {
         this.sign_time = sign_time;
     }
 
-    public Date getDelete_time() {
+    public String getDelete_time() {
         return delete_time;
     }
 
-    public void setDelete_time(Date delete_time) {
+    public void setDelete_time(String delete_time) {
         this.delete_time = delete_time;
     }
 

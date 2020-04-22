@@ -14,13 +14,13 @@ public class Book {
     private String summary;
     private String cover;
     private int state;
-    private Date entry_time;
-    private Date delete_time;
+    private String entry_time;
+    private String delete_time;
 
     public Book() {
     }
 
-    public Book(int id, String name, String author, String ISBN, String publisher, int price, String version, String typeId, String summary, String cover, int state, Date entry_time, Date delete_time) {
+    public Book(int id, String name, String author, String ISBN, String publisher, int price, String version, String typeId, String summary, String cover, int state, String entry_time, String delete_time) {
         this.id = id;
         this.name = name;
         this.author = author;
@@ -36,7 +36,7 @@ public class Book {
         this.delete_time = delete_time;
     }
 
-    public Book(String name, String author, String ISBN, String publisher, int price, String version, String typeId, String summary, String cover, int state, Date entry_time, Date delete_time) {
+    public Book(String name, String author, String ISBN, String publisher, int price, String version, String typeId, String summary, String cover, int state, String entry_time, String delete_time) {
         this.name = name;
         this.author = author;
         this.ISBN = ISBN;
@@ -139,19 +139,19 @@ public class Book {
         this.state = state;
     }
 
-    public Date getEntry_time() {
+    public String getEntry_time() {
         return entry_time;
     }
 
-    public void setEntry_time(Date entry_time) {
+    public void setEntry_time(String entry_time) {
         this.entry_time = entry_time;
     }
 
-    public Date getDelete_time() {
+    public String getDelete_time() {
         return delete_time;
     }
 
-    public void setDelete_time(Date delete_time) {
+    public void setDelete_time(String delete_time) {
         this.delete_time = delete_time;
     }
 
