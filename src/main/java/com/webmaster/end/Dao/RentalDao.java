@@ -54,4 +54,21 @@ public class RentalDao {
             return false;
         }
     }
+
+    /**
+     * 根据书籍ID返回流水号
+     * @param bookId 书籍ID
+     * @return 返回流水号,-1则为错误
+     */
+    public int getRentalIdByBookId(int bookId){
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="select id from rentaln where book_id= ?";
+        Object[] params={bookId};
+        try {
+            return queryRunner.query(sql,new ScalarHandler<Integer>(),params);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
 }

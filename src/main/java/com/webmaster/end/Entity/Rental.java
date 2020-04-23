@@ -4,15 +4,15 @@ public class Rental {
     private int id;
     private int bookId;
     private int userId;
-    private long borrowTime;
-    private long returnTime;
+    private String borrowTime;
+    private String returnTime;
     private long duration;
     private int isReborrow;
 
     public Rental() {
     }
 
-    public Rental(int id, int bookId, int userId, long borrowTime, long returnTime, long duration, int isReborrow) {
+    public Rental(int id, int bookId, int userId, String borrowTime, String returnTime, long duration, int isReborrow) {
         this.id = id;
         this.bookId = bookId;
         this.userId = userId;
@@ -22,7 +22,7 @@ public class Rental {
         this.isReborrow = isReborrow;
     }
 
-    public Rental(int bookId, int userId, long borrowTime, long returnTime, long duration, int isReborrow) {
+    public Rental(int bookId, int userId, String borrowTime, String returnTime, long duration, int isReborrow) {
         this.bookId = bookId;
         this.userId = userId;
         this.borrowTime = borrowTime;
@@ -55,19 +55,19 @@ public class Rental {
         this.userId = userId;
     }
 
-    public long getBorrowTime() {
+    public String getBorrowTime() {
         return borrowTime;
     }
 
-    public void setBorrowTime(long borrowTime) {
+    public void setBorrowTime(String borrowTime) {
         this.borrowTime = borrowTime;
     }
 
-    public long getReturnTime() {
+    public String getReturnTime() {
         return returnTime;
     }
 
-    public void setReturnTime(long returnTime) {
+    public void setReturnTime(String returnTime) {
         this.returnTime = returnTime;
     }
 
