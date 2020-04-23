@@ -2,7 +2,10 @@ package com.webmaster.end.Dao;
 
 import com.webmaster.end.Entity.User;
 import com.webmaster.end.Utils.MyDateUtil;
+import org.apache.commons.dbutils.BasicRowProcessor;
+import org.apache.commons.dbutils.GenerousBeanProcessor;
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.RowProcessor;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
@@ -18,7 +21,8 @@ import java.util.List;
 public class UserDao {
     @Autowired
     private DataSource dataSource;
-
+    //下划线转驼峰
+    RowProcessor processor=new BasicRowProcessor(new GenerousBeanProcessor());
     /**
      * 查询用户是否存在
      * @param id 用户的id
@@ -45,7 +49,7 @@ public class UserDao {
     public boolean addUser(User user){
         QueryRunner queryRunner=new QueryRunner(dataSource);
         String sql="insert into user(card,name,sex,email,phone,sign_time) values (?,?,?,?,?,?)";
-        Object[] params={user.getCard(),user.getName(),user.getSex(),user.getEmail(), user.getPhone(),user.getSign_time()};
+        Object[] params={user.getCard(),user.getName(),user.getSex(),user.getEmail(), user.getPhone(),user.getSignTime()};
         try {
             return queryRunner.update(sql,params)>=1?true:false;
         } catch (SQLException e) {
@@ -80,7 +84,7 @@ public class UserDao {
     public boolean updateUser(User user){
         QueryRunner queryRunner=new QueryRunner(dataSource);
         String sql="update user set card = ? , name = ? , sex = ? , email = ? , phone = ? , sign_time = ? , delete_time = ? where id = ?";
-        Object[] params={user.getCard(),user.getName(),user.getSex(),user.getEmail(),user.getPhone(), user.getSign_time(),user.getDelete_time(),user.getId()};
+        Object[] params={user.getCard(),user.getName(),user.getSex(),user.getEmail(),user.getPhone(), user.getSignTime(),user.getDeleteTime(),user.getId()};
         try {
             return queryRunner.update(sql,params)>=1?true:false;
         } catch (SQLException e) {
@@ -99,7 +103,7 @@ public class UserDao {
         String sql="select * from user where id =?";
         Object[] params={id};
         try {
-            User user = queryRunner.query(sql, new BeanHandler<>(User.class), params);
+            User user = queryRunner.query(sql, new BeanHandler<>(User.class,processor), params);
             return user;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -115,7 +119,7 @@ public class UserDao {
         QueryRunner queryRunner=new QueryRunner(dataSource);
         String sql="select * from user";
         try {
-            List<User> users = queryRunner.query(sql, new BeanListHandler<>(User.class));
+            List<User> users = queryRunner.query(sql, new BeanListHandler<>(User.class,processor));
             return users;
         } catch (SQLException e) {
             e.printStackTrace();

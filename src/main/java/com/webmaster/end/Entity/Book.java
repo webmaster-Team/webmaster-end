@@ -14,13 +14,18 @@ public class Book {
     private String summary;
     private String cover;
     private int state;
-    private String entry_time;
-    private String delete_time;
+    private String entryTime;
+    private String deleteTime;
+
+    public static final int CAN_BORROW=1;
+    public static final int HAS_BORROW=2;
+    public static final int NOT_BORROW=0;
+    public static final int ERROR_BORROW=-1;
 
     public Book() {
     }
 
-    public Book(int id, String name, String author, String ISBN, String publisher, int price, String version, String typeId, String summary, String cover, int state, String entry_time, String delete_time) {
+    public Book(int id, String name, String author, String ISBN, String publisher, int price, String version, String typeId, String summary, String cover, int state, String entryTime, String deleteTime) {
         this.id = id;
         this.name = name;
         this.author = author;
@@ -32,11 +37,11 @@ public class Book {
         this.summary = summary;
         this.cover = cover;
         this.state = state;
-        this.entry_time = entry_time;
-        this.delete_time = delete_time;
+        this.entryTime = entryTime;
+        this.deleteTime = deleteTime;
     }
 
-    public Book(String name, String author, String ISBN, String publisher, int price, String version, String typeId, String summary, String cover, int state, String entry_time, String delete_time) {
+    public Book(String name, String author, String ISBN, String publisher, int price, String version, String typeId, String summary, String cover, int state, String entryTime, String deleteTime) {
         this.name = name;
         this.author = author;
         this.ISBN = ISBN;
@@ -47,8 +52,8 @@ public class Book {
         this.summary = summary;
         this.cover = cover;
         this.state = state;
-        this.entry_time = entry_time;
-        this.delete_time = delete_time;
+        this.entryTime = entryTime;
+        this.deleteTime = deleteTime;
     }
 
     public int getId() {
@@ -139,20 +144,20 @@ public class Book {
         this.state = state;
     }
 
-    public String getEntry_time() {
-        return entry_time;
+    public String getEntryTime() {
+        return entryTime;
     }
 
-    public void setEntry_time(String entry_time) {
-        this.entry_time = entry_time;
+    public void setEntryTime(String entry_time) {
+        this.entryTime = entry_time;
     }
 
     public String getDelete_time() {
-        return delete_time;
+        return deleteTime;
     }
 
-    public void setDelete_time(String delete_time) {
-        this.delete_time = delete_time;
+    public void setDeleteTime(String delete_time) {
+        this.deleteTime = delete_time;
     }
 
     @Override
@@ -169,8 +174,8 @@ public class Book {
                 ", summary='" + summary + '\'' +
                 ", cover='" + cover + '\'' +
                 ", state=" + state +
-                ", entry_time=" + entry_time +
-                ", delete_time=" + delete_time +
+                ", entry_time=" + entryTime +
+                ", delete_time=" + deleteTime +
                 '}';
     }
 }

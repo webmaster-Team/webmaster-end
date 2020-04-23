@@ -10,31 +10,31 @@ public class User {
     private int sex;
     private String email;
     private String phone;
-    private String sign_time;
-    private String delete_time;
+    private String signTime;
+    private String deleteTime;
 
     public User() {
     }
 
-    public User(int id, String card, String name, int sex, String email, String phone, String sign_time, String delete_time) {
+    public User(int id, String card, String name, int sex, String email, String phone, String signTime, String deleteTime) {
         this.id = id;
         this.card = card;
         this.name = name;
         this.sex = sex;
         this.email = email;
         this.phone = phone;
-        this.sign_time = sign_time;
-        this.delete_time = delete_time;
+        this.signTime = signTime;
+        this.deleteTime = deleteTime;
     }
 
-    public User(String card, String name, int sex, String email, String phone, String sign_time, String delete_time) {
+    public User(String card, String name, int sex, String email, String phone, String signTime, String deleteTime) {
         this.card = card;
         this.name = name;
         this.sex = sex;
         this.email = email;
         this.phone = phone;
-        this.sign_time = sign_time;
-        this.delete_time = delete_time;
+        this.signTime = signTime;
+        this.deleteTime = deleteTime;
     }
 
     public int getId() {
@@ -85,20 +85,20 @@ public class User {
         this.phone = phone;
     }
 
-    public String getSign_time() {
-        return sign_time;
+    public String getSignTime() {
+        return signTime;
     }
 
-    public void setSign_time(String sign_time) {
-        this.sign_time = sign_time;
+    public void setSignTime(String sign_time) {
+        this.signTime = sign_time;
     }
 
-    public String getDelete_time() {
-        return delete_time;
+    public String getDeleteTime() {
+        return deleteTime;
     }
 
-    public void setDelete_time(String delete_time) {
-        this.delete_time = delete_time;
+    public void setDeleteTime(String delete_time) {
+        this.deleteTime = deleteTime;
     }
 
     @Override
@@ -110,8 +110,8 @@ public class User {
                 ", sex=" + sex +
                 ", email='" + email + '\'' +
                 ", phone='" + phone + '\'' +
-                ", sign_time=" + sign_time +
-                ", delete_time=" + delete_time +
+                ", sign_time=" + signTime +
+                ", delete_time=" + deleteTime +
                 '}';
     }
 }
