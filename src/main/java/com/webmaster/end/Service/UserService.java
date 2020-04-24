@@ -27,7 +27,7 @@ public class UserService {
             String salt = passwordDao.getSaltById(id);
             String truePassword = passwordDao.getPasswordById(id);
             String currentPassword = MD5Util.getMD5String(password, salt);
-            if(currentPassword.equals(password))
+            if(currentPassword.equals(truePassword))
                 return id;
         }
         return -1;
