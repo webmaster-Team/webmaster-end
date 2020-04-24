@@ -62,13 +62,30 @@ public class RentalDao {
      */
     public int getRentalIdByBookId(int bookId){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select id from rentaln where book_id= ? and return_time is null";
+        String sql="select id from rental where book_id= ? and return_time is null";
         Object[] params={bookId};
         try {
             return queryRunner.query(sql,new ScalarHandler<Integer>(),params);
         } catch (SQLException e) {
             e.printStackTrace();
             return -1;
+        }
+    }
+
+    /**
+     * 根据流水id判断书籍是否续借
+     * @param id 流水id
+     * @return
+     */
+    public boolean isReborrow(int id){
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="select is_reborrow from rental where book_id= ? and return_time is null";
+        Object[] params={id};
+        try {
+            return queryRunner.query(sql,new ScalarHandler<Integer>(),params)==1?true:false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }
