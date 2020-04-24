@@ -6,6 +6,7 @@ import org.apache.commons.dbutils.BasicRowProcessor;
 import org.apache.commons.dbutils.GenerousBeanProcessor;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.RowProcessor;
+import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -79,13 +80,48 @@ public class RentalDao {
      */
     public boolean isReborrow(int id){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select is_reborrow from rental where book_id= ? and return_time is null";
+        String sql="select is_reborrow from rental where id= ? and return_time is null";
         Object[] params={id};
         try {
             return queryRunner.query(sql,new ScalarHandler<Integer>(),params)==1?true:false;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    /**
+     * 根据流水id查询对应的流水
+     * @param id 流水id
+     * @return
+     */
+    public Rental getRentalById(int id){
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="select * from rental where id= ?";
+        Object[] params={id};
+        try {
+            return queryRunner.query(sql,new BeanHandler<>(Rental.class,processor),params);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    /**
+     * 根据书籍id查询对应的流水
+     * @param bookId 书籍id
+     * @return
+     */
+    public Rental getRentalByBookId(int bookId){
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="select * from rental where book_id= ? and return_time is null";
+        Object[] params={bookId};
+        try {
+            return queryRunner.query(sql,new BeanHandler<>(Rental.class,processor),params);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }
