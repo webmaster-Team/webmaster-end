@@ -27,7 +27,7 @@ public class RentalDao {
      */
     public boolean isExist(int id){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select count(*) from rental where id = ?";
+        String sql="select count(*) from rental where id = ? and return_time is null";
         Object[] params={id};
         try {
             int result = queryRunner.query(sql, new ScalarHandler<Integer>(), params);
@@ -45,8 +45,8 @@ public class RentalDao {
      */
     public boolean addRental(Rental rental){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="insert into rental(book_id,user_id,borrow_time,return_time,duration,is_reborrow) values (?,?,?,?,?,?)";
-        Object[] params={rental.getBookId(),rental.getUserId(),rental.getBorrowTime(),rental.getReturnTime(),rental.getDuration(),rental.getIsReborrow()};
+        String sql="insert into rental(book_id,user_id,borrow_time,duration,is_reborrow) values (?,?,?,?,?,?)";
+        Object[] params={rental.getBookId(),rental.getUserId(),rental.getBorrowTime(),rental.getDuration(),rental.getIsReborrow()};
         try {
             return queryRunner.update(sql,params)>=1?true:false;
         } catch (SQLException e) {
@@ -62,7 +62,7 @@ public class RentalDao {
      */
     public int getRentalIdByBookId(int bookId){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select id from rentaln where book_id= ?";
+        String sql="select id from rentaln where book_id= ? and return_time is null";
         Object[] params={bookId};
         try {
             return queryRunner.query(sql,new ScalarHandler<Integer>(),params);

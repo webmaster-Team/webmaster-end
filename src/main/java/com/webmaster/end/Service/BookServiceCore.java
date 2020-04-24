@@ -39,4 +39,32 @@ public class BookServiceCore {
     private final Book book = bookDao.getBookById(1);
     protected BorrowState testBorrowState = new BorrowState(1, rental, book, "成功");
 
+    /**
+     * 返回书籍是否存在
+     * @param bookid 书籍的id
+     * @return 返回是否存在
+     */
+    public boolean bookIsExist(int bookid){
+        return bookDao.isExist(bookid);
+    }
+
+    /**
+     * 返回书籍信息
+     * @param bookid 书籍的id
+     * @return 返回是否存在
+     */
+    public Book getBookByid(int bookid){
+        if(bookDao.isExist(bookid))
+            return bookDao.getBookById(bookid);
+        return null;
+    }
+
+    /**
+     * 根据bookId，判断是否有借阅记录
+     * @param bookId 书籍ID
+     * @return 返回是否存在
+     */
+    public boolean rentalIsExist(int bookId){
+        return rentalDao.getRentalIdByBookId(bookId)==-1?false:true;
+    }
 }

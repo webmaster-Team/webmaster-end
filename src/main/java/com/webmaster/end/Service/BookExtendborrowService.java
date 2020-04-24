@@ -1,6 +1,7 @@
 package com.webmaster.end.Service;
 
 import com.webmaster.end.Entity.BorrowState;
+import org.springframework.stereotype.Service;
 
 /**
  * TODO 完善抽象类，先出模板供Controller调用
@@ -9,6 +10,7 @@ import com.webmaster.end.Entity.BorrowState;
  * @Author: Daniel
  * @Date: 2020/4/24 3:23 下午
  */
+@Service
 public class BookExtendborrowService extends BookServiceCore {
     /**
      * @Description: 续借核心逻辑
@@ -17,7 +19,7 @@ public class BookExtendborrowService extends BookServiceCore {
      * @params: [username 用户名, bookid 书籍id]
      * @return: com.webmaster.end.Entity.BorrowState
      */
-    public BorrowState extendBorrow(String userid, String bookid){
+    public BorrowState extendBorrow(int userid, int bookid){
         return testBorrowState;
     }
 

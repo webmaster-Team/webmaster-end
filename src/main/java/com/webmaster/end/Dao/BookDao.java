@@ -148,12 +148,12 @@ public class BookDao {
     }
 
     /**
-     * 返回所有相同名字的书籍
+     * 返回包含对应字段的书籍
      * @return 返回书籍集合
      */
     public List<Book> getBooksByName(String name){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select * from Book where name= ? and delete_time is null";
+        String sql="select * from Book where name like '%?%' and delete_time is null ";
         Object[] params={name};
         try {
             List<Book> books = queryRunner.query(sql, new BeanListHandler<>(Book.class,processor),params);
