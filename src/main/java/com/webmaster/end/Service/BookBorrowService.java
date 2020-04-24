@@ -9,6 +9,7 @@ import com.webmaster.end.Entity.Rental;
 import com.webmaster.end.Utils.MD5Util;
 import com.webmaster.end.Utils.MyDateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.text.SimpleDateFormat;
@@ -22,6 +23,7 @@ import java.util.HashMap;
  * @Author: Daniel
  * @Date: 2020/4/23 2:15 下午
  */
+@Service
 public class BookBorrowService {
     @Autowired
     private BookDao bookDao;
@@ -60,8 +62,8 @@ public class BookBorrowService {
                         rental = new Rental(
                                 book.getId(),
                                 userId,
-                                MyDateUtil.convertDateToStr(new Date()),
-                                "",/**@TODO 还书日期先用空值顶着*/
+                                MyDateUtil.getCurrentString(),
+                                "",/*TODO 还书日期先用空值顶着*/
                                 180,
                                 (rentalDao.isExist(rentalDao.getRentalIdByBookId(bookId))?1:0)
                         );

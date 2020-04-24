@@ -27,7 +27,7 @@ public class BookDao {
      */
     public Boolean isExist(int id){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select count(*) from Book where id = ?";
+        String sql="select count(*) from Book where id = ? and delete_time is null";
         Object[] params={id};
         try {
             int result = queryRunner.query(sql, new ScalarHandler<Integer>(), params);
@@ -65,7 +65,7 @@ public class BookDao {
      */
     public boolean deleteBook(int id, String time){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="update Book set delete_time= ? where id = ?";
+        String sql="update Book set delete_time= ? where id = ? and delete_time is null";
         Object[] params={time,id};
         try {
             return queryRunner.update(sql,params)>=1?true:false;
@@ -82,7 +82,7 @@ public class BookDao {
      */
     public boolean updateBook(Book book){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="update Book set name = ? , author = ? , isbn = ? , publisher = ? , price = ? , version = ? , typeid = ? , summary = ? , cover = ? , state = ? , entry_time = ? , delete_time = ? where id = ?";
+        String sql="update Book set name = ? , author = ? , isbn = ? , publisher = ? , price = ? , version = ? , typeid = ? , summary = ? , cover = ? , state = ? , entry_time = ? , delete_time = ? where id = ? and delete_time is null";
         Object[] params={book.getName(),book.getAuthor(),book.getISBN(),book.getPublisher(),book.getPrice(),
                         book.getVersion(),book.getTypeId(),book.getSummary(),book.getCover(),book.getState(),
                         book.getEntryTime(),
@@ -102,7 +102,7 @@ public class BookDao {
      */
     public Book getBookById(int id){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select * from Book where id =?";
+        String sql="select * from Book where id =? and delete_time is null";
         Object[] params={id};
         try {
             Book book = queryRunner.query(sql, new BeanHandler<>(Book.class,processor), params);
@@ -119,10 +119,27 @@ public class BookDao {
      */
     public List<Book> getBooks(){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select * from Book";
+        String sql="select * from Book where delete_time is null";
         try {
 
             List<Book> books = queryRunner.query(sql, new BeanListHandler<>(Book.class,processor));
+            return books;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 返回对应的typeId对应的书籍
+     * @return 返回书籍集合
+     */
+    public List<Book> getBooksByTypeId(String typeId){
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="select * from Book where typeid= ? and delete_time is null";
+        Object[] params={typeId};
+        try {
+            List<Book> books = queryRunner.query(sql, new BeanListHandler<>(Book.class,processor),params);
             return books;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -137,7 +154,7 @@ public class BookDao {
      */
     public int getBookStateById(int id){
         QueryRunner queryRunner = new QueryRunner(dataSource);
-        String sql="select state from book where id = ?";
+        String sql="select state from book where id = ? and delete_time is null";
         Object[] params={id};
         try {
             return queryRunner.query(sql,new ScalarHandler<Integer>(),params);
@@ -155,7 +172,7 @@ public class BookDao {
      */
     public boolean updateBookState(int id,int state){
         QueryRunner queryRunner = new QueryRunner(dataSource);
-        String sql="update book set state = ? where id = ?";
+        String sql="update book set state = ? where id = ? and delete_time is null";
         Object[] params={state,id};
         try {
             return queryRunner.update(sql,params)>0?true:false;
@@ -164,5 +181,6 @@ public class BookDao {
             return false;
         }
     }
+
 
 }

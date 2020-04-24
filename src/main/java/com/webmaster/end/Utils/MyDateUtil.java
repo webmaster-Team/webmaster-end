@@ -30,4 +30,12 @@ public class MyDateUtil {
             return null;
         }
     }
+
+    /**
+     * 按照格式返回当前时间的字符串
+     * @return
+     */
+    public static String getCurrentString(){
+        return convertDateToStr(new Date());
+    }
 }

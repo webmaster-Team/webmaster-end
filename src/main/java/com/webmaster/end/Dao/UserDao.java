@@ -30,8 +30,26 @@ public class UserDao {
      */
     public Boolean isExist(int id){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select count(*) from user where id = ?";
+        String sql="select count(*) from user where id = ? and delete_time is null";
         Object[] params={id};
+        try {
+            int result = queryRunner.query(sql, new ScalarHandler<Integer>(), params);
+            return result==1?true:false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return true;
+        }
+    }
+
+    /**
+     * 查询用户是否存在
+     * @param card 用户的卡号
+     * @return 返回是否存在
+     */
+    public Boolean isExistByCard(String card){
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="select count(*) from user where card = ? and delete_time is null";
+        Object[] params={card};
         try {
             int result = queryRunner.query(sql, new ScalarHandler<Integer>(), params);
             return result==1?true:false;
@@ -66,7 +84,7 @@ public class UserDao {
      */
     public boolean deleteUser(int id, String time){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="update user set delete_time= ? where id = ?";
+        String sql="update user set delete_time= ? where id = ? and delete_time is null";
         Object[] params={time,id};
         try {
             return queryRunner.update(sql,params)>=1?true:false;
@@ -83,7 +101,7 @@ public class UserDao {
      */
     public boolean updateUser(User user){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="update user set card = ? , name = ? , sex = ? , email = ? , phone = ? , sign_time = ? , delete_time = ? where id = ?";
+        String sql="update user set card = ? , name = ? , sex = ? , email = ? , phone = ? , sign_time = ? , delete_time = ? where id = ? and delete_time is null";
         Object[] params={user.getCard(),user.getName(),user.getSex(),user.getEmail(),user.getPhone(), user.getSignTime(),user.getDeleteTime(),user.getId()};
         try {
             return queryRunner.update(sql,params)>=1?true:false;
@@ -95,12 +113,12 @@ public class UserDao {
 
     /**
      * 根据用户id来返回对应的值
-     * @param id
-     * @return
+     * @param id 用户id
+     * @return 用户的所有信息
      */
     public User getUserById(int id){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select * from user where id =?";
+        String sql="select * from user where id =? and delete_time is null";
         Object[] params={id};
         try {
             User user = queryRunner.query(sql, new BeanHandler<>(User.class,processor), params);
@@ -117,13 +135,30 @@ public class UserDao {
      */
     public List<User> getUsers(){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select * from user";
+        String sql="select * from user where delete_time is null";
         try {
             List<User> users = queryRunner.query(sql, new BeanListHandler<>(User.class,processor));
             return users;
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    /**
+     * 根据传入的card号来返回用户对应的id
+     * @param card 输入的卡号
+     * @return 返回用户的id
+     */
+    public int getUserIdByCard(String card){
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="select id from user where card = ? and delete_time is null";
+        Object[] params={card};
+        try {
+            return queryRunner.query(sql, new ScalarHandler<Integer>(), params);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
         }
     }
 }
