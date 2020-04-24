@@ -148,6 +148,23 @@ public class BookDao {
     }
 
     /**
+     * 返回所有相同名字的书籍
+     * @return 返回书籍集合
+     */
+    public List<Book> getBooksByName(String name){
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="select * from Book where name= ? and delete_time is null";
+        Object[] params={name};
+        try {
+            List<Book> books = queryRunner.query(sql, new BeanListHandler<>(Book.class,processor),params);
+            return books;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
      * 查看书籍的状态
      * @param id
      * @return 0表示无法借阅，1表示可借阅，2表示已经借出,-1表示查询错误

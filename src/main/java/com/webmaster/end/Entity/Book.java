@@ -41,7 +41,7 @@ public class Book {
         this.deleteTime = deleteTime;
     }
 
-    public Book(String name, String author, String ISBN, String publisher, int price, String version, String typeId, String summary, String cover, int state, String entryTime, String deleteTime) {
+    public Book(String name, String author, String ISBN, String publisher, int price, String version, String typeId, String summary, String cover, int state, String entryTime) {
         this.name = name;
         this.author = author;
         this.ISBN = ISBN;
@@ -53,7 +53,6 @@ public class Book {
         this.cover = cover;
         this.state = state;
         this.entryTime = entryTime;
-        this.deleteTime = deleteTime;
     }
 
     public int getId() {

@@ -20,16 +20,11 @@ public class PasswordDao {
      * @param password 加密后的密码
      * @return 是否添加成功
      */
-    public Boolean addPassword(int userId,String salt,String password){
+    public Boolean addPassword(int userId,String salt,String password) throws SQLException {
         QueryRunner queryRunner=new QueryRunner(dataSource);
         String sql="insert into password values(?,?,?)";
         Object[] params={userId,salt,password};
-        try {
-            return queryRunner.update(sql,params)>0?true:false;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
+        return queryRunner.update(sql,params)>0?true:false;
     }
 
     /**

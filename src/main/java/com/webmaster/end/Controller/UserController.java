@@ -7,7 +7,14 @@ import com.webmaster.end.Utils.MyDateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/user/")
@@ -33,8 +40,9 @@ public class UserController {
             //数据部分
             JSONObject temp=new JSONObject();
             temp.put("id",""+userId);
-            temp.put("card",""+user.getCard());
-            temp.put("name",""+user.getName());
+            temp.put("card",user.getCard());
+            temp.put("name",user.getName());
+            temp.put("cover",user.getCover());
             //加入
             jsonObject.put("data",temp);
             return jsonObject.toJSONString();
@@ -43,26 +51,52 @@ public class UserController {
 
     /**
      * 用户进行注册
-     * @param user 用户的注册信息
      * @return 返回对应的字符串
      */
     @PostMapping("register")
-    public String register(User user){
-        user.setSignTime(MyDateUtil.getCurrentString());
-        int userId = userService.register(user);
-        if(userId==-1)
+    public String register(String card, String name, String password, int sex, String email,
+                           String phone, @RequestParam(value = "cover",required = false)MultipartFile file){
+        User user=new User();
+        //图片处理
+        try{
+            String coverPath="/home/image/default.png";
+            if(file!=null) {
+                coverPath = "/home/image/" + (new Date()).getTime() + file.getOriginalFilename();
+                File image = new File(coverPath);
+                file.transferTo(image);
+            }
+            user.setCover(coverPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //设置属性
+        user.setCard(card);
+        user.setName(name);
+        user.setSex(sex);
+        user.setEmail(email);
+        user.setPhone(phone);
+        //注册返回
+        int userId = -1;
+        try {
+            userId = userService.register(user,password);
+            if(userId==-1)
+                return "{\"result\":0}";
+            else{
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("resutl",1);
+                //数据部分
+                JSONObject temp=new JSONObject();
+                temp.put("id",""+userId);
+                temp.put("card",""+user.getCard());
+                temp.put("name",""+user.getName());
+                temp.put("cover",user.getCover());
+                //加入
+                jsonObject.put("data",temp);
+                return jsonObject.toJSONString();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
             return "{\"result\":0}";
-        else{
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("resutl",1);
-            //数据部分
-            JSONObject temp=new JSONObject();
-            temp.put("id",""+userId);
-            temp.put("card",""+user.getCard());
-            temp.put("name",""+user.getName());
-            //加入
-            jsonObject.put("data",temp);
-            return jsonObject.toJSONString();
         }
     }
 

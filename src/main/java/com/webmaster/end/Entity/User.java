@@ -10,31 +10,33 @@ public class User {
     private int sex;
     private String email;
     private String phone;
+    private String cover;
     private String signTime;
     private String deleteTime;
 
     public User() {
     }
 
-    public User(int id, String card, String name, int sex, String email, String phone, String signTime, String deleteTime) {
+    public User(int id, String card, String name, int sex, String email, String phone, String cover, String signTime, String deleteTime) {
         this.id = id;
         this.card = card;
         this.name = name;
         this.sex = sex;
         this.email = email;
         this.phone = phone;
+        this.cover = cover;
         this.signTime = signTime;
         this.deleteTime = deleteTime;
     }
 
-    public User(String card, String name, int sex, String email, String phone, String signTime, String deleteTime) {
+    public User(String card, String name, int sex, String email, String phone, String cover, String signTime) {
         this.card = card;
         this.name = name;
         this.sex = sex;
         this.email = email;
         this.phone = phone;
+        this.cover = cover;
         this.signTime = signTime;
-        this.deleteTime = deleteTime;
     }
 
     public int getId() {
@@ -85,6 +87,14 @@ public class User {
         this.phone = phone;
     }
 
+    public String getCover() {
+        return cover;
+    }
+
+    public void setCover(String cover) {
+        this.cover = cover;
+    }
+
     public String getSignTime() {
         return signTime;
     }
@@ -110,8 +120,9 @@ public class User {
                 ", sex=" + sex +
                 ", email='" + email + '\'' +
                 ", phone='" + phone + '\'' +
-                ", sign_time=" + signTime +
-                ", delete_time=" + deleteTime +
+                ", cover='" + cover + '\'' +
+                ", signTime='" + signTime + '\'' +
+                ", deleteTime='" + deleteTime + '\'' +
                 '}';
     }
 }

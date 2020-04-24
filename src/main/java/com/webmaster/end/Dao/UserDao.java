@@ -64,16 +64,11 @@ public class UserDao {
      * @param user 用户数据
      * @return 返回是否成功
      */
-    public boolean addUser(User user){
+    public boolean addUser(User user) throws SQLException {
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="insert into user(card,name,sex,email,phone,sign_time) values (?,?,?,?,?,?)";
-        Object[] params={user.getCard(),user.getName(),user.getSex(),user.getEmail(), user.getPhone(),user.getSignTime()};
-        try {
-            return queryRunner.update(sql,params)>=1?true:false;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
+        String sql="insert into user(card,name,sex,email,phone,cover,sign_time) values (?,?,?,?,?,?)";
+        Object[] params={user.getCard(),user.getName(),user.getSex(),user.getEmail(), user.getPhone(),user.getCover(),user.getSignTime()};
+        return queryRunner.update(sql,params)>=1?true:false;
     }
 
     /**
@@ -101,8 +96,8 @@ public class UserDao {
      */
     public boolean updateUser(User user){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="update user set card = ? , name = ? , sex = ? , email = ? , phone = ? , sign_time = ? , delete_time = ? where id = ? and delete_time is null";
-        Object[] params={user.getCard(),user.getName(),user.getSex(),user.getEmail(),user.getPhone(), user.getSignTime(),user.getDeleteTime(),user.getId()};
+        String sql="update user set card = ? , name = ? , sex = ? , email = ? , phone = ? , cover = ? , sign_time = ? , delete_time = ? where id = ? and delete_time is null";
+        Object[] params={user.getCard(),user.getName(),user.getSex(),user.getEmail(),user.getPhone(),user.getCover(), user.getSignTime(),user.getDeleteTime(),user.getId()};
         try {
             return queryRunner.update(sql,params)>=1?true:false;
         } catch (SQLException e) {

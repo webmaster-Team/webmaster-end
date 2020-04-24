@@ -7,6 +7,10 @@ import com.webmaster.end.Utils.MD5Util;
 import com.webmaster.end.Utils.MyDateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.SQLException;
+import java.util.Date;
 
 @Service
 public class UserService {
@@ -36,12 +40,20 @@ public class UserService {
     /**
      * 用户的注册
      * @param user 用户信息
+     * @param  password 用户的密码
      * @return 返回注册成功后用户的id，注册失败返回-1
      */
-    public int register(User user){
+    @Transactional
+    public int register(User user,String password) throws SQLException {
         if (!userDao.isExistByCard(user.getCard())){
-            if(userDao.addUser(user))
-                return userDao.getUserIdByCard(user.getCard());
+            if(userDao.addUser(user)) {
+                int id = userDao.getUserIdByCard(user.getCard());
+                String salt=""+(new Date()).getTime();
+                if(passwordDao.addPassword(id,salt,MD5Util.getMD5String(salt,password)))
+                    return id;
+                else
+                    return -1;
+            }
         }
         return -1;
     }
@@ -79,5 +91,15 @@ public class UserService {
             return userDao.getUserById(id);
         }
         return null;
+    }
+
+    /**
+     * 根据对应的用户id添加密码
+     * @param id 用户的id
+     * @param password 密码
+     * @return 是否添加成功
+     */
+    public boolean addPassword(int id,String password){
+        return false;
     }
 }
