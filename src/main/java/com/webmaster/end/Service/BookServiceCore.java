@@ -8,6 +8,8 @@ import com.webmaster.end.Entity.BorrowState;
 import com.webmaster.end.Entity.Rental;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashMap;
+
 /**
  * TODO
  *
@@ -23,6 +25,24 @@ public class BookServiceCore {
     protected UserDao userDao;
     @Autowired
     protected RentalDao rentalDao;
+
+    protected final int STATE_SUCCESS = 1;
+    protected final int STATE_FAIL = 0;
+
+    /**
+     * TODO 未编写的方法暂时使用反射调用(因为不会报错)
+     */
+    protected static HashMap<methodList, String> methodMap = new HashMap<>();
+    protected enum methodList{
+        isReborrow
+    }
+
+    static {
+        for (methodList iter:
+             methodList.values()) {
+            methodMap.put(iter, iter.toString());
+        }
+    }
 
     /**
      * TODO 临时的返回数据，补完逻辑记得删

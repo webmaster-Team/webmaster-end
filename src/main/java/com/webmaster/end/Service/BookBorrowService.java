@@ -20,8 +20,6 @@ public class BookBorrowService extends BookServiceCore {
 
     protected static HashMap<Integer, String> borrowStateMap = new HashMap<>();
     protected static HashMap<existState, String> existStateMap = new HashMap<>();
-    protected final int STATE_SUCCESS = 1;
-    protected final int STATE_FAIL = 0;
     protected final String failMsg = "借书失败!";
 
     protected enum existState {
@@ -29,6 +27,7 @@ public class BookBorrowService extends BookServiceCore {
         BOOK_NOT_EXISTED,
         BOTH_EXISTED
     }
+
     static {
         borrowStateMap.put(0, "本书无法借阅!");
         borrowStateMap.put(1, "借阅成功!");
