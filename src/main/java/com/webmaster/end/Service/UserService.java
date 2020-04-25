@@ -47,8 +47,11 @@ public class UserService {
     public int register(User user,String password) throws SQLException {
         if (!userDao.isExistByCard(user.getCard())){
             if(userDao.addUser(user)) {
+                //根据card获得id
                 int id = userDao.getUserIdByCard(user.getCard());
+                //产生盐值
                 String salt=""+(new Date()).getTime();
+                //增加密码
                 if(passwordDao.addPassword(id,salt,MD5Util.getMD5String(salt,password)))
                     return id;
                 else
@@ -93,13 +96,4 @@ public class UserService {
         return null;
     }
 
-    /**
-     * 根据对应的用户id添加密码
-     * @param id 用户的id
-     * @param password 密码
-     * @return 是否添加成功
-     */
-    public boolean addPassword(int id,String password){
-        return false;
-    }
 }

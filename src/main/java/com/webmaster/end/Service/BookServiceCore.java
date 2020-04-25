@@ -29,12 +29,23 @@ public class BookServiceCore {
     protected final int STATE_SUCCESS = 1;
     protected final int STATE_FAIL = 0;
 
+    protected final int REBORROWED = 1;
+    protected final int NOT_REBORROWED = 0;
+
+    /**
+     * @Description: 描述在各种操作中可能产生的状态，方便操作
+     */
+    protected enum state{
+        SUCCESS, ERR, USER_NOT_EXISTED, BOOK_NOT_EXISTED,
+        REBORROW_EXCUTED, NOT_BORROWED, BORROWED, BOOK_CANT_BORROWED
+    }
+
     /**
      * TODO 未编写的方法暂时使用反射调用(因为不会报错)
      */
     protected static HashMap<methodList, String> methodMap = new HashMap<>();
     protected enum methodList{
-        isReborrow
+        updateReturnTime
     }
 
     static {
@@ -45,18 +56,41 @@ public class BookServiceCore {
     }
 
     /**
-     * TODO 临时的返回数据，补完逻辑记得删
+     * 返回书籍是否存在
+     * @param bookid 书籍的id
+     * @return 返回是否存在
      */
-    private final Rental rental = new Rental(
-            1,
-            1,
-            1,
-            "20200422",
-            "20200422",
-            180,
-            1
-    );
-    private final Book book = bookDao.getBookById(1);
-    protected BorrowState testBorrowState = new BorrowState(1, rental, book, "成功");
+    public boolean bookIsExist(int bookid){
+        return bookDao.isExist(bookid);
+    }
 
+    /**
+     * 返回书籍信息
+     * @param bookid 书籍的id
+     * @return 返回是否存在
+     */
+    public Book getBookByid(int bookid){
+        if(bookDao.isExist(bookid)) {
+            return bookDao.getBookById(bookid);
+        }
+        return null;
+    }
+
+    /**
+     * 根据bookId，判断是否有借阅记录
+     * @param bookId 书籍ID
+     * @return 返回是否存在
+     */
+    public boolean rentalIsExist(int bookId){
+        return rentalDao.getRentalIdByBookId(bookId)==-1?false:true;
+    }
+
+    /**
+     * @Description: 判断状态是否为success
+     * @Author: Daniel
+     * @Date: 2020/4/25 3:24 下午
+     * @params: [st 状态]
+     * @return: boolean
+     */
+    protected boolean isSuccess(state st){ return st == state.SUCCESS; }
 }

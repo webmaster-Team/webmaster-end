@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 
 /**
- * TODO
  *
  * @Description: 借书Service
  * @Author: Daniel
@@ -18,98 +17,79 @@ import java.util.HashMap;
 @Service
 public class BookBorrowService extends BookServiceCore {
 
-    protected static HashMap<Integer, String> borrowStateMap = new HashMap<>();
-    protected static HashMap<existState, String> existStateMap = new HashMap<>();
-    protected final String failMsg = "借书失败!";
-
-    protected enum existState {
-        USER_NOT_EXISTED,
-        BOOK_NOT_EXISTED,
-        BOTH_EXISTED
-    }
+    private static HashMap<state, String> stateStringHashMap = new HashMap<>();
 
     static {
-        borrowStateMap.put(0, "本书无法借阅!");
-        borrowStateMap.put(1, "借阅成功!");
-        borrowStateMap.put(2, "本书已借出!");
-        borrowStateMap.put(-1, "查询错误!");
-    }
-
-    static {
-        existStateMap.put(existState.USER_NOT_EXISTED, "用户不存在!");
-        existStateMap.put(existState.BOOK_NOT_EXISTED, "书籍不存在!");
+        stateStringHashMap.put(state.SUCCESS, "借阅成功!");
+        stateStringHashMap.put(state.ERR, "本书无法借阅!");
+        stateStringHashMap.put(state.BOOK_NOT_EXISTED, "书籍不存在!");
+        stateStringHashMap.put(state.USER_NOT_EXISTED, "用户不存在!");
+        stateStringHashMap.put(state.BORROWED, "书籍已借出!请尝试续借");
+        stateStringHashMap.put(state.BOOK_CANT_BORROWED, "本书不可借阅!请咨询管理员");
     }
 
     /**
      * @Description: 借书业务逻辑
      * @Author: Daniel
-     * @Date: 2020/4/23 5:46 下午
-     * @params: [bookId 书籍id, userId 用户id]
+     * @Date: 2020/4/25 3:22 下午
+     * @params: [bookId 书籍id, card 用户id]
+     * @return: com.webmaster.end.Entity.BorrowState 书籍状态
      */
-    public BorrowState bookBorrow(int bookId, int userId) {
-        Rental rental = new Rental();
-        existState Estate = getState(userId, bookId);
-        boolean operator = false;
-        if (Estate == existState.BOTH_EXISTED) {
-            Book book = new Book();
-            int state = bookDao.getBookStateById(bookId);
-            if (state == Book.CAN_BORROW) {
-                operator = bookDao.updateBookState(bookId, Book.HAS_BORROW);
-                if (operator) {
-                    rental = new Rental(
-                            book.getId(),
-                            userId,
-                            MyDateUtil.getCurrentString(),
-                            "",
-                            180,//TODO 可能存在不同的借书时间，先用180填充
-                            (rentalDao.isExist(rentalDao.getRentalIdByBookId(bookId)) ? 1 : 0)
-                    );
-                    // STOPSHIP: 2020/4/24  
-
-                } else {
-                    return new BorrowState(STATE_FAIL, failMsg);
-                }
-                operator = rentalDao.addRental(rental);
-                if (operator) {
-                    return new BorrowState(
-                            STATE_SUCCESS,
-                            rental,
-                            bookDao.getBookById(bookId),
-                            borrowStateMap.get(state)
-                    );
-                }
-            } else {
-                return new BorrowState(STATE_FAIL,
-                        (existStateMap.get(Estate) == null ?
-                                failMsg : existStateMap.get(Estate)));
+    public BorrowState bookBorrow(int bookId, int card) {
+        try{
+            state st;
+            String date = MyDateUtil.getCurrentString();
+            //1.用户是否存在
+            st = userDao.isExistByCard(Integer.toString(card)) ? state.SUCCESS : state.USER_NOT_EXISTED;
+            if(!isSuccess(st)){
+                return new BorrowState(STATE_FAIL, stateStringHashMap.get(st));
+            }
+            //2.书籍是否存在
+            st = bookDao.isExist(bookId) ? state.SUCCESS : state.BOOK_NOT_EXISTED;
+            if(!isSuccess(st)){
+                return new BorrowState(STATE_FAIL, stateStringHashMap.get(st));
+            }
+            //3.根据书籍状态进行操作
+            switch (bookDao.getBookStateById(bookId)){
+                case Book.NOT_BORROW:
+                    return new BorrowState(STATE_FAIL, stateStringHashMap.get(state.BOOK_CANT_BORROWED));
+                case Book.HAS_BORROW:
+                    return new BorrowState(STATE_FAIL, stateStringHashMap.get(state.BORROWED));
+                case Book.CAN_BORROW:
+                    break;
+                default:
+                    return new BorrowState(STATE_FAIL, stateStringHashMap.get(state.ERR));
+            }
+            //添加rental
+            int userid = userDao.getUserIdByCard(Integer.toString(card));
+            Rental rental = new Rental(
+                    bookId,
+                    userid,
+                    date,
+                    null,
+                    180, //先用180顶着
+                    NOT_REBORROWED
+            );
+            st = rentalDao.addRental(rental) ? state.SUCCESS : state.ERR;
+            if(!isSuccess(st)){
+                return new BorrowState(STATE_FAIL, stateStringHashMap.get(st));
+            }
+            //更改书籍状态
+            st = bookDao.updateBookState(bookId, Book.HAS_BORROW) ? state.SUCCESS : state.ERR;
+            if(!isSuccess(st)){
+                return new BorrowState(STATE_FAIL, stateStringHashMap.get(st));
+            }
+            else{
+                return new BorrowState(
+                        STATE_SUCCESS,
+                        rental,
+                        bookDao.getBookById(bookId),
+                        stateStringHashMap.get(st));
             }
         }
-        return null;//TODO
+        catch (Exception e){
+            return new BorrowState(STATE_FAIL, stateStringHashMap.get(state.ERR));
+        }
     }
 
-    /**
-     * @Description: 判定用户和书籍是否存在，返回对应的状态码
-     * @Author: Daniel
-     * @Date: 2020/4/24 2:55 下午
-     * @params: [userId 用户id, bookId 书籍id]
-     * @return: com.webmaster.end.Service.BookBorrowService.existState
-     * BOTH_EXISTED
-     * BOOK_NOT_EXISTED
-     * USER_NOT_EXISTED
-     */
-    protected existState getState(int userId, int bookId){
-        boolean userState = userDao.isExist(userId);
-        boolean bookState = bookDao.isExist(bookId);
-        if(userState){
-            if (bookState) {
-                return existState.BOTH_EXISTED;
-            }
-            else {
-                return existState.BOOK_NOT_EXISTED;
-            }
-        }
-        else{
-            return existState.USER_NOT_EXISTED;
-        }
-    }
 }
