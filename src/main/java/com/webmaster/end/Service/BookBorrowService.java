@@ -35,12 +35,12 @@ public class BookBorrowService extends BookServiceCore {
      * @params: [bookId 书籍id, card 用户id]
      * @return: com.webmaster.end.Entity.BorrowState 书籍状态
      */
-    public BorrowState bookBorrow(int bookId, int card) {
+    public BorrowState bookBorrow(int bookId, int userid) {
         try{
             state st;
             String date = MyDateUtil.getCurrentString();
             //1.用户是否存在
-            st = userDao.isExistByCard(Integer.toString(card)) ? state.SUCCESS : state.USER_NOT_EXISTED;
+            st = userDao.isExist(userid) ? state.SUCCESS : state.USER_NOT_EXISTED;
             if(!isSuccess(st)){
                 return new BorrowState(STATE_FAIL, stateStringHashMap.get(st));
             }
@@ -61,7 +61,6 @@ public class BookBorrowService extends BookServiceCore {
                     return new BorrowState(STATE_FAIL, stateStringHashMap.get(state.ERR));
             }
             //添加rental
-            int userid = userDao.getUserIdByCard(Integer.toString(card));
             Rental rental = new Rental(
                     bookId,
                     userid,

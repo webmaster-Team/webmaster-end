@@ -52,7 +52,7 @@ public class UserService {
                 //产生盐值
                 String salt=""+(new Date()).getTime();
                 //增加密码
-                if(passwordDao.addPassword(id,salt,MD5Util.getMD5String(salt,password)))
+                if(passwordDao.addPassword(id,salt,MD5Util.getMD5String(password,salt)))
                     return id;
                 else
                     return -1;
@@ -66,9 +66,12 @@ public class UserService {
      * @param id 用户的id
      * @return 返回是否注销成功
      */
-    public boolean deleteUser(int id){
-        if(userDao.isExist(id))
+    @Transactional
+    public boolean deleteUser(int id) throws SQLException {
+        if(userDao.isExist(id)) {
+            passwordDao.deletePassword(id);
             return userDao.deleteUser(id, MyDateUtil.getCurrentString());
+        }
         return false;
     }
 

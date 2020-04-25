@@ -35,7 +35,7 @@ public class BookServiceCore {
     /**
      * @Description: 描述在各种操作中可能产生的状态，方便操作
      */
-    protected enum state{
+    protected enum state {
         SUCCESS, ERR, USER_NOT_EXISTED, BOOK_NOT_EXISTED,
         REBORROW_EXCUTED, NOT_BORROWED, BORROWED, BOOK_CANT_BORROWED
     }
@@ -44,33 +44,36 @@ public class BookServiceCore {
      * TODO 未编写的方法暂时使用反射调用(因为不会报错)
      */
     protected static HashMap<methodList, String> methodMap = new HashMap<>();
-    protected enum methodList{
+
+    protected enum methodList {
         updateReturnTime
     }
 
     static {
-        for (methodList iter:
-             methodList.values()) {
+        for (methodList iter :
+                methodList.values()) {
             methodMap.put(iter, iter.toString());
         }
     }
 
     /**
      * 返回书籍是否存在
+     *
      * @param bookid 书籍的id
      * @return 返回是否存在
      */
-    public boolean bookIsExist(int bookid){
+    public boolean bookIsExist(int bookid) {
         return bookDao.isExist(bookid);
     }
 
     /**
      * 返回书籍信息
+     *
      * @param bookid 书籍的id
      * @return 返回是否存在
      */
-    public Book getBookByid(int bookid){
-        if(bookDao.isExist(bookid)) {
+    public Book getBookByid(int bookid) {
+        if (bookDao.isExist(bookid)) {
             return bookDao.getBookById(bookid);
         }
         return null;
@@ -78,11 +81,12 @@ public class BookServiceCore {
 
     /**
      * 根据bookId，判断是否有借阅记录
+     *
      * @param bookId 书籍ID
      * @return 返回是否存在
      */
-    public boolean rentalIsExist(int bookId){
-        return rentalDao.getRentalIdByBookId(bookId)==-1?false:true;
+    public boolean rentalIsExist(int bookId) {
+        return rentalDao.getRentalIdByBookId(bookId) == -1 ? false : true;
     }
 
     /**
@@ -92,5 +96,7 @@ public class BookServiceCore {
      * @params: [st 状态]
      * @return: boolean
      */
-    protected boolean isSuccess(state st){ return st == state.SUCCESS; }
+    protected boolean isSuccess(state st) {
+        return st == state.SUCCESS;
+    }
 }

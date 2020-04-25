@@ -39,11 +39,11 @@ public class BookExtendborrowService extends BookServiceCore {
      * @params: [username 用户名, bookid 书籍id]
      * @return: com.webmaster.end.Entity.BorrowState 书籍状态
      */
-    public BorrowState extendBorrow(int card, int bookid) {
+    public BorrowState extendBorrow(int userid, int bookid) {
         try {
             state st;
             //1.用户是否存在
-            st = userDao.isExistByCard(Integer.toString(card)) ? state.SUCCESS : state.USER_NOT_EXISTED;
+            st = userDao.isExist(userid)? state.SUCCESS : state.USER_NOT_EXISTED;
             if(!isSuccess(st)){
                 return new BorrowState(STATE_FAIL, stateStringHashMap.get(st));
             }
@@ -58,23 +58,20 @@ public class BookExtendborrowService extends BookServiceCore {
                 return new BorrowState(STATE_FAIL, stateStringHashMap.get(state.NOT_BORROWED));
             }
             //4.是否已续借过
-            st = rentalDao.isReborrow(rentalid) ? state.SUCCESS : state.REBORROW_EXCUTED;
+            st = (!rentalDao.isReborrow(rentalid)) ? state.SUCCESS : state.REBORROW_EXCUTED;
             if(!isSuccess(st)){
                 return new BorrowState(STATE_FAIL, stateStringHashMap.get(st));
             }
             //5.处理续借事务
-            String date = MyDateUtil.getCurrentString();
-            rentalDao.updateReturnTime(rentalid,date);
-            int userid = userDao.getUserIdByCard(Integer.toString(card));
             Rental rental = new Rental(
                     bookid,
                     userid,
-                    date,
+                    MyDateUtil.getCurrentString(),
                     null,
                     180, //先用180顶着
                     REBORROWED
             );
-            st = rentalDao.addRental(rental) ? state.SUCCESS : state.ERR;
+            st = rentalDao.updateReborrow(rentalid) ? state.SUCCESS : state.ERR;
             if(isSuccess(st)){
                 return new BorrowState(
                         STATE_SUCCESS,

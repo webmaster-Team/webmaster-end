@@ -32,16 +32,11 @@ public class PasswordDao {
      * @param userId 用户ID
      * @return 返回是否删除成功
      */
-    public Boolean deletePassword(int userId){
+    public Boolean deletePassword(int userId) throws SQLException {
         QueryRunner queryRunner=new QueryRunner(dataSource);
         String sql="delete from password where id = ?";
         Object[] params={userId};
-        try {
-            return queryRunner.update(sql,params)>0?true:false;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
+        return queryRunner.update(sql,params)>0?true:false;
     }
 
     /**

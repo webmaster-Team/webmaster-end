@@ -27,10 +27,10 @@ public class BookDao {
      */
     public Boolean isExist(int id){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select count(*) from Book where id = ? and delete_time is null";
+        String sql="select count(*) from book where id = ? and delete_time is null";
         Object[] params={id};
         try {
-            int result = queryRunner.query(sql, new ScalarHandler<Integer>(), params);
+            int result = queryRunner.query(sql, new ScalarHandler<Long>(), params).intValue();
             return result==1?true:false;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -45,7 +45,7 @@ public class BookDao {
      */
     public boolean addBook(Book book){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="insert into Book(name,author,isbn,publisher,price,version,typeid,summary,cover,state,entry_time) values (?,?,?,?,?,?,?,?,?,?,?)";
+        String sql="insert into book(name,author,isbn,publisher,price,version,typeid,summary,cover,state,entry_time) values (?,?,?,?,?,?,?,?,?,?,?)";
         Object[] params={book.getName(),book.getAuthor(),book.getISBN(),book.getPublisher(),book.getPrice(),
                         book.getVersion(),book.getTypeId(),book.getSummary(),book.getCover(),book.getState(),
                         book.getEntryTime()};
@@ -65,7 +65,7 @@ public class BookDao {
      */
     public boolean deleteBook(int id, String time){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="update Book set delete_time= ? where id = ? and delete_time is null";
+        String sql="update book set delete_time= ? where id = ? and delete_time is null";
         Object[] params={time,id};
         try {
             return queryRunner.update(sql,params)>=1?true:false;
@@ -82,7 +82,7 @@ public class BookDao {
      */
     public boolean updateBook(Book book){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="update Book set name = ? , author = ? , isbn = ? , publisher = ? , price = ? , version = ? , typeid = ? , summary = ? , cover = ? , state = ? , entry_time = ? , delete_time = ? where id = ? and delete_time is null";
+        String sql="update book set name = ? , author = ? , isbn = ? , publisher = ? , price = ? , version = ? , typeid = ? , summary = ? , cover = ? , state = ? , entry_time = ? , delete_time = ? where id = ? and delete_time is null";
         Object[] params={book.getName(),book.getAuthor(),book.getISBN(),book.getPublisher(),book.getPrice(),
                         book.getVersion(),book.getTypeId(),book.getSummary(),book.getCover(),book.getState(),
                         book.getEntryTime(),
@@ -102,7 +102,7 @@ public class BookDao {
      */
     public Book getBookById(int id){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select * from Book where id =? and delete_time is null";
+        String sql="select * from book where id =? and delete_time is null";
         Object[] params={id};
         try {
             Book book = queryRunner.query(sql, new BeanHandler<>(Book.class,processor), params);
@@ -119,7 +119,7 @@ public class BookDao {
      */
     public List<Book> getBooks(){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select * from Book where delete_time is null";
+        String sql="select * from book where delete_time is null";
         try {
 
             List<Book> books = queryRunner.query(sql, new BeanListHandler<>(Book.class,processor));
@@ -136,7 +136,7 @@ public class BookDao {
      */
     public List<Book> getBooksByTypeId(String typeId){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select * from Book where typeid= ? and delete_time is null";
+        String sql="select * from book where typeid= ? and delete_time is null";
         Object[] params={typeId};
         try {
             List<Book> books = queryRunner.query(sql, new BeanListHandler<>(Book.class,processor),params);
@@ -153,8 +153,8 @@ public class BookDao {
      */
     public List<Book> getBooksByName(String name){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select * from Book where name= ? and delete_time is null";
-        Object[] params={name};
+        String sql="select * from book where name like ? and delete_time is null";
+        Object[] params={"%"+name+"%"};
         try {
             List<Book> books = queryRunner.query(sql, new BeanListHandler<>(Book.class,processor),params);
             return books;

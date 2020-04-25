@@ -28,10 +28,10 @@ public class RentalDao {
      */
     public boolean isExist(int id){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select count(*) from rental where id = ?";
+        String sql="select count(*) from rental where id = ? and return_time is null";
         Object[] params={id};
         try {
-            int result = queryRunner.query(sql, new ScalarHandler<Integer>(), params);
+            int result = queryRunner.query(sql, new ScalarHandler<Long>(), params).intValue();
             return result>0?true:false;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -63,7 +63,7 @@ public class RentalDao {
      */
     public int getRentalIdByBookId(int bookId){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select id from rentaln where book_id= ?";
+        String sql="select id from rental where book_id= ? and return_time is null";
         Object[] params={bookId};
         try {
             return queryRunner.query(sql,new ScalarHandler<Integer>(),params);
@@ -97,7 +97,7 @@ public class RentalDao {
      */
     public Rental getRentalById(int id){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select * from rental where id= ?";
+        String sql="select * from rental where id= ? and return_time is null";
         Object[] params={id};
         try {
             return queryRunner.query(sql,new BeanHandler<>(Rental.class,processor),params);
@@ -143,4 +143,20 @@ public class RentalDao {
         }
     }
 
+    /**
+     * 更改对应的续借状态
+     * @param rentalid 流水id
+     * @return
+     */
+    public boolean updateReborrow(int rentalid){
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="update rental set is_reborrow= ? where id= ? and return_time is null";
+        Object[] params={1,rentalid};
+        try {
+            return queryRunner.update(sql,params)>0?true:false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

@@ -35,10 +35,12 @@ public class UserController {
             return "{\"result\":0}";
         else {
             User user = userService.getUserById(userId);
-            JSONObject jsonObject = new JSONObject();
+            if(user==null)
+                return "{\"result\":0}";
+            JSONObject jsonObject = new JSONObject(true);
             jsonObject.put("resutl",1);
             //数据部分
-            JSONObject temp=new JSONObject();
+            JSONObject temp=new JSONObject(true);
             temp.put("id",""+userId);
             temp.put("card",user.getCard());
             temp.put("name",user.getName());
@@ -59,9 +61,11 @@ public class UserController {
         User user=new User();
         //图片处理
         try{
-            String coverPath="/home/image/default.png";
+            //String coverPath="/home/image/default.png";
+            String coverPath="C:/Users/83999/Desktop/新建文件夹/default.png";
             if(file!=null) {
-                coverPath = "/home/image/" + (new Date()).getTime() + file.getOriginalFilename();
+                coverPath = "C:/Users/83999/Desktop/新建文件夹/" + (new Date()).getTime() + file.getOriginalFilename();
+                //coverPath = "/home/image/" + (new Date()).getTime() + file.getOriginalFilename();
                 File image = new File(coverPath);
                 file.transferTo(image);
             }
@@ -75,6 +79,7 @@ public class UserController {
         user.setSex(sex);
         user.setEmail(email);
         user.setPhone(phone);
+        user.setSignTime(MyDateUtil.getCurrentString());
         //注册返回
         int userId = -1;
         try {
@@ -82,10 +87,10 @@ public class UserController {
             if(userId==-1)
                 return "{\"result\":0}";
             else{
-                JSONObject jsonObject = new JSONObject();
+                JSONObject jsonObject = new JSONObject(true);
                 jsonObject.put("resutl",1);
                 //数据部分
-                JSONObject temp=new JSONObject();
+                JSONObject temp=new JSONObject(true);
                 temp.put("id",""+userId);
                 temp.put("card",""+user.getCard());
                 temp.put("name",""+user.getName());
@@ -105,9 +110,15 @@ public class UserController {
      * @param id 用户的id
      * @return 返回对应的字符串
      */
-    @PostMapping("register")
+    @PostMapping("delete")
     public String delete(int id){
-        boolean result = userService.deleteUser(id);
-        return "{\"result\":"+(result?1:0)+"}";
+        boolean result = false;
+        try {
+            result = userService.deleteUser(id);
+            return "{\"result\":"+(result?1:0)+"}";
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "{\"result\":0}";
+        }
     }
 }

@@ -44,10 +44,10 @@ public class BookController {
         if(bookBorrowService.bookIsExist(bookid)){
             BorrowState state = bookBorrowService.bookBorrow(bookid, userid);
             if(state.getState()==1){
-                JSONObject jsonObject = new JSONObject();
+                JSONObject jsonObject = new JSONObject(true);
                 jsonObject.put("result",1);
 
-                JSONObject data=new JSONObject();
+                JSONObject data=new JSONObject(true);
                 data.put("bookid",bookid+"");
                 data.put("uid",userid+"");
                 Rental rental = state.getRental();
@@ -73,12 +73,12 @@ public class BookController {
     @PostMapping("extendborrow")
     public String extendborrow(int userid,int bookid){
         if(bookExtendborrowService.rentalIsExist(bookid)){
-            BorrowState state = bookExtendborrowService.extendBorrow(bookid, userid);
+            BorrowState state = bookExtendborrowService.extendBorrow(userid, bookid);
             if(state.getState()==1){
-                JSONObject jsonObject = new JSONObject();
+                JSONObject jsonObject = new JSONObject(true);
                 jsonObject.put("result",1);
 
-                JSONObject data=new JSONObject();
+                JSONObject data=new JSONObject(true);
                 data.put("bookid",bookid+"");
                 data.put("uid",userid+"");
                 Rental rental = state.getRental();
@@ -105,10 +105,10 @@ public class BookController {
         if(bookReturnService.rentalIsExist(bookid)){
             BorrowState state = bookReturnService.returnBook(bookid);
             if(state.getState()==1){
-                JSONObject jsonObject = new JSONObject();
+                JSONObject jsonObject = new JSONObject(true);
                 jsonObject.put("result",1);
 
-                JSONObject data=new JSONObject();
+                JSONObject data=new JSONObject(true);
                 Rental rental = state.getRental();
                 data.put("bookid",rental.getBookId()+"");
                 data.put("uid",rental.getUserId()+"");
@@ -129,21 +129,21 @@ public class BookController {
      * @param key 关键字
      * @return 返回所有书籍
      */
-    @PostMapping("searchBooks")
+    @PostMapping("searchbooks")
     public String searchBooks(String key){
         List<Book> books = bookSearchService.searchBooks(key);
         if(books.size()==0)
             return "{\"result\":0}";
         else{
-            JSONObject jsonObject=new JSONObject();
+            JSONObject jsonObject=new JSONObject(true);
             jsonObject.put("result",1);
             JSONArray array = new JSONArray();
             for (Book book : books) {
-                JSONObject temp = (JSONObject) JSON.toJSON(book);
+                String temp=JSONObject.toJSONString(book);
                 array.add(temp);
             }
             jsonObject.put("data",array);
-            return jsonObject.toJSONString();
+            return jsonObject.toJSONString().replace("\\","");
         }
     }
 }

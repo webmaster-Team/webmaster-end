@@ -1,7 +1,8 @@
 package com.webmaster.end.Entity;
 
-import java.util.Date;
+import com.alibaba.fastjson.annotation.JSONType;
 
+@JSONType(orders={"id","name","author","iSBN","publisher","price","version","typeId","summary","cover","state","entry_time"})
 public class Book {
     private int id;
     private String name;
