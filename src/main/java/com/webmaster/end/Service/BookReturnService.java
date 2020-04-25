@@ -64,9 +64,7 @@ public class BookReturnService extends BookServiceCore {
             if (rentalid == -1) {
                 return new BorrowState(STATE_FAIL, stateStringHashMap.get(state.ERR));
             }
-            //TODO invoke
-            RentalDao.class.getDeclaredMethod(methodMap.get(methodList.updateReturnTime))
-                    .invoke(rentalDao, rentalid, date);
+            rentalDao.updateReturnTime(rentalid,date);
             st = bookDao.updateBookState(bookid, Book.CAN_BORROW) ? state.SUCCESS : state.ERR;
             if(!isSuccess(st)){
                 return new BorrowState(STATE_FAIL, stateStringHashMap.get(st));

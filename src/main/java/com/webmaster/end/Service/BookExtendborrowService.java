@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 
 import com.webmaster.end.Utils.MyDateUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -63,12 +64,7 @@ public class BookExtendborrowService extends BookServiceCore {
             }
             //5.处理续借事务
             String date = MyDateUtil.getCurrentString();
-            //暂时使用反射调用没有编写的方法,补完后视情况改正
-            //TODO  待补全方法 updateReturnTime(int rentalid, String date)
-            //      用以补数据库rental中的return_time
-            //      ps 最好是抛错，这样可以直接在这个方法里输出错误
-            RentalDao.class.getDeclaredMethod(methodMap.get(methodList.updateReturnTime))
-                    .invoke(rentalDao, rentalid, date);
+            rentalDao.updateReturnTime(rentalid,date);
             int userid = userDao.getUserIdByCard(Integer.toString(card));
             Rental rental = new Rental(
                     bookid,
