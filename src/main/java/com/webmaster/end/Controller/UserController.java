@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -29,11 +30,12 @@ public class UserController {
      * @return 返回对应的字符串
      */
     @PostMapping("login")
-    public String login(String card,String password){
+    public String login(String card, String password, HttpSession session){
         int userId = userService.login(card, password);
         if(userId==-1)
             return "{\"result\":0}";
         else {
+            session.setAttribute(card,userId);
             User user = userService.getUserById(userId);
             if(user==null)
                 return "{\"result\":0}";
@@ -104,7 +106,7 @@ public class UserController {
     }
 
     /**
-     * 用户注销
+     * 用户删除
      * @param id 用户的id
      * @return 返回对应的字符串
      */
@@ -115,6 +117,22 @@ public class UserController {
             result = userService.deleteUser(id);
             return "{\"result\":"+(result?1:0)+"}";
         } catch (SQLException e) {
+            e.printStackTrace();
+            return "{\"result\":0}";
+        }
+    }
+
+    /**
+     * 用户注销
+     * @param card 卡号
+     * @return 返回对应的字符串
+     */
+    @PostMapping("logout")
+    public String logout(String card,HttpSession session){
+        try {
+            session.removeAttribute(card);
+            return "{\"result\":1}";
+        } catch (Exception e) {
             e.printStackTrace();
             return "{\"result\":0}";
         }
