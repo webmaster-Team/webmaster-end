@@ -9,10 +9,12 @@ import com.webmaster.end.Entity.Rental;
 import com.webmaster.end.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @RestController
@@ -40,25 +42,27 @@ public class BookController {
      * @return 对应的JSON串
      */
     @PostMapping("borrow")
-    public String borrow(int userid,int bookid){
-        if(bookBorrowService.bookIsExist(bookid)){
-            BorrowState state = bookBorrowService.bookBorrow(bookid, userid);
-            if(state.getState()==1){
-                JSONObject jsonObject = new JSONObject(true);
-                jsonObject.put("result",1);
+    public String borrow(int userid,int bookid, HttpSession session){
+        if(!StringUtils.isEmpty((String)(session.getAttribute(userid+"")))) {
+            if (bookBorrowService.bookIsExist(bookid)) {
+                BorrowState state = bookBorrowService.bookBorrow(bookid, userid);
+                if (state.getState() == 1) {
+                    JSONObject jsonObject = new JSONObject(true);
+                    jsonObject.put("result", 1);
 
-                JSONObject data=new JSONObject(true);
-                data.put("bookid",bookid+"");
-                data.put("uid",userid+"");
-                Rental rental = state.getRental();
-                data.put("username",userService.getUserById(userid).getName());
-                data.put("bookname",bookBorrowService.getBookByid(bookid).getName());
-                data.put("borrowtime",rental.getBorrowTime());
-                data.put("duration",rental.getDuration());
-                data.put("isReborrow",(rental.getIsReborrow()==1?true:false));
+                    JSONObject data = new JSONObject(true);
+                    data.put("bookid", bookid + "");
+                    data.put("uid", userid + "");
+                    Rental rental = state.getRental();
+                    data.put("username", userService.getUserById(userid).getName());
+                    data.put("bookname", bookBorrowService.getBookByid(bookid).getName());
+                    data.put("borrowtime", rental.getBorrowTime());
+                    data.put("duration", rental.getDuration());
+                    data.put("isReborrow", (rental.getIsReborrow() == 1 ? true : false));
 
-                jsonObject.put("data",data);
-                return jsonObject.toJSONString();
+                    jsonObject.put("data", data);
+                    return jsonObject.toJSONString();
+                }
             }
         }
         return "{\"result\":0}";
@@ -71,25 +75,27 @@ public class BookController {
      * @return 返回对应的信息
      */
     @PostMapping("extendborrow")
-    public String extendborrow(int userid,int bookid){
-        if(bookExtendborrowService.rentalIsExist(bookid)){
-            BorrowState state = bookExtendborrowService.extendBorrow(userid, bookid);
-            if(state.getState()==1){
-                JSONObject jsonObject = new JSONObject(true);
-                jsonObject.put("result",1);
+    public String extendborrow(int userid,int bookid, HttpSession session){
+        if(!StringUtils.isEmpty((String)(session.getAttribute(userid+"")))) {
+            if (bookExtendborrowService.rentalIsExist(bookid)) {
+                BorrowState state = bookExtendborrowService.extendBorrow(userid, bookid);
+                if (state.getState() == 1) {
+                    JSONObject jsonObject = new JSONObject(true);
+                    jsonObject.put("result", 1);
 
-                JSONObject data=new JSONObject(true);
-                data.put("bookid",bookid+"");
-                data.put("uid",userid+"");
-                Rental rental = state.getRental();
-                data.put("username",userService.getUserById(userid).getName());
-                data.put("bookname",bookExtendborrowService.getBookByid(bookid).getName());
-                data.put("borrowtime",rental.getBorrowTime());
-                data.put("duration",rental.getDuration());
-                data.put("isReborrow",(rental.getIsReborrow()==1?true:false));
+                    JSONObject data = new JSONObject(true);
+                    data.put("bookid", bookid + "");
+                    data.put("uid", userid + "");
+                    Rental rental = state.getRental();
+                    data.put("username", userService.getUserById(userid).getName());
+                    data.put("bookname", bookExtendborrowService.getBookByid(bookid).getName());
+                    data.put("borrowtime", rental.getBorrowTime());
+                    data.put("duration", rental.getDuration());
+                    data.put("isReborrow", (rental.getIsReborrow() == 1 ? true : false));
 
-                jsonObject.put("data",data);
-                return jsonObject.toJSONString();
+                    jsonObject.put("data", data);
+                    return jsonObject.toJSONString();
+                }
             }
         }
         return "{\"result\":0}";
@@ -101,24 +107,26 @@ public class BookController {
      * @return 返回相关信息
      */
     @PostMapping("returnbook")
-    public String returnbook(int bookid){
-        if(bookReturnService.rentalIsExist(bookid)){
-            BorrowState state = bookReturnService.returnBook(bookid);
-            if(state.getState()==1){
-                JSONObject jsonObject = new JSONObject(true);
-                jsonObject.put("result",1);
+    public String returnbook(int userid,int bookid, HttpSession session){
+        if(!StringUtils.isEmpty((String)(session.getAttribute(userid+"")))) {
+            if (bookReturnService.rentalIsExist(bookid)) {
+                BorrowState state = bookReturnService.returnBook(bookid);
+                if (state.getState() == 1) {
+                    JSONObject jsonObject = new JSONObject(true);
+                    jsonObject.put("result", 1);
 
-                JSONObject data=new JSONObject(true);
-                Rental rental = state.getRental();
-                data.put("bookid",rental.getBookId()+"");
-                data.put("uid",rental.getUserId()+"");
-                data.put("username",userService.getUserById(rental.getUserId()).getName());
-                data.put("bookname",bookReturnService.getBookByid(rental.getBookId()).getName());
-                data.put("borrowtime",rental.getBorrowTime());
-                data.put("returntime",rental.getReturnTime());
+                    JSONObject data = new JSONObject(true);
+                    Rental rental = state.getRental();
+                    data.put("bookid", rental.getBookId() + "");
+                    data.put("uid", rental.getUserId() + "");
+                    data.put("username", userService.getUserById(rental.getUserId()).getName());
+                    data.put("bookname", bookReturnService.getBookByid(rental.getBookId()).getName());
+                    data.put("borrowtime", rental.getBorrowTime());
+                    data.put("returntime", rental.getReturnTime());
 
-                jsonObject.put("data",data);
-                return jsonObject.toJSONString();
+                    jsonObject.put("data", data);
+                    return jsonObject.toJSONString();
+                }
             }
         }
         return "{\"result\":0}";

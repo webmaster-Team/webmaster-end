@@ -35,8 +35,8 @@ public class UserController {
         if(userId==-1)
             return "{\"result\":0}";
         else {
-            session.setAttribute(card,userId);
             User user = userService.getUserById(userId);
+            session.setAttribute(userId+"",card);
             if(user==null)
                 return "{\"result\":0}";
             JSONObject jsonObject = new JSONObject(true);
@@ -59,7 +59,7 @@ public class UserController {
      */
     @PostMapping("register")
     public String register(String card, String name, String password, int sex, String email,
-                           String phone, @RequestParam(value = "cover",required = false)MultipartFile file){
+                           String phone, @RequestParam(value = "cover",required = false)MultipartFile file,HttpSession session){
         User user=new User();
         //图片处理
         try{
@@ -84,6 +84,7 @@ public class UserController {
         int userId = -1;
         try {
             userId = userService.register(user,password);
+            session.setAttribute(userId+"",card);
             if(userId==-1)
                 return "{\"result\":0}";
             else{
@@ -124,13 +125,13 @@ public class UserController {
 
     /**
      * 用户注销
-     * @param card 卡号
+     * @param id 卡号
      * @return 返回对应的字符串
      */
     @PostMapping("logout")
-    public String logout(String card,HttpSession session){
+    public String logout(int id,HttpSession session){
         try {
-            session.removeAttribute(card);
+            session.removeAttribute(id+"");
             return "{\"result\":1}";
         } catch (Exception e) {
             e.printStackTrace();
