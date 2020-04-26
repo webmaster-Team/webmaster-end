@@ -61,15 +61,13 @@ public class UserController {
         User user=new User();
         //图片处理
         try{
-            //String coverPath="/home/image/default.png";
-            String coverPath="C:/Users/83999/Desktop/新建文件夹/default.png";
+            String coverPath="/home/image/default.png";
             if(file!=null) {
-                coverPath = "C:/Users/83999/Desktop/新建文件夹/" + (new Date()).getTime() + file.getOriginalFilename();
-                //coverPath = "/home/image/" + (new Date()).getTime() + file.getOriginalFilename();
+                coverPath = "/home/image/" + (new Date()).getTime() + file.getOriginalFilename();
                 File image = new File(coverPath);
                 file.transferTo(image);
             }
-            user.setCover(coverPath);
+            user.setCover("http://123.56.3.135:8080"+coverPath);
         } catch (IOException e) {
             e.printStackTrace();
         }
