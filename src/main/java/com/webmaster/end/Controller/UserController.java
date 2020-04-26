@@ -17,7 +17,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 @RestController
-@RequestMapping("/user/")
+@RequestMapping("/api/user/")
 public class UserController {
     @Autowired
     private UserService userService;
