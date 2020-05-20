@@ -60,6 +60,24 @@ public class UserDao {
     }
 
     /**
+     * 查询用户是否存在
+     * @param name 用户名
+     * @return 返回是否存在
+     */
+    public Boolean isExistByName(String name){
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="select count(*) from user where name = ? and delete_time is null";
+        Object[] params={name};
+        try {
+            int result = queryRunner.query(sql, new ScalarHandler<Long>(), params).intValue();
+            return result==1?true:false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
      * 注册一个用户
      * @param user 用户数据
      * @return 返回是否成功
@@ -151,4 +169,22 @@ public class UserDao {
             return -1;
         }
     }
+
+    /**
+     * 根据传入的name来返回用户对应的name
+     * @param name 用户名
+     * @return 返回用户的id
+     */
+    public int getUserIdByName(String name){
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="select id from user where name =? and delete_time is null";
+        Object[] params={name};
+        try {
+            return queryRunner.query(sql, new ScalarHandler<Integer>(), params);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
 }

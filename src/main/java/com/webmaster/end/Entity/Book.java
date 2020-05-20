@@ -1,6 +1,9 @@
 package com.webmaster.end.Entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
+
+import java.util.Comparator;
 
 @JSONType(orders={"id","name","author","iSBN","publisher","price","version","typeId","summary","cover","state","entry_time"})
 public class Book {
@@ -178,4 +181,5 @@ public class Book {
                 ", delete_time=" + deleteTime +
                 '}';
     }
+
 }

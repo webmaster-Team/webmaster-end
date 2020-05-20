@@ -1,8 +1,13 @@
 package com.webmaster.end.Utils;
 
+import com.webmaster.end.Entity.Book;
+import org.springframework.util.StringUtils;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class MyDateUtil {
 
@@ -38,4 +43,26 @@ public class MyDateUtil {
     public static String getCurrentString(){
         return convertDateToStr(new Date());
     }
+
+    /**
+     * 返回当前Long的当前时间
+     * @return
+     */
+    public static long getCurrentTime(){
+        return new Date().getTime();
+    }
+
+    /**
+     * 比较第一个时间是不是更早
+     *
+     * @param firstDate 第一个
+     * @param secondDate 第二个时间
+     * @return 第一个时间是否更早
+     */
+    public static boolean isFirstDatePrevious(String firstDate, String secondDate){
+        Date date1 = convertStrToDate(firstDate);
+        Date date2 = convertStrToDate(secondDate);
+        return date1.compareTo(date2)<0;
+    }
+
 }

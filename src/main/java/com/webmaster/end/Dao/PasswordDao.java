@@ -93,4 +93,22 @@ public class PasswordDao {
             return null;
         }
     }
+
+    /**
+     * 判断密码条款是否存在
+     * @param userId 用户的Id
+     * @return 是否存在
+     */
+    public boolean isExist(int userId){
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="select count(*) from password where id = ?";
+        Object[] params={userId};
+        try {
+            Long count =   queryRunner.query(sql, new ScalarHandler<Long>(), params);
+            return count.intValue()>0?true:false;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

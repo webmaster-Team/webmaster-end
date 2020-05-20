@@ -1,6 +1,7 @@
 package com.webmaster.end.Service;
 
 import com.webmaster.end.Dao.PasswordDao;
+import com.webmaster.end.Dao.RentalDao;
 import com.webmaster.end.Dao.UserDao;
 import com.webmaster.end.Entity.User;
 import com.webmaster.end.Utils.MD5Util;
@@ -18,6 +19,8 @@ public class UserService {
     private UserDao userDao;
     @Autowired
     private PasswordDao passwordDao;
+    @Autowired
+    private RentalDao rentalDao;
 
     /**
      * 用户的登录
@@ -45,7 +48,7 @@ public class UserService {
      */
     @Transactional
     public int register(User user,String password) throws SQLException {
-        if (!userDao.isExistByCard(user.getCard())){
+        if (!userDao.isExistByCard(user.getCard())&&!userDao.isExistByName(user.getName())){
             if(userDao.addUser(user)) {
                 //根据card获得id
                 int id = userDao.getUserIdByCard(user.getCard());
@@ -97,6 +100,58 @@ public class UserService {
             return userDao.getUserById(id);
         }
         return null;
+    }
+
+    /**
+     * 获得用户的借书数量
+     * @param userId 用户的id
+     * @return 返回借书数量
+     */
+    public int getBorrowBooksByUserId(int userId){
+        return rentalDao.getBorrowBooksByUserId(userId);
+    }
+
+    /**
+     * 通过用户名来获得用户的ID
+     * @param name 用户昵称
+     * @return 返回用户ID，失败为-1
+     */
+    public int getUserIdByName(String name){
+        if(userDao.isExistByName(name))
+            return userDao.getUserIdByName(name);
+        return -1;
+    }
+
+    /**
+     * 设置密码
+     * @param userId 用户的id
+     * @param password 密码
+     * @return 返回是否修改成功
+     */
+    public boolean setPassword(int userId,String password){
+        if(passwordDao.isExist(userId)){
+            String salt=MD5Util.getSalt();
+            String truePassword = MD5Util.getMD5String(password, salt);
+            Boolean result = passwordDao.updatePassword(userId, salt, truePassword);
+            return result;
+        }
+        return false;
+    }
+
+    /**
+     * 判断密码是否正确
+     * @param userId 用户的id
+     * @param password 密码
+     * @return 是否正确
+     */
+    public boolean checkPassword(int userId,String password){
+        if(passwordDao.isExist(userId)){
+            String salt = passwordDao.getSaltById(userId);
+            String currentPassword = MD5Util.getMD5String(password, salt);
+            if(currentPassword.equals(passwordDao.getPasswordById(userId)))
+                return true;
+        }
+        return false;
     }
 
 }

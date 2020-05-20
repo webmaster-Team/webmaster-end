@@ -159,4 +159,16 @@ public class RentalDao {
             return false;
         }
     }
+
+    public int getBorrowBooksByUserId(int userId){
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="select count(*) from rental where user_id= ? and return_time is null";
+        Object[] params={userId};
+        try {
+            return queryRunner.query(sql,new ScalarHandler<Long>(),params).intValue();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
 }

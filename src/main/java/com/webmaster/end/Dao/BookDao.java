@@ -7,6 +7,7 @@ import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -151,10 +152,11 @@ public class BookDao {
      * 返回所有相同名字的书籍
      * @return 返回书籍集合
      */
-    public List<Book> getBooksByName(String name){
+    public List<Book> getBooksByKey(String key){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select * from book where name like ? and delete_time is null";
-        Object[] params={"%"+name+"%"};
+        String sql="select * from book where delete_time is null and (name like ? or author like ? or publisher like ?) ";
+        key="%"+key+"%";
+        Object[] params={key,key,key};
         try {
             List<Book> books = queryRunner.query(sql, new BeanListHandler<>(Book.class,processor),params);
             return books;
@@ -200,4 +202,29 @@ public class BookDao {
     }
 
 
+    public Book getBookByBookId(int bookId) {
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="select * from book where id= ? and delete_time is null";
+        Object[] params={bookId};
+        try {
+            Book book = queryRunner.query(sql, new BeanHandler<>(Book.class,processor), params);
+            return book;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Book getBookByISBN(String iSBN){
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="select * from book where isbn= ? and delete_time is null";
+        Object[] params={iSBN};
+        try {
+            Book book = queryRunner.query(sql, new BeanHandler<>(Book.class,processor), params);
+            return book;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

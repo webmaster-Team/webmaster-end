@@ -1,6 +1,5 @@
 package com.webmaster.end.Entity;
 
-import java.util.Date;
 
 public class User {
     private int id;
@@ -13,11 +12,12 @@ public class User {
     private String cover;
     private String signTime;
     private String deleteTime;
+    private int identity;
 
     public User() {
     }
 
-    public User(int id, String card, String name, int sex, String email, String phone, String cover, String signTime, String deleteTime) {
+    public User(int id, String card, String name, int sex, String email, String phone, String cover, String signTime, String deleteTime,int identity) {
         this.id = id;
         this.card = card;
         this.name = name;
@@ -27,9 +27,10 @@ public class User {
         this.cover = cover;
         this.signTime = signTime;
         this.deleteTime = deleteTime;
+        this.identity=identity;
     }
 
-    public User(String card, String name, int sex, String email, String phone, String cover, String signTime) {
+    public User(String card, String name, int sex, String email, String phone, String cover, String signTime,int identity) {
         this.card = card;
         this.name = name;
         this.sex = sex;
@@ -37,6 +38,7 @@ public class User {
         this.phone = phone;
         this.cover = cover;
         this.signTime = signTime;
+        this.identity=identity;
     }
 
     public int getId() {
@@ -111,6 +113,14 @@ public class User {
         this.deleteTime = deleteTime;
     }
 
+    public int getIdentity() {
+        return identity;
+    }
+
+    public void setIdentity(int identity) {
+        this.identity = identity;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -123,6 +133,7 @@ public class User {
                 ", cover='" + cover + '\'' +
                 ", signTime='" + signTime + '\'' +
                 ", deleteTime='" + deleteTime + '\'' +
+                ", identity=" + identity +
                 '}';
     }
 }
