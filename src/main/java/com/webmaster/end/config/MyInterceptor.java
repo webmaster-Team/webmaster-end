@@ -18,7 +18,13 @@ public class MyInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         response.addHeader("Access-Control-Allow-Credentials","true");
-        HandlerMethod method=(HandlerMethod)handler;
+        HandlerMethod method=null;
+        try{
+            method=(HandlerMethod)handler;
+        }catch (Exception e){
+            e.printStackTrace();
+            return super.preHandle(request,response,handler);
+        }
         LoginAccess methodAnnotation = method.getMethodAnnotation(LoginAccess.class);
         if(methodAnnotation==null||!(methodAnnotation.value()))
             return true;
