@@ -196,7 +196,7 @@ public class UserController {
         }
         String app_id="323275235";
         String app_secret="1409df204947454234cf764953ac6549";
-        String redirect_uri="http://127.0.0.1:8080/api/user/weiboThreeLogin";
+        String redirect_uri="http://123.56.3.135:8080/api/user/weiboThreeLogin";
         JSONObject jsonObject=MyHttpClient.post("https://api.weibo.com/oauth2/access_token?client_id="
                 +app_id+
                 "&client_secret="+app_secret+
@@ -227,7 +227,7 @@ public class UserController {
                 userId = userService.register(user, "111111");
                 //注册失败
                 if(userId==-1)
-                    response.sendRedirect("http://127.0.0.1:80/error.html");
+                    response.sendRedirect("http://www.solingjees.site:11010/#/login");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -241,7 +241,7 @@ public class UserController {
         };
         String token=JwtUtil.encode(param);
         try {
-            response.sendRedirect("http://127.0.0.1:80/success.html?token="+access_token);
+            response.sendRedirect("http://www.solingjees.site:11010/#/index?token="+access_token);
         } catch (IOException e) {
             e.printStackTrace();
         }
