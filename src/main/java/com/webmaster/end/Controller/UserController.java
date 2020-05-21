@@ -138,6 +138,7 @@ public class UserController {
      * @param map 用户的数据列表，包含Id
      * @return 返回对应的字符串
      */
+    @Deprecated
     @LoginAccess
     @CrossOrigin
     @PostMapping("logout")
@@ -158,7 +159,6 @@ public class UserController {
      * @param file
      * @return
      */
-    @LoginAccess
     @CrossOrigin
     @PostMapping("upload")
     @ResponseBody
