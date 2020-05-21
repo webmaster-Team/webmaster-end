@@ -159,7 +159,7 @@ public class UserController {
      * @param file
      * @return
      */
-    @CrossOrigin
+    @CrossOrigin(origins = {"http://39.170.26.135:3000"}, maxAge = 3600)
     @PostMapping("upload")
     @ResponseBody
     public String upload(@RequestParam(value="portrait") MultipartFile file) {
