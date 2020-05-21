@@ -1,7 +1,9 @@
 package com.webmaster.end.Service;
 
 import com.webmaster.end.Dao.BookDao;
+import com.webmaster.end.Dao.BookTypeDao;
 import com.webmaster.end.Entity.Book;
+import com.webmaster.end.Entity.BookType;
 import com.webmaster.end.Utils.MyDateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,8 +17,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class BookSearchService extends BookServiceCore {
-    @Autowired
-    private BookDao bookDao;
 
     public List<Book> searchBooks(){
         List<Book> books=null;
@@ -84,5 +84,31 @@ public class BookSearchService extends BookServiceCore {
                     .filter((Book book)->book.getState()==state)
                     .collect(Collectors.toList());
         return result;
+    }
+
+    public List<Book> filterBooksByPage(List<Book> books, int perpage, int pageIndex) {
+        int startIndex=(pageIndex-1)*perpage;
+        int endIndex=startIndex+perpage;
+        //开始索引大于0，小于书籍总数
+        if(startIndex>=0||startIndex<books.size()){
+            //结尾索引小于开始索引
+            if (endIndex<startIndex)
+                return null;
+                //结尾索引超过书籍总数
+            else if(endIndex>=books.size())
+                endIndex=books.size()-1;
+            return books.subList(startIndex, endIndex);
+        }
+        //开始索引不满足条件
+        else
+            return null;
+    }
+
+
+    public List<Book> filterBooksByTitle(List<Book> books, String title) {
+        BookType bookType = bookTypeDao.getBookTypeByTitle(title);
+        return books.stream()
+                .filter((Book book) -> book.getTypeId().equals(bookType.getType()))
+                .collect(Collectors.toList());
     }
 }

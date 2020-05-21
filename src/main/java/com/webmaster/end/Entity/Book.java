@@ -14,6 +14,7 @@ public class Book {
     private String publisher;
     private int price;
     private String version;
+    @JSONField(name="title")
     private String typeId;
     private String summary;
     private String cover;

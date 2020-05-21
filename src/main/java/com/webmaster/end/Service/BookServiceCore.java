@@ -1,9 +1,11 @@
 package com.webmaster.end.Service;
 
 import com.webmaster.end.Dao.BookDao;
+import com.webmaster.end.Dao.BookTypeDao;
 import com.webmaster.end.Dao.RentalDao;
 import com.webmaster.end.Dao.UserDao;
 import com.webmaster.end.Entity.Book;
+import com.webmaster.end.Entity.BookType;
 import com.webmaster.end.Entity.BorrowState;
 import com.webmaster.end.Entity.Rental;
 import com.webmaster.end.Utils.MyDateUtil;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * TODO
@@ -27,6 +30,8 @@ public class BookServiceCore {
     protected UserDao userDao;
     @Autowired
     protected RentalDao rentalDao;
+    @Autowired
+    protected BookTypeDao bookTypeDao;
 
     protected final int STATE_SUCCESS = 1;
     protected final int STATE_FAIL = 0;
@@ -101,6 +106,14 @@ public class BookServiceCore {
     protected boolean isSuccess(state st) {
         return st == state.SUCCESS;
     }
+
+    public List<BookType> getBookTypes(){
+        return bookTypeDao.getBookTypes();
+    }
+    public String getTitleByType(String type){
+        return bookTypeDao.getBookTypeByType(type).getTitle();
+    }
+
     //名字排序
     class BookNameCompartor implements Comparator<Book> {
         private boolean isUpSort=true;
@@ -131,6 +144,5 @@ public class BookServiceCore {
                 return MyDateUtil.isFirstDatePrevious(o1.getEntryTime(),o2.getEntryTime())?1:-1;
         }
     }
-
 
 }

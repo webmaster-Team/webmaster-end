@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.webmaster.end.Entity.Book;
+import com.webmaster.end.Entity.BookType;
 import com.webmaster.end.Entity.BorrowState;
 import com.webmaster.end.Entity.Rental;
 import com.webmaster.end.Service.*;
@@ -142,6 +143,23 @@ public class BookController {
         return "{\"result\":0}";
     }
 
+    @CrossOrigin
+    @PostMapping("getBookTypes")
+    public String getBookTypes(){
+        try {
+            List<BookType> bookTypes = bookSearchService.getBookTypes();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("result", 1);
+            JSONArray jsonArray = new JSONArray();
+            for (int i = 0; i < bookTypes.size(); i++)
+                jsonArray.add(bookTypes.get(i).getTitle());
+            jsonObject.put("data",jsonArray);
+            return jsonObject.toJSONString();
+        }catch (Exception e){
+            e.printStackTrace();
+            return "{\"result\":0}";
+        }
+    }
     /**
      * 根据对应的key返回所有相关的书籍
      * @param map 关键字的map
@@ -231,11 +249,31 @@ public class BookController {
                         return "{\"result\":0}";
                     }
                 }
+                //进行页数筛选
+                if (map.get("perpage") != null&&map.get("pageIndex") != null) {
+                    int perpage=(int)map.get("perpage");
+                    int pageIndex=(int)map.get("pageIndex");
+                    books = bookSearchService.filterBooksByPage(books, perpage, pageIndex);
+                    if (books==null)
+                        return "{\"result\":0}";
+                }
+                //需要类别筛选
+                if (map.get("type") != null) {
+                    try {
+                        String title = (String) map.get("type");
+                        books=bookSearchService.filterBooksByTitle(books,title);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return "{\"result\":0}";
+                    }
+                }
             }
             JSONObject jsonObject = new JSONObject(true);
             jsonObject.put("result", 1);
             JSONArray array = new JSONArray();
-            for (Book book : books) {
+            for (int i = 0; i < books.size(); i++) {
+                Book book=books.get(i);
+                book.setTypeId(bookSearchService.getTitleByType(book.getTypeId()));
                 String temp = JSONObject.toJSONString(book);
                 array.add(temp);
             }

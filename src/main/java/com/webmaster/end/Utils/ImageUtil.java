@@ -27,7 +27,7 @@ public class ImageUtil {
      */
     public void setBorder(Graphics g) {
         // 设置边框颜色
-        g.setColor(Color.BLUE);
+        g.setColor(Color.WHITE);
         // 边框区域
         g.drawRect(1, 1, WIDTH - 2, HEIGHT - 2);
     }
@@ -38,7 +38,7 @@ public class ImageUtil {
      */
     public void drawRandomLine(Graphics g) {
         // 设置颜色
-        g.setColor(Color.GREEN);
+        g.setColor(new Color(4,121,238,255));
         // 设置线条个数并画线
         for (int i = 0; i < 5; i++) {
             int x1 = new Random().nextInt(WIDTH);
@@ -83,6 +83,7 @@ public class ImageUtil {
             sb.append(ch);
             // 将笔正向角度，以及旋转原点的x轴和y轴
             g.rotate(degree * Math.PI / 180, x, 20);
+            g.setFont(new Font("Arial",Font.PLAIN,18));
             //在指定的位置绘制字符串
             g.drawString(ch, x, 20);
             // 反向角度，将笔转回来

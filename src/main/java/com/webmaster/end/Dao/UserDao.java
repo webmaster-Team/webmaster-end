@@ -84,8 +84,8 @@ public class UserDao {
      */
     public boolean addUser(User user) throws SQLException {
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="insert into user(card,name,sex,email,phone,cover,sign_time) values (?,?,?,?,?,?,?)";
-        Object[] params={user.getCard(),user.getName(),user.getSex(),user.getEmail(), user.getPhone(),user.getCover(),user.getSignTime()};
+        String sql="insert into user(card,name,sex,email,phone,cover,sign_time,identity) values (?,?,?,?,?,?,?,?)";
+        Object[] params={user.getCard(),user.getName(),user.getSex(),user.getEmail(), user.getPhone(),user.getCover(),user.getSignTime(),user.getIdentity()};
         return queryRunner.update(sql,params)>=1?true:false;
     }
 
@@ -109,8 +109,8 @@ public class UserDao {
      */
     public boolean updateUser(User user){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="update user set card = ? , name = ? , sex = ? , email = ? , phone = ? , cover = ? , sign_time = ? , delete_time = ? where id = ? and delete_time is null";
-        Object[] params={user.getCard(),user.getName(),user.getSex(),user.getEmail(),user.getPhone(),user.getCover(), user.getSignTime(),user.getDeleteTime(),user.getId()};
+        String sql="update user set card = ? , name = ? , sex = ? , email = ? , phone = ? , cover = ? , sign_time = ? , delete_time = ? , identity = ? where id = ? and delete_time is null";
+        Object[] params={user.getCard(),user.getName(),user.getSex(),user.getEmail(),user.getPhone(),user.getCover(), user.getSignTime(),user.getDeleteTime(),user.getIdentity(),user.getId()};
         try {
             return queryRunner.update(sql,params)>=1?true:false;
         } catch (SQLException e) {

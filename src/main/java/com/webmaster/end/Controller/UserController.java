@@ -15,6 +15,8 @@ import javax.servlet.http.HttpSession;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,6 +31,24 @@ public class UserController {
     private MyMail myMail;
     @Autowired
     private ImageUtil imageUtil;
+
+    @CrossOrigin
+    @LoginAccess
+    @PostMapping("getUserData")
+    public String getUserData(HttpSession session){
+        int userId = (int)session.getAttribute("userId");
+        User user = userService.getUserById(userId);
+        JSONObject result = new JSONObject(true);
+        if(user!=null){
+            result.put("result",1);
+            JSONObject temp = MyJsonConverter.convertUserToJson(user);
+            temp.put("borrow",userService.getBorrowBooksByUserId(userId));
+            result.put("data",temp);
+            return result.toJSONString();
+        }
+        else
+            return "{\"result\":0}";
+    }
     /**
      * 用户进行登录
      * @param map 数据map
@@ -44,9 +64,8 @@ public class UserController {
             return "{\"result\":0}";
         else {
             User user = userService.getUserById(userId);
-            if(user==null) {
+            if(user==null)
                 return "{\"result\":0}";
-            }
             JSONObject jsonObject = new JSONObject(true);
             jsonObject.put("result",1);
             //生成Token
@@ -54,12 +73,8 @@ public class UserController {
                 {put("id",user.getId());}
             };
             String token=JwtUtil.encode(param);
-            //数据部分
-            JSONObject temp=MyJsonConverter.convertUserToJson(user);
-            temp.put("borrow",userService.getBorrowBooksByUserId(userId));
-            temp.put("token",token);
             //加入
-            jsonObject.put("data",temp);
+            jsonObject.put("token",token);
             return jsonObject.toJSONString();
         }
     }
@@ -78,7 +93,9 @@ public class UserController {
         String email=(String)map.get("email");
         String phone=(String)map.get("phone");
         String coverPath=(String)map.get("cover");
-        int identity=(int)map.get("identity");
+        int identity=0;
+        if(map.get("identity")==null)
+            identity=(int)map.get("identity");
         if(StringUtils.isEmpty(coverPath))
             coverPath="http://123.56.3.135:8081/image/default.png";
         User user=new User(card,name,sex,email,phone,coverPath,MyDateUtil.getCurrentString(),identity);
@@ -86,18 +103,10 @@ public class UserController {
         int userId = -1;
         try {
             userId = userService.register(user,password);
-            if(userId==-1) {
+            if(userId==-1)
                 return "{\"result\":0}";
-            }
-            else{
-                JSONObject jsonObject = new JSONObject(true);
-                jsonObject.put("result",1);
-                //数据部分
-                JSONObject temp=MyJsonConverter.convertUserToJson(user);
-                //加入
-                jsonObject.put("data",temp);
-                return jsonObject.toJSONString();
-            }
+            else
+                return "{\"result\":1}";
         } catch (SQLException e) {
             e.printStackTrace();
             return "{\"result\":0}";
@@ -161,9 +170,7 @@ public class UserController {
                 File image = new File(coverPath);
                 file.transferTo(image);
                 result.put("result",1);
-                JSONObject jsonObject=new JSONObject();
-                jsonObject.put("url","http://123.56.3.135:8081"+coverPath.substring(5));
-                result.put("data",jsonObject);
+                result.put("url","http://123.56.3.135:8081"+coverPath.substring(5));
                 return result.toJSONString();
             }
         } catch (Exception e) {
@@ -180,10 +187,16 @@ public class UserController {
      */
     @CrossOrigin
     @GetMapping("weiboThreeLogin")
-    public String threeLogin(String code){
+    public void threeLogin(String code,HttpServletResponse response){
+        PrintWriter writer = null;
+        try {
+            writer = response.getWriter();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         String app_id="323275235";
         String app_secret="1409df204947454234cf764953ac6549";
-        String redirect_uri="http://172.26.51.123:8080/api/user/weiboThreeLogin";
+        String redirect_uri="http://127.0.0.1:8080/api/user/weiboThreeLogin";
         JSONObject jsonObject=MyHttpClient.post("https://api.weibo.com/oauth2/access_token?client_id="
                 +app_id+
                 "&client_secret="+app_secret+
@@ -205,36 +218,33 @@ public class UserController {
             user.setCard(RandomUtil.getRandomCard());
             user.setName((String) data.get("name"));
             user.setSex(((String) data.get("gender")).equals("m") ? 1 : 0);
+            user.setEmail("无");
             user.setCover((String) data.get("profile_image_url"));
             user.setSignTime(MyDateUtil.getCurrentString());
+            user.setIdentity(0);
             try {
                 //默认密码是111111
                 userId = userService.register(user, "111111");
                 //注册失败
                 if(userId==-1)
-                    return "{\"result\":0}";
-            } catch (SQLException e) {
+                    response.sendRedirect("http://127.0.0.1:80/error.html");
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         //登录或者是注册完成之后返回数据
         //获得用户
         User user = userService.getUserById(userId);
-        JSONObject jsondata = new JSONObject(true);
-        //放入数据
-        jsonObject.put("result",1);
         //生成token
         Map<String,Object> param=new HashMap<>(){
             {put("id",user.getId());}
         };
         String token=JwtUtil.encode(param);
-        //数据部分
-        JSONObject temp=MyJsonConverter.convertUserToJson(user);
-        temp.put("borrow",userService.getBorrowBooksByUserId(user.getId()));
-        temp.put("token",token);
-        //加入
-        jsonObject.put("data",temp);
-        return jsonObject.toJSONString();
+        try {
+            response.sendRedirect("http://127.0.0.1:80/success.html?token="+access_token);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -307,13 +317,8 @@ public class UserController {
         User user = userService.getUserByCard(card);
         if(user!=null) {
             boolean result = userService.setPassword(user.getId(), newPassword);
-            if (result) {
-                JSONObject jsonObject = new JSONObject(true);
-                jsonObject.put("result", 1);
-                JSONObject temp = MyJsonConverter.convertUserToJson(user);
-                jsonObject.put("data", temp);
-                return jsonObject.toJSONString();
-            }
+            if (result)
+                return "{\"result\":1}";;
         }
         return "{\"result\":0}";
     }
@@ -345,7 +350,7 @@ public class UserController {
      * @param response
      */
     @CrossOrigin
-    @PostMapping("drawImage")
+    @GetMapping("drawImage")
     public void drawImage(HttpSession session,HttpServletResponse response){
         //1.在内存中创建一张图片
         BufferedImage bi = new BufferedImage(ImageUtil.WIDTH, ImageUtil.HEIGHT, BufferedImage.TYPE_INT_RGB);

@@ -29,8 +29,11 @@ public class MyInterceptor extends HandlerInterceptorAdapter {
                     if("token".equals(name)) {
                         String value=request.getHeader(name);
                         Map<String, Object> map = JwtUtil.decode(value);
-                        if((boolean)map.get("isSuccess"))
+                        if((boolean)map.get("isSuccess")) {
+                            HttpSession session = request.getSession();
+                            session.setAttribute("userId",map.get("id"));
                             return true;
+                        }
                     }
             }
             PrintWriter writer = response.getWriter();
