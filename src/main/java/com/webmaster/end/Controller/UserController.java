@@ -1,5 +1,6 @@
 package com.webmaster.end.Controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.webmaster.end.Entity.User;
 import com.webmaster.end.Service.UserService;
@@ -106,14 +107,22 @@ public class UserController {
         //注册返回
         int userId = -1;
         try {
-            userId = userService.register(user,password);
-            if(userId==-1)
-                return "{\"result\":0}";
-            else
+            String msg = userService.register(user,password);
+            try{
+                userId = Integer.parseInt(msg);
                 return "{\"result\":1}";
+            }catch(Exception e){
+                JSONObject object = new JSONObject();
+                object.put("result",1);
+                object.put("msg",msg);
+                return object.toJSONString();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            return "{\"result\":0}";
+            JSONObject object = new JSONObject();
+            object.put("result",1);
+            object.put("msg","服务器内部错误");
+            return object.toJSONString();
         }
     }
 
@@ -228,10 +237,13 @@ public class UserController {
             user.setIdentity(0);
             try {
                 //默认密码是111111
-                userId = userService.register(user, "111111");
+                String msg = userService.register(user, "111111");
                 //注册失败
-                if(userId==-1)
+                try {
+                    int i = Integer.parseInt(msg);
+                }catch (Exception e) {
                     response.sendRedirect("http://www.solingjees.site:11010/#/login");
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -47,21 +47,25 @@ public class UserService {
      * @return 返回注册成功后用户的id，注册失败返回-1
      */
     @Transactional
-    public int register(User user,String password) throws SQLException {
-        if (!userDao.isExistByCard(user.getCard())&&!userDao.isExistByName(user.getName())){
-            if(userDao.addUser(user)) {
-                //根据card获得id
-                int id = userDao.getUserIdByCard(user.getCard());
-                //产生盐值
-                String salt=""+(new Date()).getTime();
-                //增加密码
-                if(passwordDao.addPassword(id,salt,MD5Util.getMD5String(password,salt)))
-                    return id;
-                else
-                    return -1;
+    public String register(User user,String password) throws SQLException {
+        if (!userDao.isExistByCard(user.getCard())){
+            if(!userDao.isExistByName(user.getName())) {
+                if (userDao.addUser(user)) {
+                    //根据card获得id
+                    int id = userDao.getUserIdByCard(user.getCard());
+                    //产生盐值
+                    String salt = "" + (new Date()).getTime();
+                    //增加密码
+                    if (passwordDao.addPassword(id, salt, MD5Util.getMD5String(password, salt)))
+                        return id + "";
+                    else
+                        return "服务器内部错误";
+                }
             }
+            else
+                return "用户名已被使用";
         }
-        return -1;
+        return "学号已存在";
     }
 
     /**
