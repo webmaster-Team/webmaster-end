@@ -10,14 +10,18 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.websocket.Decoder;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -253,7 +257,7 @@ public class UserController {
      * @param session
      * @return 返回是否成功
      */
-    @CrossOrigin
+    @CrossOrigin(allowCredentials = "true")
     @PostMapping("sendVerificationCode")
     public String sendVerificationCode(@RequestBody Map<String,String> map,HttpSession session){
         String card=(String)map.get("card");
@@ -276,7 +280,7 @@ public class UserController {
      * @param session
      * @return 是否成功
      */
-    @CrossOrigin
+    @CrossOrigin(allowCredentials = "true")
     @PostMapping("checkVerificationCode")
     public String checkVerificationCode(@RequestBody Map<String,String> map,HttpSession session){
         String veriCode = map.get("veriCode");
@@ -349,9 +353,9 @@ public class UserController {
      * @param session
      * @param response
      */
-    @CrossOrigin
+    @CrossOrigin(allowCredentials = "true")
     @GetMapping("drawImage")
-    public void drawImage(HttpSession session,HttpServletResponse response){
+    public void drawImage(HttpSession session, HttpServletResponse response) {
         //1.在内存中创建一张图片
         BufferedImage bi = new BufferedImage(ImageUtil.WIDTH, ImageUtil.HEIGHT, BufferedImage.TYPE_INT_RGB);
         //2.得到图片
@@ -363,17 +367,23 @@ public class UserController {
         //5.在图片上画干扰线
         imageUtil.drawRandomLine(g);
         String num = imageUtil.drawRandomNum((Graphics2D) g);
-        session.setAttribute("image",num);
-        //8.设置响应头通知浏览器以图片的形式打开
+        session.setAttribute("image", num);
         response.setHeader("Content-Type", "image/jpeg");
         //9.设置响应头控制浏览器不要缓存
         response.setDateHeader("expries", -1);
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Pragma", "no-cache");
-        //10.将图片写给浏览器
         try {
-            ImageIO.write(bi, "jpg", response.getOutputStream());
-        }catch (Exception e){
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(bi, "jpg", baos);
+            baos.flush();
+            byte[] imageInByte = baos.toByteArray();
+            ServletOutputStream outputStream = response.getOutputStream();
+            String s = Base64.getEncoder().encodeToString(imageInByte);
+            outputStream.print(s);
+            outputStream.flush();
+            outputStream.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -384,7 +394,7 @@ public class UserController {
      * @param session
      * @return
      */
-    @CrossOrigin
+    @CrossOrigin(allowCredentials = "true")
     @PostMapping("checkImage")
     public String checkImage(@RequestBody Map<String,String> map, HttpSession session){
         String image = map.get("image").toUpperCase();
