@@ -113,14 +113,14 @@ public class UserController {
                 return "{\"result\":1}";
             }catch(Exception e){
                 JSONObject object = new JSONObject();
-                object.put("result",1);
+                object.put("result",0);
                 object.put("msg",msg);
                 return object.toJSONString();
             }
         } catch (SQLException e) {
             e.printStackTrace();
             JSONObject object = new JSONObject();
-            object.put("result",1);
+            object.put("result",0);
             object.put("msg","服务器内部错误");
             return object.toJSONString();
         }
