@@ -96,7 +96,7 @@ public class BookSearchService extends BookServiceCore {
                 return null;
                 //结尾索引超过书籍总数
             else if(endIndex>=books.size())
-                endIndex=books.size()-1;
+                endIndex=books.size();
             return books.subList(startIndex, endIndex);
         }
         //开始索引不满足条件
