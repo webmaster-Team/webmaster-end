@@ -1,11 +1,5 @@
 package com.webmaster.end.Entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.alibaba.fastjson.annotation.JSONType;
-
-import java.util.Comparator;
-
-@JSONType(orders={"id","name","author","iSBN","publisher","price","version","typeId","summary","cover","state","entry_time"})
 public class Book {
     private int id;
     private String name;
@@ -14,10 +8,12 @@ public class Book {
     private String publisher;
     private int price;
     private String version;
-    @JSONField(name="title")
     private String typeId;
     private String summary;
     private String cover;
+    private String library;
+    private String layer;
+    private String entail;
     private int state;
     private String entryTime;
     private String deleteTime;
@@ -30,7 +26,7 @@ public class Book {
     public Book() {
     }
 
-    public Book(int id, String name, String author, String ISBN, String publisher, int price, String version, String typeId, String summary, String cover, int state, String entryTime, String deleteTime) {
+    public Book(int id, String name, String author, String ISBN, String publisher, int price, String version, String typeId, String summary, String cover, String library, String layer, String entail, int state, String entryTime, String deleteTime) {
         this.id = id;
         this.name = name;
         this.author = author;
@@ -41,12 +37,15 @@ public class Book {
         this.typeId = typeId;
         this.summary = summary;
         this.cover = cover;
+        this.library = library;
+        this.layer = layer;
+        this.entail = entail;
         this.state = state;
         this.entryTime = entryTime;
         this.deleteTime = deleteTime;
     }
 
-    public Book(String name, String author, String ISBN, String publisher, int price, String version, String typeId, String summary, String cover, int state, String entryTime) {
+    public Book(String name, String author, String ISBN, String publisher, int price, String version, String typeId, String summary, String cover,String library,String layer,String entail, int state, String entryTime) {
         this.name = name;
         this.author = author;
         this.ISBN = ISBN;
@@ -56,6 +55,9 @@ public class Book {
         this.typeId = typeId;
         this.summary = summary;
         this.cover = cover;
+        this.library=library;
+        this.layer=layer;
+        this.entail=entail;
         this.state = state;
         this.entryTime = entryTime;
     }
@@ -164,6 +166,34 @@ public class Book {
         this.deleteTime = delete_time;
     }
 
+    public String getLibrary() {
+        return library;
+    }
+
+    public void setLibrary(String library) {
+        this.library = library;
+    }
+
+    public String getLayer() {
+        return layer;
+    }
+
+    public void setLayer(String layer) {
+        this.layer = layer;
+    }
+
+    public String getEntail() {
+        return entail;
+    }
+
+    public void setEntail(String entail) {
+        this.entail = entail;
+    }
+
+    public String getDeleteTime() {
+        return deleteTime;
+    }
+
     @Override
     public String toString() {
         return "Book{" +
@@ -177,10 +207,12 @@ public class Book {
                 ", typeId='" + typeId + '\'' +
                 ", summary='" + summary + '\'' +
                 ", cover='" + cover + '\'' +
+                ", library='" + library + '\'' +
+                ", layer='" + layer + '\'' +
+                ", entail='" + entail + '\'' +
                 ", state=" + state +
-                ", entry_time=" + entryTime +
-                ", delete_time=" + deleteTime +
+                ", entryTime='" + entryTime + '\'' +
+                ", deleteTime='" + deleteTime + '\'' +
                 '}';
     }
-
 }

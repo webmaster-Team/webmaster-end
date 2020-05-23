@@ -3,6 +3,7 @@ package com.webmaster.end.Service;
 import com.webmaster.end.Entity.Book;
 import com.webmaster.end.Entity.BorrowState;
 import com.webmaster.end.Entity.Rental;
+import com.webmaster.end.Entity.User;
 import com.webmaster.end.Utils.MyDateUtil;
 import org.springframework.stereotype.Service;
 
@@ -60,13 +61,14 @@ public class BookBorrowService extends BookServiceCore {
                 default:
                     return new BorrowState(STATE_FAIL, stateStringHashMap.get(state.ERR));
             }
+            User user = userDao.getUserById(userid);
             //添加rental
             Rental rental = new Rental(
                     bookId,
                     userid,
                     date,
                     null,
-                    180, //先用180顶着
+                    user.getIdentity()==0?30:180, //学生为0，教师为180
                     NOT_REBORROWED
             );
             st = rentalDao.addRental(rental) ? state.SUCCESS : state.ERR;

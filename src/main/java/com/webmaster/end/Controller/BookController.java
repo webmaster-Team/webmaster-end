@@ -3,13 +3,11 @@ package com.webmaster.end.Controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.webmaster.end.Entity.Book;
-import com.webmaster.end.Entity.BookType;
-import com.webmaster.end.Entity.BorrowState;
-import com.webmaster.end.Entity.Rental;
+import com.webmaster.end.Entity.*;
 import com.webmaster.end.Service.*;
 import com.webmaster.end.Utils.LoginAccess;
 import com.webmaster.end.Utils.MyDateUtil;
+import com.webmaster.end.Utils.MyJsonConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -38,13 +36,14 @@ public class BookController {
     @Autowired
     private UserService userService;
 
+
     /**
      * 借书
      * @param map 用户id和书籍id的map
      * @return 对应的JSON串
      */
     @CrossOrigin
-    @LoginAccess
+    //@LoginAccess
     @PostMapping("borrow")
     public String borrow(@RequestBody Map<String,Integer> map, HttpSession session){
         int userid=map.get("userid");
@@ -54,7 +53,6 @@ public class BookController {
             if (state.getState() == 1) {
                 JSONObject jsonObject = new JSONObject(true);
                 jsonObject.put("result", 1);
-
                 JSONObject data = new JSONObject(true);
                 data.put("bookid", bookid + "");
                 data.put("uid", userid + "");
@@ -79,8 +77,8 @@ public class BookController {
      */
     @CrossOrigin
     @LoginAccess
-    @PostMapping("extendborrow")
-    public String extendborrow(@RequestBody Map<String,Integer> map,  HttpSession session){
+    @PostMapping("extendBorrow")
+    public String extendBorrow(@RequestBody Map<String,Integer> map,  HttpSession session){
         int userid=map.get("userid");
         int bookid=map.get("bookid");
         if(!StringUtils.isEmpty((String)(session.getAttribute(userid+"")))) {
@@ -115,8 +113,8 @@ public class BookController {
      */
     @CrossOrigin
     @LoginAccess
-    @PostMapping("returnbook")
-    public String returnbook(@RequestBody Map<String,Integer> map,  HttpSession session){
+    @PostMapping("returnBook")
+    public String returnBook(@RequestBody Map<String,Integer> map,  HttpSession session){
         int userid=map.get("userid");
         int bookid=map.get("bookid");
         if(!StringUtils.isEmpty((String)(session.getAttribute(userid+"")))) {
@@ -143,23 +141,70 @@ public class BookController {
         return "{\"result\":0}";
     }
 
+
+    /**
+     * 借阅书籍
+     * @return 返回搜索的信息
+     */
     @CrossOrigin
-    @PostMapping("getBookTypes")
-    public String getBookTypes(){
+    @PostMapping("getSearchTypes")
+    public String getSearchTypes(){
         try {
             List<BookType> bookTypes = bookSearchService.getBookTypes();
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("result", 1);
-            JSONArray jsonArray = new JSONArray();
-            for (int i = 0; i < bookTypes.size(); i++)
-                jsonArray.add(bookTypes.get(i).getTitle());
-            jsonObject.put("data",jsonArray);
-            return jsonObject.toJSONString();
+            List<String> authors = bookSearchService.getAuthors();
+            List<String> publishers = bookSearchService.getPublishers();
+            List<Library> libraries = bookSearchService.getLibraries();
+            //所有都查询成功
+            if(bookTypes!=null&&authors!=null&&publishers!=null&&libraries!=null) {
+                JSONObject jsonObject = new JSONObject(true);
+                jsonObject.put("result", 1);
+                JSONObject data = new JSONObject(true);
+                //添加书籍类别
+                JSONArray jsonBookTypes=new JSONArray();
+                for (BookType type : bookTypes)
+                    jsonBookTypes.add(type.getTitle());
+                data.put("bookTypes",jsonBookTypes);
+
+                //添加作者
+                JSONArray jsonAuthors=new JSONArray();
+                for (String author : authors)
+                    jsonAuthors.add(author);
+                data.put("authors",jsonAuthors);
+
+                //添加出版社
+                JSONArray jsonPublishers=new JSONArray();
+                for (String publisher : publishers)
+                    jsonPublishers.add(publisher);
+                data.put("publishers",jsonPublishers);
+
+                //添加图书馆信息
+                JSONArray jsonLibraries = new JSONArray();
+                for (Library library : libraries) {
+                    JSONObject temp = new JSONObject(true);
+                    temp.put("name",library.getLibrary());
+                    //将对应的层数放入到Array中
+                    String[] split = library.getLayer().split(",");
+                    JSONArray array=new JSONArray();
+                    for (String s : split)
+                        array.add(Integer.parseInt(s));
+                    temp.put("layers",array);
+                    jsonLibraries.add(temp);
+                }
+                data.put("libraries",jsonLibraries);
+
+                jsonObject.put("data",data);
+                return jsonObject.toJSONString();
+            }
+            else
+                return "{\"result\":0}";
         }catch (Exception e){
             e.printStackTrace();
             return "{\"result\":0}";
         }
     }
+
+
+
     /**
      * 根据对应的key返回所有相关的书籍
      * @param map 关键字的map
@@ -167,7 +212,7 @@ public class BookController {
      */
     @CrossOrigin
     @LoginAccess(value = false)
-    @PostMapping("searchbooks")
+    @PostMapping("searchBooks")
     public String searchBooks(@RequestBody(required = false) Map<String,Object> map){
         int bookId=-1;
         Book singleBook=null;
@@ -200,7 +245,7 @@ public class BookController {
             JSONObject jsonObject = new JSONObject(true);
             jsonObject.put("result", 1);
             JSONArray array = new JSONArray();
-            JSONObject temp = (JSONObject) JSONObject.toJSON(singleBook);
+            JSONObject temp = MyJsonConverter.convertSimpleBookToJson(singleBook);
             array.add(temp);
             jsonObject.put("data", array);
             return jsonObject.toJSONString();
@@ -267,21 +312,60 @@ public class BookController {
                         return "{\"result\":0}";
                     }
                 }
+                //图书馆地址筛选
+                if (map.get("library") != null) {
+                    try {
+                        String library = (String) map.get("library");
+                        books=bookSearchService.filterBooksByLibrary(books,library);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return "{\"result\":0}";
+                    }
+                }
+                //图书馆地址筛选
+                if (map.get("layer") != null) {
+                    try {
+                         String layer = (int) map.get("layer")+"";
+                        books=bookSearchService.filterBooksByLayer(books,layer);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return "{\"result\":0}";
+                    }
+                }
             }
             JSONObject jsonObject = new JSONObject(true);
             jsonObject.put("result", 1);
             JSONArray array = new JSONArray();
-            for (int i = 0; i < books.size(); i++) {
-                Book book=books.get(i);
-                book.setTypeId(bookSearchService.getTitleByType(book.getTypeId()));
-                String temp = JSONObject.toJSONString(book);
-                array.add(temp);
-            }
+            for (Book book : books)
+                 array.add(MyJsonConverter.convertSimpleBookToJson(book));
             jsonObject.put("data", array);
             return jsonObject.toJSONString();
         }
         //多书籍查询失败
         else
             return "{\"result\":0}";
+    }
+
+
+    /**
+     * 借阅书籍
+     * @return 返回搜索的信息
+     */
+    @CrossOrigin
+    @PostMapping("searchBookData")
+    public String searchBookData(@RequestBody Map<String,Integer> map){
+        try {
+            int bookId = map.get("bookId");
+            Book book = bookSearchService.searchBookByBookId(bookId);
+            JSONObject object = new JSONObject(true);
+            object.put("result",1);
+            JSONObject data = MyJsonConverter.convertComplexBookToJson(book);
+            data.put("title",bookSearchService.getTitleByType(book.getTypeId()));
+            object.put("data",data);
+            return object.toJSONString();
+        }catch (Exception e){
+            e.printStackTrace();
+            return "{\"result\":0}";
+        }
     }
 }

@@ -1,18 +1,17 @@
 package com.webmaster.end.Dao;
 
 import com.webmaster.end.Entity.Book;
-import com.webmaster.end.Utils.MyDateUtil;
-import org.apache.commons.dbutils.*;
-import org.apache.commons.dbutils.handlers.BeanHandler;
-import org.apache.commons.dbutils.handlers.BeanListHandler;
-import org.apache.commons.dbutils.handlers.ScalarHandler;
+import org.apache.commons.dbutils.BasicRowProcessor;
+import org.apache.commons.dbutils.GenerousBeanProcessor;
+import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.RowProcessor;
+import org.apache.commons.dbutils.handlers.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -46,10 +45,10 @@ public class BookDao {
      */
     public boolean addBook(Book book){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="insert into book(name,author,isbn,publisher,price,version,typeid,summary,cover,state,entry_time) values (?,?,?,?,?,?,?,?,?,?,?)";
+        String sql="insert into book(name,author,isbn,publisher,price,version,typeid,summary,cover,library,layer,entail,state,entry_time) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         Object[] params={book.getName(),book.getAuthor(),book.getISBN(),book.getPublisher(),book.getPrice(),
-                        book.getVersion(),book.getTypeId(),book.getSummary(),book.getCover(),book.getState(),
-                        book.getEntryTime()};
+                        book.getVersion(),book.getTypeId(),book.getSummary(),book.getCover(),book.getLibrary(),
+                        book.getLayer(),book.getEntail(),book.getState(), book.getEntryTime()};
         try {
             return queryRunner.update(sql,params)>=1?true:false;
         } catch (SQLException e) {
@@ -83,10 +82,10 @@ public class BookDao {
      */
     public boolean updateBook(Book book){
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="update book set name = ? , author = ? , isbn = ? , publisher = ? , price = ? , version = ? , typeid = ? , summary = ? , cover = ? , state = ? , entry_time = ? , delete_time = ? where id = ? and delete_time is null";
+        String sql="update book set name = ? , author = ? , isbn = ? , publisher = ? , price = ? , version = ? , typeid = ? , summary = ? , cover = ? ,library = ? ,layer = ? ,entail = ? , state = ? , entry_time = ? , delete_time = ? where id = ? and delete_time is null";
         Object[] params={book.getName(),book.getAuthor(),book.getISBN(),book.getPublisher(),book.getPrice(),
-                        book.getVersion(),book.getTypeId(),book.getSummary(),book.getCover(),book.getState(),
-                        book.getEntryTime(),
+                        book.getVersion(),book.getTypeId(),book.getSummary(),book.getCover(),book.getLibrary(),
+                        book.getLayer(),book.getEntail(),book.getState(), book.getEntryTime(),
                         book.getDelete_time(),book.getId()};
         try {
             return queryRunner.update(sql,params)>=1?true:false;
@@ -201,7 +200,11 @@ public class BookDao {
         }
     }
 
-
+    /**
+     * 根据bookid来获得对应的书籍
+     * @param bookId 书籍ID
+     * @return 返回书籍
+     */
     public Book getBookByBookId(int bookId) {
         QueryRunner queryRunner=new QueryRunner(dataSource);
         String sql="select * from book where id= ? and delete_time is null";
@@ -215,6 +218,11 @@ public class BookDao {
         }
     }
 
+    /**
+     * 根据ISBN返回对应的书籍
+     * @param iSBN ISBN号
+     * @return 返回对应的书籍
+     */
     public Book getBookByISBN(String iSBN){
         QueryRunner queryRunner=new QueryRunner(dataSource);
         String sql="select * from book where isbn= ? and delete_time is null";
@@ -222,6 +230,44 @@ public class BookDao {
         try {
             Book book = queryRunner.query(sql, new BeanHandler<>(Book.class,processor), params);
             return book;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 获得所有的书籍作者
+     * @return 作者名
+     */
+    public List<String> getAuthors(){
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="select distinct author from book";
+        try {
+            List<Object[]> authors = queryRunner.query(sql, new ArrayListHandler());
+            List<String> result=new ArrayList<>();
+            for (Object[] author : authors)
+                result.add((String)(author[0]));
+            return result;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 获得所有的出版社
+     * @return 出版社名
+     */
+    public List<String> getPublishers(){
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="select distinct publisher from book";
+        try {
+            List<Object[]> publishers = queryRunner.query(sql, new ArrayListHandler());
+            List<String> result=new ArrayList<>();
+            for (Object[] publisher : publishers)
+                result.add((String)(publisher[0]));
+            return result;
         } catch (SQLException e) {
             e.printStackTrace();
             return null;

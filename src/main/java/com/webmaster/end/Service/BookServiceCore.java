@@ -1,13 +1,7 @@
 package com.webmaster.end.Service;
 
-import com.webmaster.end.Dao.BookDao;
-import com.webmaster.end.Dao.BookTypeDao;
-import com.webmaster.end.Dao.RentalDao;
-import com.webmaster.end.Dao.UserDao;
-import com.webmaster.end.Entity.Book;
-import com.webmaster.end.Entity.BookType;
-import com.webmaster.end.Entity.BorrowState;
-import com.webmaster.end.Entity.Rental;
+import com.webmaster.end.Dao.*;
+import com.webmaster.end.Entity.*;
 import com.webmaster.end.Utils.MyDateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,6 +26,8 @@ public class BookServiceCore {
     protected RentalDao rentalDao;
     @Autowired
     protected BookTypeDao bookTypeDao;
+    @Autowired
+    protected LibraryDao libraryDao;
 
     protected final int STATE_SUCCESS = 1;
     protected final int STATE_FAIL = 0;
@@ -107,9 +103,43 @@ public class BookServiceCore {
         return st == state.SUCCESS;
     }
 
+    /**
+     * 获得所有的书籍类型
+     * @return 类型列表
+     */
     public List<BookType> getBookTypes(){
         return bookTypeDao.getBookTypes();
     }
+
+    /**
+     * 获得所有的图书馆类型
+     * @return 图书馆列表
+     */
+    public List<Library> getLibraries(){
+        return libraryDao.getLibraries();
+    }
+
+    /**
+     * 获得所有的作者
+     * @return 作者列表
+     */
+    public List<String> getAuthors(){
+        return bookDao.getAuthors();
+    }
+
+    /**
+     * 获得所有的出版社
+     * @return 出版社列表
+     */
+    public List<String> getPublishers(){
+        return bookDao.getPublishers();
+    }
+
+    /**
+     * 根据类型获得具体的名字
+     * @param type 书记类型
+     * @return 类型名
+     */
     public String getTitleByType(String type){
         return bookTypeDao.getBookTypeByType(type).getTitle();
     }
@@ -129,6 +159,8 @@ public class BookServiceCore {
                 return (-1)*(o1.getName().compareTo(o2.getName()));
         }
     }
+
+
     //日期排序
     class BookDateCompartor implements Comparator<Book> {
         private boolean isUpSort=true;

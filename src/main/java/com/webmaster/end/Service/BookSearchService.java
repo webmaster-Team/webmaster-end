@@ -111,4 +111,16 @@ public class BookSearchService extends BookServiceCore {
                 .filter((Book book) -> book.getTypeId().equals(bookType.getType()))
                 .collect(Collectors.toList());
     }
+
+    public List<Book> filterBooksByLibrary(List<Book> books, String library) {
+        return books.stream()
+                .filter((Book book) -> book.getLibrary().equals(library))
+                .collect(Collectors.toList());
+    }
+
+    public List<Book> filterBooksByLayer(List<Book> books, String layer) {
+        return books.stream()
+                .filter((Book book) -> book.getLayer().equals(layer))
+                .collect(Collectors.toList());
+    }
 }

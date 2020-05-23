@@ -1,6 +1,5 @@
 package com.webmaster.end.Dao;
 
-import com.webmaster.end.Entity.Book;
 import com.webmaster.end.Entity.BookType;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanHandler;
