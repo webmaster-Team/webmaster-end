@@ -187,4 +187,21 @@ public class UserDao {
         }
     }
 
+    /**
+     * 判断邮箱是否存在
+     * @param email 用户的邮箱
+     * @return 返回是否存在
+     */
+    public boolean isExistByEmail(String email) {
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="select count(*) from user where email = ? and delete_time is null";
+        Object[] params={email};
+        try {
+            int result = queryRunner.query(sql, new ScalarHandler<Long>(), params).intValue();
+            return result==1?true:false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
