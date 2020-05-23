@@ -333,6 +333,8 @@ public class BookController {
                     }
                 }
             }
+            if(books==null)
+                return "{\"result\":0}";
             JSONObject jsonObject = new JSONObject(true);
             jsonObject.put("result", 1);
             JSONArray array = new JSONArray();

@@ -90,7 +90,7 @@ public class BookSearchService extends BookServiceCore {
         int startIndex=(pageIndex-1)*perpage;
         int endIndex=startIndex+perpage;
         //开始索引大于0，小于书籍总数
-        if(startIndex>=0||startIndex<books.size()){
+        if(startIndex>=0&&startIndex<books.size()){
             //结尾索引小于开始索引
             if (endIndex<startIndex)
                 return null;
