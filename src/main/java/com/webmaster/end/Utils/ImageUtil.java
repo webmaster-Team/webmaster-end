@@ -115,7 +115,7 @@ public class ImageUtil {
      */
     public static Map<String,Object> createQRCode(int userId, int bookId){
         try {
-            String QRCodeImagePath = "/home/image/" + MyDateUtil.getCurrentTime() + ".png";
+            String QRCodeImagePath = "/home/image/QR" + MyDateUtil.getCurrentTime() + ".png";
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
             String text = "userId:" + userId + ",bookId:" + bookId ;
             BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, 300, 300);
