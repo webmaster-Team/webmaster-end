@@ -2,14 +2,11 @@ package com.webmaster.end.Controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.webmaster.end.Entity.Book;
 import com.webmaster.end.Entity.User;
-import com.webmaster.end.Service.BookSearchService;
 import com.webmaster.end.Service.UserService;
 import com.webmaster.end.Utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,9 +20,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/user/")
@@ -296,46 +292,29 @@ public class UserController {
     }
 
 
-//    /**
-//     * 用户删除
-//     * @param map 用户的数据列表，包含Id
-//     * @return 返回对应的字符串
-//     */
-//    @LoginAccess
-//    @CrossOrigin
-//    @PostMapping("delete")
-//    public String delete(@RequestBody Map<String,Integer> map){
-//        int id=map.get("id");
-//        boolean result = false;
-//        try {
-//            result = userService.deleteUser(id);
-//            return "{\"result\":"+(result?1:0)+"}";
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//            return "{\"result\":0}";
-//        }
-//    }
 
 
-//    /**
-//     * 用户注销
-//     * @param map 用户的数据列表，包含Id
-//     * @return 返回对应的字符串
-//     */
-//    @Deprecated
-//    @LoginAccess
-//    @CrossOrigin
-//    @PostMapping("logout")
-//    public String logout(@RequestBody Map<String,Integer> map,HttpSession session){
-//        try {
-//            int id=map.get("id");
-//            session.removeAttribute("user");
-//            return "{\"result\":1}";
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return "{\"result\":0}";
-//        }
-//    }
+    /**
+     * 用户注销
+     * @return 返回对应的字符串
+     */
+    @LoginAccess
+    @CrossOrigin
+    @PostMapping("logout")
+    public String logout(HttpSession session){
+        try {
+            Object userId = session.getAttribute("userId");
+            if(userId!=null){
+                session.removeAttribute("userId");
+                return MyJsonConverter.createSuccessrToJson("注销成功").toJSONString();
+            }
+            else
+                return MyJsonConverter.createErrorToJson("用户未登录").toJSONString();
+        }catch (Exception e){
+            e.printStackTrace();
+            return MyJsonConverter.createErrorToJson("系统内部错误").toJSONString();
+        }
+    }
 
 
     /**
@@ -457,7 +436,7 @@ public class UserController {
      * @param session
      * @return 返回是否成功
      */
-    @CrossOrigin(allowCredentials = "true")
+    @CrossOrigin
     @PostMapping("sendVerificationCode")
     public String sendVerificationCode(@RequestBody Map<String,String> map,HttpSession session){
         try {
@@ -493,7 +472,7 @@ public class UserController {
      * @param session
      * @return 是否成功
      */
-    @CrossOrigin(allowCredentials = "true")
+    @CrossOrigin
     @PostMapping("checkVerificationCode")
     public String checkVerificationCode(@RequestBody Map<String,String> map,HttpSession session){
         try {
@@ -608,7 +587,7 @@ public class UserController {
      * @param session
      * @param response
      */
-    @CrossOrigin(allowCredentials = "true")
+    @CrossOrigin
     @GetMapping("drawImage")
     public void drawImage(HttpSession session, HttpServletResponse response) {
         try {
@@ -649,7 +628,7 @@ public class UserController {
      * @param session
      * @return
      */
-    @CrossOrigin(allowCredentials = "true")
+    @CrossOrigin
     @PostMapping("checkImage")
     public String checkImage(@RequestBody Map<String,String> map, HttpSession session){
         try {
