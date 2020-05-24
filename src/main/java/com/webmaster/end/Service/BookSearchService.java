@@ -243,7 +243,7 @@ public class BookSearchService extends BookServiceCore {
     public Map<String,Object> filterBooksByAuthor(List<Book> books, String author) {
         try {
             List<Book> books1=books.stream()
-                    .filter((Book book) -> book.getPublisher().equals(author))
+                    .filter((Book book) -> book.getAuthor().equals(author))
                     .collect(Collectors.toList());
             if(books1==null)
                 return ResultMap.getResultMap(null,"作者过滤失败");

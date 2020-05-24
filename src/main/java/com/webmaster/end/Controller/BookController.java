@@ -443,7 +443,7 @@ public class BookController {
                         if (publisher == null)
                             return MyJsonConverter.createErrorToJson("出版社规则不符合要求").toJSONString();
                         else {
-                            Map<String, Object> searchData = bookSearchService.filterBooksByTitle(books, publisher);
+                            Map<String, Object> searchData = bookSearchService.filterBooksByPublisher(books, publisher);
                             books = (List<Book>) searchData.get("state");
                             if (books == null)
                                 return MyJsonConverter.convertErrorToJson(searchData).toJSONString();
