@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.webmaster.end.Entity.*;
 import com.webmaster.end.Service.*;
+import com.webmaster.end.Utils.ImageUtil;
 import com.webmaster.end.Utils.LoginAccess;
 import com.webmaster.end.Utils.MyDateUtil;
 import com.webmaster.end.Utils.MyJsonConverter;
@@ -34,8 +35,6 @@ public class BookController {
     @Autowired
     private BookSearchService bookSearchService;
 
-    @Autowired
-    private UserService userService;
 
 
     /**
@@ -55,18 +54,25 @@ public class BookController {
                     Map<String, Object> info = bookBorrowService.borrow(userId, bookId);
                     BorrowInfo borrowInfo = (BorrowInfo) info.get("state");
                     if (borrowInfo != null) {
-                        JSONObject result = new JSONObject(true);
-                        result.put("result", 1);
-                        JSONObject data = new JSONObject(true);
-                        data.put("bookid", borrowInfo.getBookId() + "");
-                        data.put("uid", borrowInfo.getUserId() + "");
-                        data.put("username", borrowInfo.getUsername());
-                        data.put("bookname", borrowInfo.getBookname());
-                        data.put("borrowtime", borrowInfo.getBorrowtime());
-                        data.put("duration", borrowInfo.getDuration());
-                        data.put("isReborrow", borrowInfo.getIsReborrow() == 1 ? true : false);
-                        result.put("data", data);
-                        return result.toJSONString();
+                        Map<String, Object> qrCodeData = ImageUtil.createQRCode(userId, bookId);
+                        String path= (String) qrCodeData.get("state");
+                        if(path!=null) {
+                            JSONObject result = new JSONObject(true);
+                            result.put("result", 1);
+                            JSONObject data = new JSONObject(true);
+                            data.put("bookid", borrowInfo.getBookId() + "");
+                            data.put("uid", borrowInfo.getUserId() + "");
+                            data.put("username", borrowInfo.getUsername());
+                            data.put("bookname", borrowInfo.getBookname());
+                            data.put("borrowtime", borrowInfo.getBorrowtime());
+                            data.put("duration", borrowInfo.getDuration());
+                            data.put("QRCode",path);
+                            data.put("isReborrow", borrowInfo.getIsReborrow() == 1 ? true : false);
+                            result.put("data", data);
+                            return result.toJSONString();
+                        }
+                        else
+                            return MyJsonConverter.convertErrorToJson(qrCodeData).toJSONString();
                     } else
                         return MyJsonConverter.convertErrorToJson(info).toJSONString();
                 } else

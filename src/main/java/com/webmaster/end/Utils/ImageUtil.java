@@ -1,8 +1,18 @@
 package com.webmaster.end.Utils;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.webmaster.end.Entity.ResultMap;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.util.Map;
 import java.util.Random;
 
 @Component
@@ -50,20 +60,6 @@ public class ImageUtil {
     }
 
     /**
-     * 画随机字符
-     * @param g
-     * @return
-     */
-    public String drawRandomNum(Graphics2D g) {
-        // 设置颜色
-        g.setColor(Color.RED);
-        //数字和字母的组合
-        String baseNumLetter = "0123456789ABCDEFGHJKLMNOPQRSTUVWXYZ";
-        // 截取数字和字母的组合
-        return createRandomChar(g, baseNumLetter);
-    }
-
-    /**
      * 创建随机字符
      * @param g
      * @param baseChar
@@ -92,4 +88,44 @@ public class ImageUtil {
         }
         return sb.toString();
     }
+
+    /**
+     * 画随机字符
+     * @param g
+     * @return
+     */
+    public String drawRandomNum(Graphics2D g) {
+        // 设置颜色
+        g.setColor(Color.RED);
+        //数字和字母的组合
+        String baseNumLetter = "0123456789ABCDEFGHJKLMNOPQRSTUVWXYZ";
+        // 截取数字和字母的组合
+        return createRandomChar(g, baseNumLetter);
+    }
+
+    //------------------------------------------------二维码功能-----------------------------------------
+
+    /**
+     * 生成二维码
+     * @param userId 用户Id
+     * @param bookId 书籍Id
+     * @return String
+     * @throws WriterException
+     * @throws IOException
+     */
+    public static Map<String,Object> createQRCode(int userId, int bookId){
+        try {
+            String QRCodeImagePath = "/home/image/" + MyDateUtil.getCurrentTime() + ".png";
+            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+            String text = "userId:" + userId + ",bookId:" + bookId ;
+            BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, 300, 300);
+            Path path = FileSystems.getDefault().getPath(QRCodeImagePath);
+            MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
+            return ResultMap.getResultMap("http://123.56.3.135:8080/"+QRCodeImagePath,"生成二维码成功");
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultMap.getResultMap(null,"生成二维码失败");
+        }
+    }
+
 }
