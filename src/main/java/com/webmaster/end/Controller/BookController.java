@@ -43,7 +43,7 @@ public class BookController {
      * @return 对应的JSON串
      */
     @CrossOrigin
-    //@LoginAccess
+    @LoginAccess
     @PostMapping("borrow")
     public String borrow(@RequestBody Map<String,Integer> map, HttpSession session){
         try {
