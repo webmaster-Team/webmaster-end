@@ -281,6 +281,7 @@ public class BookController {
     @PostMapping("searchBooks")
     public String searchBooks(@RequestBody(required = false) Map<String,Object> map){
         try {
+            boolean[] isLast=new boolean[]{false};
             Integer bookId = null;
             Book singleBook = null;
             List<Book> books = null;
@@ -392,7 +393,7 @@ public class BookController {
                         else if (pageIndexInt == null || pageIndexInt.intValue() <= 0)
                             return MyJsonConverter.createErrorToJson("页索引不符合要求").toJSONString();
                         else {
-                            Map<String, Object> searchData = bookSearchService.filterBooksByPage(books, perpageInt.intValue(), pageIndexInt.intValue());
+                            Map<String, Object> searchData = bookSearchService.filterBooksByPage(books, perpageInt.intValue(), pageIndexInt.intValue(),isLast);
                             books = (List<Book>) searchData.get("state");
                             if (books == null)
                                 return MyJsonConverter.convertErrorToJson(searchData).toJSONString();
@@ -456,6 +457,7 @@ public class BookController {
                 else {
                     JSONObject jsonObject = new JSONObject(true);
                     jsonObject.put("result", 1);
+                    jsonObject.put("isLast",isLast[0]);
                     JSONArray array = new JSONArray();
                     for (Book book : books)
                         array.add(MyJsonConverter.convertSimpleBookToJson(book));

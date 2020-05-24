@@ -161,7 +161,7 @@ public class BookSearchService extends BookServiceCore {
      * @param pageIndex 页的索引
      * @return List<Book>
      */
-    public Map<String,Object> filterBooksByPage(List<Book> books, int perpage, int pageIndex) {
+    public Map<String,Object> filterBooksByPage(List<Book> books, int perpage, int pageIndex,boolean[] isLast) {
         try {
             int startIndex = (pageIndex - 1) * perpage;
             int endIndex = startIndex + perpage;
@@ -171,8 +171,10 @@ public class BookSearchService extends BookServiceCore {
                 if (endIndex < startIndex)
                     return ResultMap.getResultMap(null,"结尾索引小于开始索引");
                     //结尾索引超过书籍总数
-                else if (endIndex >= books.size())
+                else if (endIndex >= books.size()) {
+                    isLast[0]=true;
                     endIndex = books.size();
+                }
                 return ResultMap.getResultMap(books.subList(startIndex, endIndex),"检索成功");
             }
             //开始索引不满足条件
