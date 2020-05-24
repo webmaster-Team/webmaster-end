@@ -329,7 +329,12 @@ public class UserController {
         try {
             if (file != null) {
                 JSONObject result = new JSONObject(true);
-                String coverPath = "/home/image/tou" + (new Date()).getTime() + file.getOriginalFilename().trim().substring(0,5)+".png";
+                String coverPath = "/home/image/tou" + (new Date()).getTime() + file.getOriginalFilename()
+                                                                                .trim().substring(0,5)
+                                                                                .replace(".","")
+                                                                                .replace(",","")
+                                                                                .replace("\\","")
+                                                                                .replace("/","")+".png";
                 File image = new File(coverPath);
                 file.transferTo(image);
                 result.put("result", 1);
