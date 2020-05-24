@@ -410,7 +410,6 @@ public class BookController {
                                 return MyJsonConverter.convertErrorToJson(searchData).toJSONString();
                         }
                     }
-
                     //进行页数筛选
                     if (map.get("perpage") != null && map.get("pageIndex") != null) {
                         Integer perpageInt = (Integer) map.get("perpage");
@@ -433,6 +432,30 @@ public class BookController {
                             return MyJsonConverter.createErrorToJson("类别规则不符合要求").toJSONString();
                         else {
                             Map<String, Object> searchData = bookSearchService.filterBooksByTitle(books, title);
+                            books = (List<Book>) searchData.get("state");
+                            if (books == null)
+                                return MyJsonConverter.convertErrorToJson(searchData).toJSONString();
+                        }
+                    }
+                    //需要出版社筛选
+                    if (map.get("publisher") != null) {
+                        String publisher = (String) map.get("publisher");
+                        if (publisher == null)
+                            return MyJsonConverter.createErrorToJson("出版社规则不符合要求").toJSONString();
+                        else {
+                            Map<String, Object> searchData = bookSearchService.filterBooksByTitle(books, publisher);
+                            books = (List<Book>) searchData.get("state");
+                            if (books == null)
+                                return MyJsonConverter.convertErrorToJson(searchData).toJSONString();
+                        }
+                    }
+                    //需要作者筛选
+                    if (map.get("author") != null) {
+                        String author = (String) map.get("author");
+                        if (author == null)
+                            return MyJsonConverter.createErrorToJson("作者名规则不符合要求").toJSONString();
+                        else {
+                            Map<String, Object> searchData = bookSearchService.filterBooksByAuthor(books, author);
                             books = (List<Book>) searchData.get("state");
                             if (books == null)
                                 return MyJsonConverter.convertErrorToJson(searchData).toJSONString();
@@ -517,18 +540,24 @@ public class BookController {
                 Map<String, Object> bookData = bookSearchService.getBook(bookId);
                 Book book= (Book) bookData.get("state");
                 if (book != null) {
-                    JSONObject object = new JSONObject(true);
-                    object.put("result", 1);
-                    JSONObject data = MyJsonConverter.convertComplexBookToJson(book);
-                    Map<String, Object> info = bookSearchService.getTitleByType(book.getTypeId());
-                    String title= (String) info.get("state");
-                    if(title!=null){
-                        data.put("title", title);
-                        object.put("data", data);
-                        return object.toJSONString();
+                    Map<String, Object> borrowedTimes = bookSearchService.getBookBorrowedTimes(bookId);
+                    Integer time= (Integer) borrowedTimes.get("state");
+                    if(time!=null) {
+                        JSONObject object = new JSONObject(true);
+                        object.put("result", 1);
+                        JSONObject data = MyJsonConverter.convertComplexBookToJson(book);
+                        Map<String, Object> info = bookSearchService.getTitleByType(book.getTypeId());
+                        String title = (String) info.get("state");
+                        if (title != null) {
+                            data.put("title", title);
+                            data.put("borrowed",time);
+                            object.put("data", data);
+                            return object.toJSONString();
+                        } else
+                            return MyJsonConverter.convertErrorToJson(info).toJSONString();
                     }
                     else
-                        return MyJsonConverter.convertErrorToJson(info).toJSONString();
+                        return MyJsonConverter.convertErrorToJson(borrowedTimes).toJSONString();
                 }
                 else
                     return MyJsonConverter.convertErrorToJson(bookData).toJSONString();

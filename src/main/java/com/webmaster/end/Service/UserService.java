@@ -1,8 +1,11 @@
 package com.webmaster.end.Service;
 
+import com.webmaster.end.Dao.BookDao;
 import com.webmaster.end.Dao.PasswordDao;
 import com.webmaster.end.Dao.RentalDao;
 import com.webmaster.end.Dao.UserDao;
+import com.webmaster.end.Entity.Book;
+import com.webmaster.end.Entity.Rental;
 import com.webmaster.end.Entity.ResultMap;
 import com.webmaster.end.Entity.User;
 import com.webmaster.end.Utils.MD5Util;
@@ -12,14 +15,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class UserService {
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private BookDao bookDao;
     @Autowired
     private PasswordDao passwordDao;
     @Autowired
@@ -166,16 +169,78 @@ public class UserService {
     /**
      * 获得用户的借书数量
      * @param userId 用户的id
-     * @return int类型
+     * @return List<Integer>类型
      */
     public Map<String,Object> getBorrowBooksByUserId(int userId){
-        HashMap<String, Object> map = new HashMap<>();
+        List<Integer> borrowBooks=new ArrayList<>();
         try {
-            int count = rentalDao.getBorrowBooksByUserId(userId);
-            return ResultMap.getResultMap(count,"获取借书数量成功");
+            int count = rentalDao.getHasBorrowedBooksByUserId(userId);
+            borrowBooks.add(count);
         }catch (Exception e){
             e.printStackTrace();
-            return ResultMap.getResultMap(-1,"服务器内部错误");
+            return ResultMap.getResultMap(-1,"获得总借书数量失败");
+        }
+
+        try {
+            int count = rentalDao.getIsBorrowingBooksByUserId(userId);
+            borrowBooks.add(count);
+            return ResultMap.getResultMap(borrowBooks,"获取借书数量成功");
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResultMap.getResultMap(-1, "获得正在借书数量失败");
+        }
+    }
+
+    /**
+     * 获得用户正在借阅的书籍
+     * @param userId 用户id
+     * @return List<Map<String,Object>>
+     */
+    public Map<String,Object> getIsRentalsingByUserId(int userId){
+        List<Map<String,Object>> result = new ArrayList<>();
+        try{
+            List<Rental> isRentalsingData = rentalDao.getIsRentalsingByUserId(userId);
+            for (Rental isRentalsingDatum : isRentalsingData) {
+                Map<String, Object> data = new HashMap<>();
+                int bookId = isRentalsingDatum.getBookId();
+                Book book = bookDao.getBook(bookId);
+                if(book!=null){
+                    data.put("book",book);
+                    data.put("distance",MyDateUtil.reckonDateDistance(isRentalsingDatum));
+                    result.add(data);
+                }
+                else
+                    return ResultMap.getResultMap(null, "获取书籍失败");
+            }
+            return ResultMap.getResultMap(result,"获取用户正在借阅的书籍成功");
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResultMap.getResultMap(null, "服务器内部错误");
+        }
+    }
+
+
+    /**
+     * 获得用户已经归还的书籍
+     * @param userId 用户id
+     * @return List<Map<String,Object>>
+     */
+    public Map<String,Object> getHasRentalsedByUserId(int userId){
+        List<Book> result = new ArrayList<>();
+        try{
+            List<Rental> isRentalsingData = rentalDao.getHasRentalsedByUserId(userId);
+            for (Rental isRentalsingDatum : isRentalsingData) {
+                int bookId = isRentalsingDatum.getBookId();
+                Book book = bookDao.getBook(bookId);
+                if(book!=null)
+                    result.add(book);
+                else
+                    return ResultMap.getResultMap(null, "获取书籍失败");
+            }
+            return ResultMap.getResultMap(result,"获取用户已经归还的书籍成功");
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResultMap.getResultMap(null, "服务器内部错误");
         }
     }
 

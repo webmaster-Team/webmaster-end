@@ -8,6 +8,7 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.RowProcessor;
 import org.apache.commons.dbutils.handlers.ArrayListHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
+import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -143,19 +144,65 @@ public class RentalDao {
         return queryRunner.query(sql,new BeanHandler<>(Rental.class,processor),params);
     }
 
+    /**
+     * 根据书籍id查询所有的流水
+     * @param bookId 书籍id
+     * @return 返回Rental列表，失败返回Null
+     */
+    public List<Rental> getRentalsByBookId(int bookId) throws SQLException {
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="select * from rental where book_id= ? and return_time = '0'";
+        Object[] params={bookId};
+        return queryRunner.query(sql, new BeanListHandler<>(Rental.class, processor), params);
+    }
 
     /**
-     * 根据用户id返回用户的借阅数量
-     * @param userId 用户的id
-     * @return 返回用户的借阅数量
+     * 获得用户所有的所借的流水
+     * @param userId 用户id
+     * @return 用户正在借阅的书籍
      */
-    public int getBorrowBooksByUserId(int userId) throws SQLException {
+    public List<Rental> getIsRentalsingByUserId(int userId) throws SQLException {
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="select * from rental where user_id = ? and return_time = '0'";
+        Object[] params={userId};
+        return queryRunner.query(sql,new BeanListHandler<Rental>(Rental.class,processor),params);
+    }
+
+    /**
+     * 获得用户所有的已归还的流水
+     * @param userId 用户id
+     * @return 用户已经归还的书籍
+     */
+    public List<Rental> getHasRentalsedByUserId(int userId) throws SQLException {
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="select * from rental where user_id = ? and return_time <> '0'";
+        Object[] params={userId};
+        return queryRunner.query(sql,new BeanListHandler<Rental>(Rental.class,processor),params);
+    }
+
+    /**
+     * 根据用户id总共的借阅数量
+     * @param userId 用户的id
+     * @return 返回用户的总共借阅数量
+     */
+    public int getHasBorrowedBooksByUserId(int userId) throws SQLException {
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="select count(*) from rental where user_id= ?";
+        Object[] params={userId};
+        return queryRunner.query(sql,new ScalarHandler<Long>(),params).intValue();
+    }
+
+    /**
+     * 根据用户id正在借阅的数量
+     * @param userId 用户的id
+     * @return 返回用户的正在借阅数量
+     */
+    public int getIsBorrowingBooksByUserId(int userId) throws SQLException {
         QueryRunner queryRunner=new QueryRunner(dataSource);
         String sql="select count(*) from rental where user_id= ? and return_time = '0'";
         Object[] params={userId};
         return queryRunner.query(sql,new ScalarHandler<Long>(),params).intValue();
     }
-
 
     /**
      * 返回借阅较多的书籍

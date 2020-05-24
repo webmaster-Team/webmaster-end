@@ -1,11 +1,15 @@
 package com.webmaster.end.Utils;
 
 import com.webmaster.end.Entity.Book;
+import com.webmaster.end.Entity.Rental;
 import org.springframework.util.StringUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -65,4 +69,16 @@ public class MyDateUtil {
         return date1.compareTo(date2)<0;
     }
 
+    /**
+     * 计算距离归还
+     * @param rental 流水
+     * @return 计算距离天数
+     */
+    public static int reckonDateDistance(Rental rental){
+        Date borrowDate = convertStrToDate(rental.getBorrowTime());
+        Date currenDate = new Date();
+        long returnTime=borrowDate.getTime()+(((long)rental.getDuration())*24*3600*1000);
+        long currentTime = currenDate.getTime();
+        return (int) ((returnTime-currentTime)/(1000*60*60*24));
+    }
 }

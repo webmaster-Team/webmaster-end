@@ -41,7 +41,7 @@ public class BookSearchService extends BookServiceCore {
      */
     public Map<String,Object> searchBooksByKey(String key){
         try {
-            List<Book> books=bookDao.getAllBooks();
+            List<Book> books=bookDao.getBooksByKey(key);
             if(books==null)
                 return ResultMap.getResultMap(null,"关键字搜索书籍失败");
             else
@@ -139,7 +139,12 @@ public class BookSearchService extends BookServiceCore {
         }
     }
 
-
+    /**
+     * 按照书籍状态过滤书籍
+     * @param books 书籍
+     * @param state 状态
+     * @return List<Book>
+     */
     public Map<String,Object> filterBooksByState(List<Book> books,boolean state){
         try {
             List<Book> result = null;
@@ -209,6 +214,50 @@ public class BookSearchService extends BookServiceCore {
     }
 
     /**
+     * 按照出版社筛选书籍
+     * @param books 书籍列表
+     * @param publisher 出版社
+     * @return List<Book>类型
+     */
+    public Map<String,Object> filterBooksByPublisher(List<Book> books, String publisher) {
+        try {
+            List<Book> books1=books.stream()
+                    .filter((Book book) -> book.getPublisher().equals(publisher))
+                    .collect(Collectors.toList());
+            if(books1==null)
+                return ResultMap.getResultMap(null,"出版社过滤失败");
+            else
+                return ResultMap.getResultMap(books1,"出版社过滤成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultMap.getResultMap(null,"系统内部错误");
+        }
+    }
+
+    /**
+     * 按照作者筛选书籍
+     * @param books 书籍列表
+     * @param author 作者
+     * @return List<Book>类型
+     */
+    public Map<String,Object> filterBooksByAuthor(List<Book> books, String author) {
+        try {
+            List<Book> books1=books.stream()
+                    .filter((Book book) -> book.getPublisher().equals(author))
+                    .collect(Collectors.toList());
+            if(books1==null)
+                return ResultMap.getResultMap(null,"作者过滤失败");
+            else
+                return ResultMap.getResultMap(books1,"作者过滤成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultMap.getResultMap(null,"系统内部错误");
+        }
+    }
+
+
+
+    /**
      * 图书馆过滤书籍
      * @param books 书籍列表
      * @param library 图书馆
@@ -229,6 +278,7 @@ public class BookSearchService extends BookServiceCore {
             return ResultMap.getResultMap(null,"系统内部错误");
         }
     }
+
 
     /**
      * 层数过滤书籍
@@ -251,6 +301,7 @@ public class BookSearchService extends BookServiceCore {
             return ResultMap.getResultMap(null,"系统内部错误");
         }
     }
+
 
     /**
      * 区号过滤书籍

@@ -63,6 +63,28 @@ public class BookServiceCore {
         }
     }
 
+    /**
+     * 获得书籍被借阅的次数
+     * @param id 书籍的id
+     * @return int
+     */
+    public Map<String,Object> getBookBorrowedTimes(int id) {
+        try {
+            if (bookDao.isExist(id)){
+                List<Rental> rentals = rentalDao.getRentalsByBookId(id);
+                if(rentals==null)
+                    return ResultMap.getResultMap(null,"获取书籍被借阅次数失败");
+                else
+                    return ResultMap.getResultMap(rentals.size(),"获取书籍被借阅次数成功");
+            }
+            else
+                return ResultMap.getResultMap(null,"书籍不存在");
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultMap.getResultMap(null,"系统内部错误");
+        }
+    }
+
 
     /**
      * 获得所有的书籍类型

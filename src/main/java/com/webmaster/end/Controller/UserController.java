@@ -1,8 +1,11 @@
 package com.webmaster.end.Controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.webmaster.end.Entity.Book;
 import com.webmaster.end.Entity.User;
+import com.webmaster.end.Service.BookSearchService;
 import com.webmaster.end.Service.UserService;
 import com.webmaster.end.Utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +24,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/user/")
@@ -36,6 +37,11 @@ public class UserController {
     @Autowired
     private ImageUtil imageUtil;
 
+    /**
+     * 获得用户信息
+     * @param session
+     * @return 用户的相关信息
+     */
     @CrossOrigin
     @LoginAccess
     @PostMapping("getUserData")
@@ -55,9 +61,10 @@ public class UserController {
                     result.put("result", 1);
                     JSONObject temp = MyJsonConverter.convertUserToJson(user);
                     Map<String, Object> borrowData = userService.getBorrowBooksByUserId(trueUserId);
-                    Integer number = (Integer) borrowData.get("state");
-                    if (number != null) {
-                        temp.put("borrow", number);
+                    List<Integer> borrowBooks = (List<Integer>) borrowData.get("state");
+                    if (borrowBooks != null) {
+                        temp.put("hasBorrowed", borrowBooks.get(0));
+                        temp.put("isBorrowing", borrowBooks.get(1));
                         result.put("data", temp);
                         return result.toJSONString();
                     } else
@@ -72,6 +79,96 @@ public class UserController {
             return MyJsonConverter.createErrorToJson("服务器内部错误").toJSONString();
         }
     }
+
+
+    /**
+     * 获得用户正在借阅的书籍
+     * @return 用户的借阅信息
+     */
+    @CrossOrigin
+    @LoginAccess
+    @PostMapping("getUserIsBorrowingBook")
+    public String getUserIsBorrowingBook(HttpSession session){
+        try {
+            Object userId = session.getAttribute("userId");
+            if (userId == null)
+                return MyJsonConverter.createErrorToJson("用户未登录").toJSONString();
+            else {
+                int trueUserId = (int) userId;
+                Map<String, Object> isRentalsingData = userService.getIsRentalsingByUserId(trueUserId);
+                List<Map<String,Object>> isRentalsing= (List<Map<String, Object>>) isRentalsingData.get("state");
+                if(isRentalsing!=null){
+                    JSONObject result = new JSONObject();
+                    result.put("result", 1);
+                    JSONArray array = new JSONArray();
+                    for (Map<String, Object> objectMap : isRentalsing) {
+                        JSONObject tempBook = new JSONObject();
+                        Book book = (Book) objectMap.get("book");
+                        int distance=(int)objectMap.get("distance");
+                        tempBook.put("id",book.getId()+"");
+                        tempBook.put("name",book.getName());
+                        tempBook.put("author",book.getAuthor());
+                        tempBook.put("publisher",book.getPublisher());
+                        tempBook.put("cover",book.getCover());
+                        tempBook.put("distance",distance);
+                        array.add(tempBook);
+                    }
+                    result.put("data",array);
+                    return result.toJSONString();
+                }
+                else
+                    return MyJsonConverter.convertErrorToJson(isRentalsingData).toJSONString();
+            }
+        }catch (ClassCastException e){
+            e.printStackTrace();
+            return MyJsonConverter.createErrorToJson("参数类型错误").toJSONString();
+        }catch (Exception e){
+            e.printStackTrace();
+            return MyJsonConverter.createErrorToJson("服务器内部错误").toJSONString();
+        }
+    }
+
+
+    /**
+     * 获得用户已经归还的书籍
+     * @return 用户的借阅信息
+     */
+    @CrossOrigin
+    @LoginAccess
+    @PostMapping("getUserHasReturnedBook")
+    public String getUserHasReturnedBook(HttpSession session){
+        try {
+            Object userId = session.getAttribute("userId");
+            if (userId == null)
+                return MyJsonConverter.createErrorToJson("用户未登录").toJSONString();
+            else {
+                int trueUserId = (int) userId;
+                Map<String, Object> hasRentalsedData = userService.getHasRentalsedByUserId(trueUserId);
+                List<Book> hasRentaled= (List<Book>) hasRentalsedData.get("state");
+                if(hasRentaled!=null){
+                    JSONObject result = new JSONObject();
+                    result.put("result", 1);
+                    JSONArray array = new JSONArray();
+                    for (Book book : hasRentaled) {
+                        JSONObject jsonObject = MyJsonConverter.convertSimpleBookToJson(book);
+                        jsonObject.remove("state");
+                        array.add(jsonObject);
+                    }
+                    result.put("data",array);
+                    return result.toJSONString();
+                }
+                else
+                    return MyJsonConverter.convertErrorToJson(hasRentalsedData).toJSONString();
+            }
+        }catch (ClassCastException e){
+            e.printStackTrace();
+            return MyJsonConverter.createErrorToJson("参数类型错误").toJSONString();
+        }catch (Exception e){
+            e.printStackTrace();
+            return MyJsonConverter.createErrorToJson("服务器内部错误").toJSONString();
+        }
+    }
+
 
 
     /**
