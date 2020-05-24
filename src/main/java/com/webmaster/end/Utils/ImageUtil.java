@@ -121,7 +121,7 @@ public class ImageUtil {
             BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, 300, 300);
             Path path = FileSystems.getDefault().getPath(QRCodeImagePath);
             MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
-            return ResultMap.getResultMap("http://123.56.3.135:8080/"+QRCodeImagePath,"生成二维码成功");
+            return ResultMap.getResultMap("http://123.56.3.135:8081"+QRCodeImagePath.substring(5),"生成二维码成功");
         }catch (Exception e){
             e.printStackTrace();
             return ResultMap.getResultMap(null,"生成二维码失败");
