@@ -55,16 +55,18 @@ public class UserController {
                     result.put("result", 1);
                     JSONObject temp = MyJsonConverter.convertUserToJson(user);
                     Map<String, Object> borrowData = userService.getBorrowBooksByUserId(trueUserId);
-                    Integer number= (Integer) borrowData.get("state");
-                    if(number!=null){
+                    Integer number = (Integer) borrowData.get("state");
+                    if (number != null) {
                         temp.put("borrow", number);
                         result.put("data", temp);
                         return result.toJSONString();
-                    }
-                    else
+                    } else
                         return MyJsonConverter.convertErrorToJson(borrowData).toJSONString();
                 }
             }
+        }catch (ClassCastException e){
+            e.printStackTrace();
+            return MyJsonConverter.createErrorToJson("参数类型错误").toJSONString();
         }catch (Exception e){
             e.printStackTrace();
             return MyJsonConverter.createErrorToJson("服务器内部错误").toJSONString();
@@ -111,6 +113,9 @@ public class UserController {
                     return MyJsonConverter.createErrorToJson("密码不能为空").toJSONString();
             } else
                 return MyJsonConverter.createErrorToJson("学号不能为空").toJSONString();
+        }catch (ClassCastException e){
+            e.printStackTrace();
+            return MyJsonConverter.createErrorToJson("参数类型错误").toJSONString();
         }catch (Exception e){
             e.printStackTrace();
             return MyJsonConverter.createErrorToJson("服务器内部错误").toJSONString();
@@ -184,6 +189,9 @@ public class UserController {
         }
         else
             return MyJsonConverter.convertErrorToJson(info).toJSONString();
+        }catch (ClassCastException e){
+            e.printStackTrace();
+            return MyJsonConverter.createErrorToJson("参数类型错误").toJSONString();
         } catch (Exception e) {
             e.printStackTrace();
             return MyJsonConverter.createErrorToJson("服务器内部错误").toJSONString();
@@ -338,6 +346,8 @@ public class UserController {
                 else
                     response.sendRedirect("http://www.solingjees.site:11010/#/login?msg="+registerMsg);
             }
+        }catch (ClassCastException e){
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -370,6 +380,9 @@ public class UserController {
                     return MyJsonConverter.convertErrorToJson(userData).toJSONString();
             } else
                 return MyJsonConverter.createErrorToJson("学号不能为空").toJSONString();
+        }catch (ClassCastException e){
+            e.printStackTrace();
+            return MyJsonConverter.createErrorToJson("参数类型错误").toJSONString();
         }catch (Exception e){
             e.printStackTrace();
             return MyJsonConverter.createErrorToJson("系统内部错误").toJSONString();
@@ -403,6 +416,9 @@ public class UserController {
                 }
             } else
                 return MyJsonConverter.createErrorToJson("邮件验证码不能为空").toJSONString();
+        }catch (ClassCastException e){
+            e.printStackTrace();
+            return MyJsonConverter.createErrorToJson("参数类型错误").toJSONString();
         }catch (Exception e){
             e.printStackTrace();
             return MyJsonConverter.createErrorToJson("系统内部错误").toJSONString();
@@ -438,6 +454,9 @@ public class UserController {
                     return MyJsonConverter.createErrorToJson("新密码不能为空").toJSONString();
             } else
                 return MyJsonConverter.createErrorToJson("学号不能为空").toJSONString();
+        }catch (ClassCastException e){
+            e.printStackTrace();
+            return MyJsonConverter.createErrorToJson("参数类型错误").toJSONString();
         }catch (Exception e){
             e.printStackTrace();
             return MyJsonConverter.createErrorToJson("系统内部错误").toJSONString();
@@ -477,6 +496,9 @@ public class UserController {
                     return MyJsonConverter.createErrorToJson("旧密码不能为空").toJSONString();
             } else
                 return MyJsonConverter.createErrorToJson("用户id不能为空").toJSONString();
+        }catch (ClassCastException e){
+            e.printStackTrace();
+            return MyJsonConverter.createErrorToJson("参数类型错误").toJSONString();
         }catch (Exception e){
             e.printStackTrace();
             return MyJsonConverter.createErrorToJson("系统内部错误").toJSONString();
@@ -550,6 +572,9 @@ public class UserController {
             }
             else
                 return MyJsonConverter.createErrorToJson("验证码不能为空").toJSONString();
+        }catch (ClassCastException e){
+            e.printStackTrace();
+            return MyJsonConverter.createErrorToJson("参数类型错误").toJSONString();
         }catch (Exception e){
             e.printStackTrace();
             return MyJsonConverter.createErrorToJson("系统内部错误").toJSONString();

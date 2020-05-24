@@ -73,6 +73,9 @@ public class BookController {
                     return MyJsonConverter.createErrorToJson("书籍id不能为空").toJSONString();
             } else
                 return MyJsonConverter.createErrorToJson("用户id不能为空").toJSONString();
+        }catch (ClassCastException e){
+            e.printStackTrace();
+            return MyJsonConverter.createErrorToJson("参数类型错误").toJSONString();
         }catch (Exception e){
             e.printStackTrace();
             return MyJsonConverter.createErrorToJson("系统内部错误").toJSONString();
@@ -123,6 +126,9 @@ public class BookController {
                     return MyJsonConverter.createErrorToJson("书籍id不能为空").toJSONString();
             } else
                 return MyJsonConverter.createErrorToJson("用户id不能为空").toJSONString();
+        }catch (ClassCastException e){
+            e.printStackTrace();
+            return MyJsonConverter.createErrorToJson("参数类型错误").toJSONString();
         }catch (Exception e){
             e.printStackTrace();
             return MyJsonConverter.createErrorToJson("系统内部错误").toJSONString();
@@ -172,6 +178,9 @@ public class BookController {
                     return MyJsonConverter.createErrorToJson("书籍id不能为空").toJSONString();
             } else
                 return MyJsonConverter.createErrorToJson("用户id不能为空").toJSONString();
+        }catch (ClassCastException e){
+            e.printStackTrace();
+            return MyJsonConverter.createErrorToJson("参数类型错误").toJSONString();
         }catch (Exception e){
             e.printStackTrace();
             return MyJsonConverter.createErrorToJson("系统内部错误").toJSONString();
@@ -251,6 +260,9 @@ public class BookController {
             }
             else
                 return MyJsonConverter.convertErrorToJson(typesData).toJSONString();
+        }catch (ClassCastException e){
+            e.printStackTrace();
+            return MyJsonConverter.createErrorToJson("参数类型错误").toJSONString();
         }catch (Exception e){
             e.printStackTrace();
             return MyJsonConverter.createErrorToJson("系统内部错误").toJSONString();
@@ -452,6 +464,9 @@ public class BookController {
                 }
             } else
                 return MyJsonConverter.createErrorToJson("书籍查询失败").toJSONString();
+        }catch (ClassCastException e){
+            e.printStackTrace();
+            return MyJsonConverter.createErrorToJson("参数类型错误").toJSONString();
         }catch (Exception e){
             e.printStackTrace();
             return MyJsonConverter.createErrorToJson("系统内部错误").toJSONString();
@@ -491,6 +506,9 @@ public class BookController {
             }
             else
                 return MyJsonConverter.createErrorToJson("书籍id不能为空").toJSONString();
+        }catch (ClassCastException e){
+            e.printStackTrace();
+            return MyJsonConverter.createErrorToJson("参数类型错误").toJSONString();
         }catch (Exception e){
             e.printStackTrace();
             return MyJsonConverter.createErrorToJson("系统内部错误").toJSONString();
