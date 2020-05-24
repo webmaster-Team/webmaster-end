@@ -5,8 +5,15 @@ import com.webmaster.end.Dao.BookTypeDao;
 import com.webmaster.end.Entity.Book;
 import com.webmaster.end.Entity.User;
 
+import java.util.Map;
+
 
 public class MyJsonConverter {
+    /**
+     * 用户信息转换
+     * @param user 用户
+     * @return JSONObject
+     */
     public static JSONObject convertUserToJson(User user){
         JSONObject jsonObject = new JSONObject(true);
         jsonObject.put("id",""+user.getId());
@@ -17,6 +24,11 @@ public class MyJsonConverter {
         return jsonObject;
     }
 
+    /**
+     * 简单的书籍信息转换
+     * @param book 书籍
+     * @return JSONObject
+     */
     public static JSONObject convertSimpleBookToJson(Book book){
         JSONObject object = new JSONObject(true);
         object.put("id",book.getId()+"");
@@ -24,10 +36,15 @@ public class MyJsonConverter {
         object.put("author",book.getAuthor());
         object.put("publisher",book.getPublisher());
         object.put("cover",book.getCover());
-        object.put("state",book.getState()+"");
+        object.put("state",book.getState());
         return object;
     }
 
+    /**
+     * 复杂的书籍信息转换
+     * @param book 书籍
+     * @return JSONObject
+     */
     public static JSONObject convertComplexBookToJson(Book book){
         JSONObject object = new JSONObject(true);
         object.put("id",book.getId()+"");
@@ -38,9 +55,59 @@ public class MyJsonConverter {
         object.put("version",book.getVersion());
         object.put("summary",book.getSummary());
         object.put("cover",book.getCover());
-        object.put("place",book.getLibrary()+book.getLayer()+"层"+book.getEntail());
+        object.put("place",book.getLibrary()+book.getLayer()+"层"+book.getOrigin()+book.getEntail());
         object.put("state",book.getState()+"");
         object.put("entry_time",book.getEntryTime());
+        return object;
+    }
+
+    /**
+     * 将正确信息转换成JSON
+     * @param map 正确信息对
+     * @return JSONObject
+     */
+    public static JSONObject convertSuccessToJson(Map<String,Object> map){
+        JSONObject object = new JSONObject();
+        object.put("result",1);
+        object.put("msg",(String)map.get("msg"));
+        return object;
+    }
+
+    /**
+     * 将错误信息转换成JSON
+     * @param map 错误信息对
+     * @return JSONObject
+     */
+    public static JSONObject convertErrorToJson(Map<String,Object> map){
+        JSONObject object = new JSONObject();
+        object.put("result",0);
+        object.put("msg",(String)map.get("msg"));
+        return object;
+    }
+
+
+    /**
+     * 生成正确信息转换成JSON
+     * @param success 错误信息
+     * @return JSONObject
+     */
+    public static JSONObject createSuccessrToJson(String success){
+        JSONObject object = new JSONObject();
+        object.put("result",1);
+        object.put("msg",success);
+        return object;
+    }
+
+
+    /**
+     * 生成错误信息转换成JSON
+     * @param error 错误信息
+     * @return JSONObject
+     */
+    public static JSONObject createErrorToJson(String error){
+        JSONObject object = new JSONObject();
+        object.put("result",0);
+        object.put("msg",error);
         return object;
     }
 }

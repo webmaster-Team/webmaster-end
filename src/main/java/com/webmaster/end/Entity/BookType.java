@@ -2,16 +2,25 @@ package com.webmaster.end.Entity;
 
 public class BookType {
     private int id;
-    private String type;
+    private String typeid;
     private String title;
 
     public BookType() {
     }
 
-    public BookType(int id, String type, String title) {
+    public BookType(int id, String typeid, String title) {
         this.id = id;
-        this.type = type;
+        this.typeid = typeid;
         this.title = title;
+    }
+
+    @Override
+    public String toString() {
+        return "BookType{" +
+                "id=" + id +
+                ", typeid='" + typeid + '\'' +
+                ", title='" + title + '\'' +
+                '}';
     }
 
     public int getId() {
@@ -22,12 +31,12 @@ public class BookType {
         this.id = id;
     }
 
-    public String getType() {
-        return type;
+    public String getTypeid() {
+        return typeid;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setTypeid(String typeid) {
+        this.typeid = typeid;
     }
 
     public String getTitle() {
@@ -36,14 +45,5 @@ public class BookType {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    @Override
-    public String toString() {
-        return "BookType{" +
-                "id=" + id +
-                ", type='" + type + '\'' +
-                ", title='" + title + '\'' +
-                '}';
     }
 }

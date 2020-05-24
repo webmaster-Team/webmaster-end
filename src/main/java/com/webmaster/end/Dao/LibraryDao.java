@@ -15,15 +15,15 @@ public class LibraryDao {
     @Autowired
     private DataSource dataSource;
 
-    public List<Library> getLibraries(){
+    /**
+     * 获得所有的图书馆信息
+     * @return 返回图书馆信息列表
+     */
+    public List<Library> getLibraries() throws SQLException {
         QueryRunner queryRunner=new QueryRunner(dataSource);
         String sql="select * from library";
-        try {
-            List<Library> libraries = queryRunner.query(sql, new BeanListHandler<>(Library.class));
-            return libraries;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
+        List<Library> libraries = queryRunner.query(sql, new BeanListHandler<>(Library.class));
+        return libraries;
     }
+
 }

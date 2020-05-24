@@ -1,83 +1,61 @@
 package com.webmaster.end.Service;
 
-import com.webmaster.end.Dao.RentalDao;
-import com.webmaster.end.Entity.Book;
-import com.webmaster.end.Entity.BorrowState;
-import com.webmaster.end.Entity.Rental;
+import com.webmaster.end.Entity.*;
 import com.webmaster.end.Utils.MyDateUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Map;
 
-/**
- * TODO 完善抽象类，先出模板供Controller调用
- *
- * @Description: 还书模板类
- * @Author: Daniel
- * @Date: 2020/4/24 3:30 下午
- */
 @Service
 public class BookReturnService extends BookServiceCore {
 
-    private static HashMap<state, String> stateStringHashMap = new HashMap<>();
-
-    static {
-        stateStringHashMap.put(state.SUCCESS, "还书成功!");
-        stateStringHashMap.put(state.ERR, "还书失败!");
-        stateStringHashMap.put(state.BOOK_NOT_EXISTED, "书本不存在!");
-        stateStringHashMap.put(state.NOT_BORROWED, "书本未借出!");
-    }
-
     /**
-     * @Description: 还书核心逻辑
-     * @Author: Daniel
-     * @Date: 2020/4/24 4:21 下午
-     * @params: [bookid 书籍号]
-     * @return: com.webmaster.end.Entity.BorrowState 书籍信息实体类
+     * 还书
+     * @param bookId 书籍id
+     * @param userId 用户id
+     * @return BorrowInfo
      */
-    public BorrowState returnBook(int bookid){
+    public Map<String,Object> returnBook(int userId,int bookId){
         try {
-            state st;
-            String date = MyDateUtil.getCurrentString();
-            //1.书籍是否存在
-            st = bookDao.isExist(bookid) ? state.SUCCESS : state.BOOK_NOT_EXISTED;
-            if (!isSuccess(st)) {
-                return new BorrowState(STATE_FAIL, stateStringHashMap.get(st));
-            }
-            //2.书本是否已借出
-            switch (bookDao.getBookStateById(bookid)) {
-                case Book.HAS_BORROW:
-                    st = state.SUCCESS;
-                    break;
-                case Book.ERROR_BORROW:
-                    st = state.ERR;
-                    break;
-                default:
-                    st = state.NOT_BORROWED;
-                    break;
-            }
-            if (!isSuccess(st)) {
-                return new BorrowState(STATE_FAIL, stateStringHashMap.get(st));
-            }
-            //3.还书业务
-            int rentalid = rentalDao.getRentalIdByBookId(bookid);
-            if (rentalid == -1) {
-                return new BorrowState(STATE_FAIL, stateStringHashMap.get(state.ERR));
-            }
-            st = bookDao.updateBookState(bookid, Book.CAN_BORROW) ? state.SUCCESS : state.ERR;
-            if(!isSuccess(st)){
-                return new BorrowState(STATE_FAIL, stateStringHashMap.get(st));
-            }
-            else{
-                Rental rental = rentalDao.getRentalByBookId(bookid);
-                rentalDao.updateReturnTime(rentalid,date);
-                rental.setReturnTime(date);
-                Book book = bookDao.getBookById(bookid);
-                return new BorrowState(STATE_SUCCESS, rental, book, stateStringHashMap.get(st));
-            }
-        }
-        catch (Exception e){
-            return new BorrowState(STATE_FAIL, stateStringHashMap.get(state.ERR));
+            //1.用户是否存在
+            if (userDao.isExist(userId)) {
+                if (bookDao.isExist(bookId)) {
+                    User user = userDao.getUser(userId);
+                    Book book = bookDao.getBook(bookId);
+                    if(rentalDao.isExist(bookId,userId)) {
+                        Rental rental = rentalDao.getRental(bookId, userId);
+                        if (rental!=null){
+                            if (bookDao.increaseState(bookId)) {
+                                rental.setReturnTime(MyDateUtil.getCurrentString());
+                                if (rentalDao.updateReturnTime(rental.getId(),rental.getReturnTime())) {
+                                    BorrowInfo info = new BorrowInfo();
+                                    info.setBookId(bookId);
+                                    info.setUserId(userId);
+                                    info.setUsername(user.getName());
+                                    info.setBookname(book.getName());
+                                    info.setBorrowtime(rental.getBorrowTime());
+                                    info.setReturntime(rental.getReturnTime());
+                                    info.setDuration(rental.getDuration());
+                                    info.setIsReborrow(rental.getIsReborrow());
+                                    return ResultMap.getResultMap(info, "还书成功");
+                                } else
+                                    return ResultMap.getResultMap(null, "更新还书时间失败");
+                            } else
+                                return ResultMap.getResultMap(null, "修改数量失败");
+                        }
+                        else
+                            return ResultMap.getResultMap(null, "流水获取失败");
+                    }
+                    else
+                        return ResultMap.getResultMap(null, "该用户未借阅过此书");
+                } else
+                    return ResultMap.getResultMap(null, "书籍不存在");
+            } else
+                return ResultMap.getResultMap(null, "用户不存在");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultMap.getResultMap(null, "系统内部错误");
         }
     }
 

@@ -6,13 +6,13 @@ public class User {
     private String card;
     private String name;
     //1为男，0为女
-    private int sex;
-    private String email;
-    private String phone;
-    private String cover;
+    private int sex=1;
+    private String email="无";
+    private String phone="0";
+    private String cover="http://123.56.3.135:8081/image/default.png";
     private String signTime;
-    private String deleteTime;
-    private int identity;
+    private String deleteTime="0";
+    private int identity=0;
 
     public User() {
     }

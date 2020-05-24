@@ -13,20 +13,17 @@ public class Book {
     private String cover;
     private String library;
     private String layer;
+    private String origin;
     private String entail;
+    //表示剩余的树的数量
     private int state;
     private String entryTime;
-    private String deleteTime;
-
-    public static final int CAN_BORROW=1;
-    public static final int HAS_BORROW=2;
-    public static final int NOT_BORROW=0;
-    public static final int ERROR_BORROW=-1;
+    private String deleteTime="0";
 
     public Book() {
     }
 
-    public Book(int id, String name, String author, String ISBN, String publisher, int price, String version, String typeId, String summary, String cover, String library, String layer, String entail, int state, String entryTime, String deleteTime) {
+    public Book(int id, String name, String author, String ISBN, String publisher, int price, String version, String typeId, String summary, String cover, String library, String layer, String origin, String entail, int state, String entryTime, String deleteTime) {
         this.id = id;
         this.name = name;
         this.author = author;
@@ -39,13 +36,14 @@ public class Book {
         this.cover = cover;
         this.library = library;
         this.layer = layer;
+        this.origin = origin;
         this.entail = entail;
         this.state = state;
         this.entryTime = entryTime;
         this.deleteTime = deleteTime;
     }
 
-    public Book(String name, String author, String ISBN, String publisher, int price, String version, String typeId, String summary, String cover,String library,String layer,String entail, int state, String entryTime) {
+    public Book(String name, String author, String ISBN, String publisher, int price, String version, String typeId, String summary, String cover, String library, String layer, String origin, String entail, int state, String entryTime) {
         this.name = name;
         this.author = author;
         this.ISBN = ISBN;
@@ -55,11 +53,35 @@ public class Book {
         this.typeId = typeId;
         this.summary = summary;
         this.cover = cover;
-        this.library=library;
-        this.layer=layer;
-        this.entail=entail;
+        this.library = library;
+        this.layer = layer;
+        this.origin = origin;
+        this.entail = entail;
         this.state = state;
         this.entryTime = entryTime;
+    }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", author='" + author + '\'' +
+                ", ISBN='" + ISBN + '\'' +
+                ", publisher='" + publisher + '\'' +
+                ", price=" + price +
+                ", version='" + version + '\'' +
+                ", typeId='" + typeId + '\'' +
+                ", summary='" + summary + '\'' +
+                ", cover='" + cover + '\'' +
+                ", library='" + library + '\'' +
+                ", layer='" + layer + '\'' +
+                ", origin='" + origin + '\'' +
+                ", entail='" + entail + '\'' +
+                ", state=" + state +
+                ", entryTime='" + entryTime + '\'' +
+                ", deleteTime='" + deleteTime + '\'' +
+                '}';
     }
 
     public int getId() {
@@ -142,30 +164,6 @@ public class Book {
         this.cover = cover;
     }
 
-    public int getState() {
-        return state;
-    }
-
-    public void setState(int state) {
-        this.state = state;
-    }
-
-    public String getEntryTime() {
-        return entryTime;
-    }
-
-    public void setEntryTime(String entry_time) {
-        this.entryTime = entry_time;
-    }
-
-    public String getDelete_time() {
-        return deleteTime;
-    }
-
-    public void setDeleteTime(String delete_time) {
-        this.deleteTime = delete_time;
-    }
-
     public String getLibrary() {
         return library;
     }
@@ -182,6 +180,14 @@ public class Book {
         this.layer = layer;
     }
 
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
+
     public String getEntail() {
         return entail;
     }
@@ -190,29 +196,27 @@ public class Book {
         this.entail = entail;
     }
 
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
+    public String getEntryTime() {
+        return entryTime;
+    }
+
+    public void setEntryTime(String entryTime) {
+        this.entryTime = entryTime;
+    }
+
     public String getDeleteTime() {
         return deleteTime;
     }
 
-    @Override
-    public String toString() {
-        return "Book{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", author='" + author + '\'' +
-                ", ISBN='" + ISBN + '\'' +
-                ", publisher='" + publisher + '\'' +
-                ", price=" + price +
-                ", version='" + version + '\'' +
-                ", typeId='" + typeId + '\'' +
-                ", summary='" + summary + '\'' +
-                ", cover='" + cover + '\'' +
-                ", library='" + library + '\'' +
-                ", layer='" + layer + '\'' +
-                ", entail='" + entail + '\'' +
-                ", state=" + state +
-                ", entryTime='" + entryTime + '\'' +
-                ", deleteTime='" + deleteTime + '\'' +
-                '}';
+    public void setDeleteTime(String deleteTime) {
+        this.deleteTime = deleteTime;
     }
 }

@@ -17,93 +17,96 @@ public class BookTypeDao {
     @Autowired
     private DataSource dataSource;
 
-    public Boolean isExist(int id){
+    /**
+     * 根据id看书籍类型是否存在
+     * @param id type表的id
+     * @return 返回是否存在，报错则为已存在
+     */
+    public Boolean isExist(int id) throws SQLException {
         QueryRunner queryRunner=new QueryRunner(dataSource);
         String sql="select count(*) from book_type where id = ?";
         Object[] params={id};
-        try {
-            int result = queryRunner.query(sql, new ScalarHandler<Long>(), params).intValue();
-            return result==1?true:false;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return true;
-        }
+        int result = queryRunner.query(sql, new ScalarHandler<Long>(), params).intValue();
+        return result==1?true:false;
     }
 
-    public Boolean isExistByType(String type){
+
+    /**
+     * 判断该类型是否存在
+     * @param typeid 类型id
+     * @return 返回是否存在
+     */
+    public Boolean isExistByTypeid(String typeid) throws SQLException {
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select count(*) from book_type where type = ?";
-        Object[] params={type};
-        try {
-            int result = queryRunner.query(sql, new ScalarHandler<Long>(), params).intValue();
-            return result==1?true:false;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return true;
-        }
+        String sql="select count(*) from book_type where typeid = ?";
+        Object[] params={typeid};
+        int result = queryRunner.query(sql, new ScalarHandler<Long>(), params).intValue();
+        return result==1?true:false;
     }
 
-    public Boolean isExistByTitle(String title){
+    /**
+     * 根据具体类型名判断是否存在
+     * @param title 类型名
+     * @return 返回是否存在
+     */
+    public Boolean isExistByTitle(String title) throws SQLException {
         QueryRunner queryRunner=new QueryRunner(dataSource);
         String sql="select count(*) from book_type where title = ?";
         Object[] params={title};
-        try {
-            int result = queryRunner.query(sql, new ScalarHandler<Long>(), params).intValue();
-            return result==1?true:false;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return true;
-        }
+        int result = queryRunner.query(sql, new ScalarHandler<Long>(), params).intValue();
+        return result==1?true:false;
     }
 
-    public List<BookType> getBookTypes(){
+    /**
+     * 获得所有的书籍类型
+     * @return 返回所有书籍类型
+     */
+    public List<BookType> getBookTypes() throws SQLException {
         QueryRunner queryRunner=new QueryRunner(dataSource);
         String sql="select * from book_type";
-        try {
-            List<BookType> bookTypes = queryRunner.query(sql, new BeanListHandler<>(BookType.class));
-            return bookTypes;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
+        List<BookType> bookTypes = queryRunner.query(sql, new BeanListHandler<>(BookType.class));
+        return bookTypes;
     }
 
-    public BookType getBookTypeById(int id){
+
+    /**
+     * 根据id来获得BookType
+     * @param id type表的id
+     * @return BookType对象
+     */
+    public BookType getBookType(int id) throws SQLException {
         QueryRunner queryRunner=new QueryRunner(dataSource);
         String sql="select * from book_type where id = ?";
         Object[] params={id};
-        try {
-            BookType bookType = queryRunner.query(sql, new BeanHandler<>(BookType.class),params);
-            return bookType;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
+        BookType bookType = queryRunner.query(sql, new BeanHandler<>(BookType.class),params);
+        return bookType;
     }
 
-    public BookType getBookTypeByType(String type){
+
+    /**
+     * 根据typeid来获得BookType
+     * @param typeid 类型id
+     * @return BookType对象
+     */
+    public BookType getBookTypeByTypeid(String typeid) throws SQLException {
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select * from book_type where type = ?";
-        Object[] params={type};
-        try {
-            BookType bookType = queryRunner.query(sql, new BeanHandler<>(BookType.class),params);
-            return bookType;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
+        String sql="select * from book_type where typeid = ?";
+        Object[] params={typeid};
+        BookType bookType = queryRunner.query(sql, new BeanHandler<>(BookType.class),params);
+        return bookType;
     }
 
-    public BookType getBookTypeByTitle(String title){
+
+    /**
+     * 根据title来获得BookType
+     * @param title 类型名
+     * @return BookType对象
+     */
+    public BookType getBookTypeByTitle(String title) throws SQLException {
         QueryRunner queryRunner=new QueryRunner(dataSource);
         String sql="select * from book_type where title = ?";
         Object[] params={title};
-        try {
-            BookType bookType = queryRunner.query(sql, new BeanHandler<>(BookType.class),params);
-            return bookType;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
+        BookType bookType = queryRunner.query(sql, new BeanHandler<>(BookType.class),params);
+        return bookType;
     }
 }

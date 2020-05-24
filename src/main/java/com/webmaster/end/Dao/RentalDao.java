@@ -23,54 +23,31 @@ public class RentalDao {
 
     /**
      * 查询该条查询记录是否存在
-     * @param id
-     * @return
+     * @param id 记录的id
+     * @return 返回是否存在
      */
-    public boolean isExist(int id){
+    public boolean isExist(int id) throws SQLException {
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select count(*) from rental where id = ? and return_time is null";
+        String sql="select count(*) from rental where id = ? and return_time = '0'";
         Object[] params={id};
-        try {
-            int result = queryRunner.query(sql, new ScalarHandler<Long>(), params).intValue();
-            return result>0?true:false;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
+        int result = queryRunner.query(sql, new ScalarHandler<Long>(), params).intValue();
+        return result>0?true:false;
+
     }
 
     /**
-     * 新增一个借书记录
-     * @param rental 借阅数据
-     * @return 返回是否成功
+     * 查询该条流水是否存在
+     * @param bookId 书籍id
+     * @param userId 用户id
+     * @return 返回是否存在
      */
-    public boolean addRental(Rental rental){
+    public boolean isExist(int bookId,int userId) throws SQLException {
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="insert into rental(book_id,user_id,borrow_time,return_time,duration,is_reborrow) values (?,?,?,?,?,?)";
-        Object[] params={rental.getBookId(),rental.getUserId(),rental.getBorrowTime(),rental.getReturnTime(),rental.getDuration(),rental.getIsReborrow()};
-        try {
-            return queryRunner.update(sql,params)>=1?true:false;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+        String sql="select count(*) from rental where book_id = ? and user_id = ?  and return_time = '0'";
+        Object[] params={bookId,userId};
+        int result = queryRunner.query(sql, new ScalarHandler<Long>(), params).intValue();
+        return result>0?true:false;
 
-    /**
-     * 根据书籍ID返回流水号
-     * @param bookId 书籍ID
-     * @return 返回流水号,-1则为错误
-     */
-    public int getRentalIdByBookId(int bookId){
-        QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select id from rental where book_id= ? and return_time is null";
-        Object[] params={bookId};
-        try {
-            return queryRunner.query(sql,new ScalarHandler<Integer>(),params);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return -1;
-        }
     }
 
     /**
@@ -78,97 +55,101 @@ public class RentalDao {
      * @param id 流水id
      * @return
      */
-    public boolean isReborrow(int id){
+    public boolean isReborrow(int id) throws SQLException {
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select is_reborrow from rental where id= ? and return_time is null";
+        String sql="select is_reborrow from rental where id= ? and return_time = '0'";
         Object[] params={id};
-        try {
-            return queryRunner.query(sql,new ScalarHandler<Integer>(),params)==1?true:false;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
+        return queryRunner.query(sql,new ScalarHandler<Integer>(),params)==1?true:false;
     }
+
+    /**
+     * 新增一个借书记录
+     * @param rental 借阅数据
+     * @return 返回是否成功
+     */
+    public boolean addRental(Rental rental) throws SQLException {
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="insert into rental(book_id,user_id,borrow_time,return_time,duration,is_reborrow) values (?,?,?,?,?,?)";
+        Object[] params={rental.getBookId(),rental.getUserId(),rental.getBorrowTime(),rental.getReturnTime(),rental.getDuration(),rental.getIsReborrow()};
+        return queryRunner.update(sql,params)>=1?true:false;
+    }
+
+    /**
+     * 归还书籍，记录对应的归还时间
+     * @param id 流水id
+     * @param date 归还的时间
+     * @return
+     */
+    public boolean updateReturnTime(int id, String date) throws SQLException {
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="update rental set return_time= ? where id= ? and return_time = '0'";
+        Object[] params={date,id};
+        return queryRunner.update(sql,params)>0?true:false;
+    }
+
+    /**
+     * 更改对应的续借状态
+     * @param id 流水id
+     * @return
+     */
+    public boolean updateReborrow(int id) throws SQLException {
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="update rental set is_reborrow= ? where id= ? and return_time = '0'";
+        Object[] params={1,id};
+        return queryRunner.update(sql,params)>0?true:false;
+    }
+
 
     /**
      * 根据流水id查询对应的流水
      * @param id 流水id
-     * @return
+     * @return 正确返回对象，否则为Null
      */
-    public Rental getRentalById(int id){
+    public Rental getRental(int id) throws SQLException {
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select * from rental where id= ? and return_time is null";
+        String sql="select * from rental where id= ? and return_time = '0'";
         Object[] params={id};
-        try {
-            return queryRunner.query(sql,new BeanHandler<>(Rental.class,processor),params);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return queryRunner.query(sql,new BeanHandler<>(Rental.class,processor),params);
+    }
+
+
+    /**
+     * 根据书籍ID返回流水号
+     * @param bookId 书籍ID
+     * @param userId 用户ID
+     * @return 返回流水号,-1则为错误
+     */
+    public int getRentalId(int bookId,int userId) throws SQLException {
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="select id from rental where book_id= ? and user_id = ? and return_time = '0'";
+        Object[] params={bookId,userId};
+        return queryRunner.query(sql,new ScalarHandler<Integer>(),params);
     }
 
 
     /**
      * 根据书籍id查询对应的流水
      * @param bookId 书籍id
-     * @return
+     * @param userId 用户Id
+     * @return 返回Rental对象，失败返回Null
      */
-    public Rental getRentalByBookId(int bookId){
+    public Rental getRental(int bookId,int userId) throws SQLException {
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select * from rental where book_id= ? and return_time is null";
-        Object[] params={bookId};
-        try {
-            return queryRunner.query(sql,new BeanHandler<>(Rental.class,processor),params);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
+        String sql="select * from rental where book_id= ? and user_id = ? and return_time = '0'";
+        Object[] params={bookId,userId};
+        return queryRunner.query(sql,new BeanHandler<>(Rental.class,processor),params);
     }
+
 
     /**
-     * 归还书籍，记录对应的归还时间
-     * @param rentalid 流水id
-     * @param date 归还的时间
-     * @return
+     * 根据用户id返回用户的借阅数量
+     * @param userId 用户的id
+     * @return 返回用户的借阅数量
      */
-    public boolean updateReturnTime(int rentalid, String date){
+    public int getBorrowBooksByUserId(int userId) throws SQLException {
         QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="update rental set return_time= ? where id= ? and return_time is null";
-        Object[] params={date,rentalid};
-        try {
-            return queryRunner.update(sql,params)>0?true:false;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    /**
-     * 更改对应的续借状态
-     * @param rentalid 流水id
-     * @return
-     */
-    public boolean updateReborrow(int rentalid){
-        QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="update rental set is_reborrow= ? where id= ? and return_time is null";
-        Object[] params={1,rentalid};
-        try {
-            return queryRunner.update(sql,params)>0?true:false;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public int getBorrowBooksByUserId(int userId){
-        QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="select count(*) from rental where user_id= ? and return_time is null";
+        String sql="select count(*) from rental where user_id= ? and return_time = '0'";
         Object[] params={userId};
-        try {
-            return queryRunner.query(sql,new ScalarHandler<Long>(),params).intValue();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return -1;
-        }
+        return queryRunner.query(sql,new ScalarHandler<Long>(),params).intValue();
     }
 }
