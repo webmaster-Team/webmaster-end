@@ -6,10 +6,7 @@ import com.webmaster.end.Utils.MyDateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.SQLException;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class BookServiceCore {
@@ -130,6 +127,26 @@ public class BookServiceCore {
             else
                 return ResultMap.getResultMap(publishers,"获取所有出版社成功");
         } catch (SQLException e) {
+            e.printStackTrace();
+            return ResultMap.getResultMap(null,"系统内部错误");
+        }
+    }
+
+    /**
+     * 获得前3的热门书籍的名称
+     * @return List<String>
+     */
+    public Map<String,Object> getHotBooks(){
+        try {
+            List<Integer> hotBooksId = rentalDao.getHotBooksId();
+            List<String> hotBooksName=new ArrayList<>();
+            for (Integer integer : hotBooksId) {
+                int bookId=integer.intValue();
+                Book book = bookDao.getBook(bookId);
+                hotBooksName.add(book.getName());
+            }
+            return ResultMap.getResultMap(hotBooksName,"查询成功");
+        }catch (SQLException e){
             e.printStackTrace();
             return ResultMap.getResultMap(null,"系统内部错误");
         }

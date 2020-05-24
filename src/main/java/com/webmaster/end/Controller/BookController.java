@@ -187,6 +187,33 @@ public class BookController {
         }
     }
 
+    /**
+     * 查询前三的热门书籍
+     * @return 返回前三热门书籍的书名
+     */
+    @CrossOrigin
+    @GetMapping("getHotBooks")
+    public String getHotBooks(){
+        try{
+            Map<String, Object> hotBooksData = bookSearchService.getHotBooks();
+            List<String> hotBooks= (List<String>) hotBooksData.get("state");
+            if(hotBooks!=null){
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("result",1);
+                JSONArray array = new JSONArray();
+                for (String hotBook : hotBooks)
+                    array.add(hotBook);
+                jsonObject.put("data",array);
+                return jsonObject.toJSONString();
+            }
+            else
+                return MyJsonConverter.convertErrorToJson(hotBooksData).toJSONString();
+        }catch (Exception e){
+            e.printStackTrace();
+            return MyJsonConverter.createErrorToJson("系统内部错误").toJSONString();
+        }
+    }
+
 
     /**
      * 搜索条件

@@ -6,6 +6,7 @@ import org.apache.commons.dbutils.BasicRowProcessor;
 import org.apache.commons.dbutils.GenerousBeanProcessor;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.RowProcessor;
+import org.apache.commons.dbutils.handlers.ArrayListHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class RentalDao {
@@ -151,5 +154,21 @@ public class RentalDao {
         String sql="select count(*) from rental where user_id= ? and return_time = '0'";
         Object[] params={userId};
         return queryRunner.query(sql,new ScalarHandler<Long>(),params).intValue();
+    }
+
+
+    /**
+     * 返回借阅较多的书籍
+     * @return 热门书籍的id
+     * @throws SQLException
+     */
+    public List<Integer> getHotBooksId() throws SQLException {
+        QueryRunner queryRunner=new QueryRunner(dataSource);
+        String sql="select book_id from (select book_id,count(*) as number from rental group by book_id) aa ORDER BY number desc limit 3";
+        List<Object[]> hotBooksId=queryRunner.query(sql,new ArrayListHandler());
+        List<Integer> result=new ArrayList<>();
+        for (Object[] hotBookId : hotBooksId)
+            result.add((Integer)(hotBookId[0]));
+        return result;
     }
 }
