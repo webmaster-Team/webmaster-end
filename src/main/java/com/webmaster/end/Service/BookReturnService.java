@@ -19,16 +19,16 @@ public class BookReturnService extends BookServiceCore {
     public Map<String,Object> returnBook(int userId,int bookId){
         try {
             //1.用户是否存在
-            if (userDao.isExist(userId)) {
-                if (bookDao.isExist(bookId)) {
-                    User user = userDao.getUser(userId);
-                    Book book = bookDao.getBook(bookId);
-                    if(rentalDao.isExist(bookId,userId)) {
-                        Rental rental = rentalDao.getRental(bookId, userId);
+            if (iUserMapper.isExist(userId)) {
+                if (iBookMapper.isExist(bookId)) {
+                    User user = iUserMapper.getUser(userId);
+                    Book book = iBookMapper.getBook(bookId);
+                    if(iRentalMapper.isExistByUserBook(bookId,userId)) {
+                        Rental rental = iRentalMapper.getRentalByUserBook(bookId, userId);
                         if (rental!=null){
-                            if (bookDao.increaseState(bookId)) {
+                            if (iBookMapper.increaseState(bookId)) {
                                 rental.setReturnTime(MyDateUtil.getCurrentString());
-                                if (rentalDao.updateReturnTime(rental.getId(),rental.getReturnTime())) {
+                                if (iRentalMapper.updateReturnTime(rental.getId(),rental.getReturnTime())) {
                                     BorrowInfo info = new BorrowInfo();
                                     info.setBookId(bookId);
                                     info.setUserId(userId);

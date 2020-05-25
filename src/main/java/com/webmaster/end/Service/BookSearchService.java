@@ -22,12 +22,12 @@ public class BookSearchService extends BookServiceCore {
      */
     public Map<String,Object> searchAllBooks(){
         try {
-            List<Book> books=bookDao.getAllBooks();
+            List<Book> books=iBookMapper.getAllBooks();
             if(books==null)
                 return ResultMap.getResultMap(null,"搜索所有书籍失败");
             else
                 return ResultMap.getResultMap(books,"搜索所有书籍成功");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultMap.getResultMap(null,"系统内部错误");
         }
@@ -41,12 +41,12 @@ public class BookSearchService extends BookServiceCore {
      */
     public Map<String,Object> searchBooksByKey(String key){
         try {
-            List<Book> books=bookDao.getBooksByKey(key);
+            List<Book> books=iBookMapper.getBooksByKey(key);
             if(books==null)
                 return ResultMap.getResultMap(null,"关键字搜索书籍失败");
             else
                 return ResultMap.getResultMap(books,"关键字搜索书籍成功");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultMap.getResultMap(null,"系统内部错误");
         }
@@ -60,12 +60,12 @@ public class BookSearchService extends BookServiceCore {
      */
     public Map<String,Object> searchBookByISBN(String iSBN){
         try {
-            Book book=bookDao.getBookByISBN(iSBN);
+            Book book=iBookMapper.getBookByISBN(iSBN);
             if(book==null)
                 return ResultMap.getResultMap(null,"ISBN搜索书籍失败");
             else
                 return ResultMap.getResultMap(book,"ISBN搜索书籍成功");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultMap.getResultMap(null,"系统内部错误");
         }
@@ -199,7 +199,7 @@ public class BookSearchService extends BookServiceCore {
      */
     public Map<String,Object> filterBooksByTitle(List<Book> books, String title) {
         try {
-            BookType bookType = bookTypeDao.getBookTypeByTitle(title);
+            BookType bookType = iBookTypeMapper.getBookTypeByTitle(title);
             List<Book> books1=books.stream()
                             .filter((Book book) -> book.getTypeId().equals(bookType.getTypeid()))
                             .collect(Collectors.toList());
@@ -207,7 +207,7 @@ public class BookSearchService extends BookServiceCore {
                 return ResultMap.getResultMap(null,"类别过滤失败");
             else
                 return ResultMap.getResultMap(books1,"类别过滤成功");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultMap.getResultMap(null,"系统内部错误");
         }

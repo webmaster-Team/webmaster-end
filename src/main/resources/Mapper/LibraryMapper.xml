@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webmaster.end.IMapper.ILibraryMapper">
+    <!--  获得所有的图书馆信息  -->
+    <select id="getLibraries" resultType="com.webmaster.end.Entity.Library">
+        select * from library
+    </select>
+</mapper>

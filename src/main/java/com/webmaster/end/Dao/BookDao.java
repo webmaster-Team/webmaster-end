@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 @Repository
 public class BookDao {
     //delete_time为0表示书籍已经被删除
@@ -68,49 +69,49 @@ public class BookDao {
     }
 
 
-    /**
-     * 删除一个书籍
-     * @param id 该类书籍的id
-     * @param time 删除时间
-     * @return 返回是否成功
-     */
-    public boolean deleteBook(int id, String time) throws SQLException {
-        QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="update book set delete_time= ? where id = ? and delete_time = '0'";
-        Object[] params={time,id};
-        return queryRunner.update(sql,params)>=1?true:false;
-    }
-
-    /**
-     * 更新一类的书籍信息
-     * @param book 新的一类书籍数据
-     * @return 返回是否成功
-     */
-    public boolean updateBook(Book book) throws SQLException {
-        QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="update book set name = ? , author = ? , isbn = ? , publisher = ? , "+
-                    "price = ? , version = ? , typeid = ? , summary = ? , cover = ? ,library = ? ,"+
-                    "layer = ? ,origin = ? , entail = ? , state = ? , entry_time = ? , delete_time = ? "+
-                    "where id = ? and delete_time = '0'";
-        Object[] params={book.getName(),
-                        book.getAuthor(),
-                        book.getISBN(),
-                        book.getPublisher(),
-                        book.getPrice(),
-                        book.getVersion(),
-                        book.getTypeId(),
-                        book.getSummary(),
-                        book.getCover(),
-                        book.getLibrary(),
-                        book.getLayer(),
-                        book.getOrigin(),
-                        book.getEntail(),
-                        book.getState(),
-                        book.getEntryTime(),
-                        book.getDeleteTime(),
-                        book.getId()};
-        return queryRunner.update(sql,params)>=1?true:false;
-    }
+//    /**
+//     * 删除一个书籍
+//     * @param id 该类书籍的id
+//     * @param time 删除时间
+//     * @return 返回是否成功
+//     */
+//    public boolean deleteBook(int id, String time) throws SQLException {
+//        QueryRunner queryRunner=new QueryRunner(dataSource);
+//        String sql="update book set delete_time= ? where id = ? and delete_time = '0'";
+//        Object[] params={time,id};
+//        return queryRunner.update(sql,params)>=1?true:false;
+//    }
+//
+//    /**
+//     * 更新一类的书籍信息
+//     * @param book 新的一类书籍数据
+//     * @return 返回是否成功
+//     */
+//    public boolean updateBook(Book book) throws SQLException {
+//        QueryRunner queryRunner=new QueryRunner(dataSource);
+//        String sql="update book set name = ? , author = ? , isbn = ? , publisher = ? , "+
+//                    "price = ? , version = ? , typeid = ? , summary = ? , cover = ? ,library = ? ,"+
+//                    "layer = ? ,origin = ? , entail = ? , state = ? , entry_time = ? , delete_time = ? "+
+//                    "where id = ? and delete_time = '0'";
+//        Object[] params={book.getName(),
+//                        book.getAuthor(),
+//                        book.getISBN(),
+//                        book.getPublisher(),
+//                        book.getPrice(),
+//                        book.getVersion(),
+//                        book.getTypeId(),
+//                        book.getSummary(),
+//                        book.getCover(),
+//                        book.getLibrary(),
+//                        book.getLayer(),
+//                        book.getOrigin(),
+//                        book.getEntail(),
+//                        book.getState(),
+//                        book.getEntryTime(),
+//                        book.getDeleteTime(),
+//                        book.getId()};
+//        return queryRunner.update(sql,params)>=1?true:false;
+//    }
 
 
     /**

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webmaster.end.IMapper.IBookTypeMapper">
+    <!--  根据id看书籍类型是否存在  -->
+    <select id="isExist" resultType="boolean">
+        select count(*) from book_type where id = #{id}
+    </select>
+
+    <!--  判断该类型是否存在  -->
+    <select id="isExistByTypeid" resultType="boolean">
+        select count(*) from book_type where typeid = #{typeid}
+    </select>
+
+    <!--  根据具体类型名判断是否存在  -->
+    <select id="isExistByTitle" resultType="boolean">
+        select count(*) from book_type where title = #{title}
+    </select>
+
+    <!--  获得所有的书籍类型  -->
+    <select id="getAllBookTypes" resultType="com.webmaster.end.Entity.BookType">
+        select * from book_type
+    </select>
+
+    <!--  根据id来获得BookType  -->
+    <select id="getBookType" resultType="com.webmaster.end.Entity.BookType">
+        select * from book_type where id = #{id}
+    </select>
+
+    <!--  根据typeid来获得BookType  -->
+    <select id="getBookTypeByTypeid" resultType="com.webmaster.end.Entity.BookType">
+        select * from book_type where typeid = #{typeid}
+    </select>
+
+    <!--  根据typeid来获得BookType  -->
+    <select id="getBookTypeByTitle" resultType="com.webmaster.end.Entity.BookType">
+        select * from book_type where title = #{title}
+    </select>
+</mapper>

@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
 
+@Deprecated
 @Repository
 public class BookTypeDao {
     @Autowired
@@ -61,7 +62,7 @@ public class BookTypeDao {
      * 获得所有的书籍类型
      * @return 返回所有书籍类型
      */
-    public List<BookType> getBookTypes() throws SQLException {
+    public List<BookType> getAllBookTypes() throws SQLException {
         QueryRunner queryRunner=new QueryRunner(dataSource);
         String sql="select * from book_type";
         List<BookType> bookTypes = queryRunner.query(sql, new BeanListHandler<>(BookType.class));

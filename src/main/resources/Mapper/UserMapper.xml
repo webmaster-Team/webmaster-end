@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webmaster.end.IMapper.IUserMapper">
+    <!-- 根据id查询用户是否存在   -->
+    <select id="isExist" resultType="boolean">
+        select count(*) from user where id = #{id} and delete_time = '0'
+    </select>
+
+    <!-- 根据id查询用户是否存在   -->
+    <select id="isExistByCard" resultType="boolean">
+        select count(*) from user where card = #{id} and delete_time = '0'
+    </select>
+
+    <!-- 根据用户名查询用户是否存在   -->
+    <select id="isExistByName" resultType="boolean">
+        select count(*) from user where name = #{name} and delete_time = '0'
+    </select>
+
+    <!-- 根据用户名查询用户是否存在   -->
+    <select id="isExistByEmail" resultType="boolean">
+        select count(*) from user where email = #{email} and delete_time = '0'
+    </select>
+
+    <!-- 根据用户名查询用户是否存在   -->
+    <insert id="addUser" useGeneratedKeys="true">
+        insert into user(card,name,sex,email,phone,cover,sign_time,identity) values (#{card},#{name},#{sex},#{email},#{phone},#{phone},#{cover},#{signTime})
+    </insert>
+
+    <!-- 更新一个用户信息   -->
+    <update id="updateUser">
+        update user set card = #{card} , name = #{name} , sex = #{sex} , email = #{email} , phone = #{phone} , cover = #{cover} , sign_time = #{signTime} , delete_time = #{deleteTime} , identity = #{identity } where id = #{id} and delete_time = '0'
+    </update>
+
+    <!-- 根据用户id来返回对应的值   -->
+    <select id="getUser" resultType="com.webmaster.end.Entity.User">
+        select * from user where id =#{id} and delete_time = '0'
+    </select>
+
+    <!-- 返回所有的用户   -->
+    <select id="getAllUsers" resultType="com.webmaster.end.Entity.User">
+        select * from user where delete_time = '0'
+    </select>
+
+    <!-- 根据传入的card号来返回用户对应的id   -->
+    <select id="getUserIdByCard" resultType="int">
+        select id from user where card = #{card} and delete_time = '0'
+    </select>
+
+    <!-- 根据传入的name来返回用户对应的name   -->
+    <select id="getUserIdByName" resultType="int">
+        select id from user where name =#{name} and delete_time = '0'
+    </select>
+</mapper>

@@ -26,14 +26,14 @@ public class BookExtendborrowService extends BookServiceCore {
     public Map<String, Object> extendBorrow(int userId, int bookId) {
         try {
             //1.用户是否存在
-            if (userDao.isExist(userId)) {
-                if (bookDao.isExist(bookId)) {
-                    User user = userDao.getUser(userId);
-                    Book book = bookDao.getBook(bookId);
-                    if(rentalDao.isExist(bookId,userId)) {
-                        Rental rental = rentalDao.getRental(bookId,userId);
+            if (iUserMapper.isExist(userId)) {
+                if (iBookMapper.isExist(bookId)) {
+                    User user = iUserMapper.getUser(userId);
+                    Book book = iBookMapper.getBook(bookId);
+                    if(iRentalMapper.isExistByUserBook(bookId,userId)) {
+                        Rental rental = iRentalMapper.getRentalByUserBook(bookId,userId);
                         if (rental!=null) {
-                            if (rentalDao.updateReborrow(rental.getId())) {
+                            if (iRentalMapper.updateReborrow(rental.getId())) {
                                 BorrowInfo info = new BorrowInfo();
                                 info.setBookId(bookId);
                                 info.setUserId(userId);

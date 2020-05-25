@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
+@Deprecated
 @Repository
 public class PasswordDao {
     @Autowired

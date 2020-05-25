@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webmaster.end.IMapper.IRentalMapper">
+    <!--  查询该条查询记录是否存在  -->
+    <select id="isExist" resultType="boolean">
+        select count(*) from rental where id = #{id} and return_time = '0'
+    </select>
+
+    <!--  查询该条流水是否存在  -->
+    <select id="isExistByUserBook" resultType="boolean">
+        select count(*) from rental where book_id = #{bookId} and user_id = #{userId}  and return_time = '0'
+    </select>
+
+    <!--  根据流水id判断书籍是否续借  -->
+    <select id="isReborrow" resultType="boolean">
+        select is_reborrow from rental where id= #{id} and return_time = '0'
+    </select>
+
+    <!--  新增一个借书记录  -->
+    <insert id="addRental">
+        insert into rental(book_id,user_id,borrow_time,return_time,duration,is_reborrow) values (#{bookId},#{userId},#{borrowTime},#{returnTime},#{duration},#{isReborrow})
+    </insert>
+
+    <!-- 归还书籍，记录对应的归还时间   -->
+    <update id="updateReturnTime">
+        update rental set return_time= #{date} where id= #{id} and return_time = '0'
+    </update>
+
+    <!-- 更改对应的续借状态   -->
+    <update id="updateReborrow">
+        update rental set is_reborrow= 1 where id= #{id} and return_time = '0'
+    </update>
+
+    <!-- 根据流水id查询对应的流水   -->
+    <update id="getRental">
+        select * from rental where id= #{id} and return_time = '0'
+    </update>
+
+    <!--  根据书籍ID返回流水号  -->
+    <select id="getRentalId" resultType="int">
+        select id from rental where book_id= #{bookId} and user_id = #{userId} and return_time = '0'
+    </select>
+
+    <!--  根据书籍id查询对应的流水  -->
+    <select id="getRentalByUserBook" resultType="com.webmaster.end.Entity.Rental">
+        select * from rental where book_id= #{bookId} and user_id = #{userId} and return_time = '0'
+    </select>
+
+    <!--  根据书籍id查询所有的流水  -->
+    <select id="getRentalsByBookId" resultType="com.webmaster.end.Entity.Rental">
+        select * from rental where book_id= #{bookId} and return_time = '0'
+    </select>
+
+    <!--  获得用户所有的所借的流水  -->
+    <select id="getIsRentalsingByUserId" resultType="com.webmaster.end.Entity.Rental">
+        select * from rental where user_id = #{userId} and return_time = '0'
+    </select>
+
+    <!--  获得用户所有的已归还的流水  -->
+    <select id="getHasRentalsedByUserId" resultType="com.webmaster.end.Entity.Rental">
+        select * from rental where user_id = #{userId} and return_time != '0'
+    </select>
+
+    <!--  获得用户所有的已归还的流水  -->
+    <select id="getHasBorrowedBooksByUserId" resultType="int">
+        select count(*) from rental where user_id= #{userId}
+    </select>
+
+    <!--  根据用户id正在借阅的数量  -->
+    <select id="getIsBorrowingBooksByUserId" resultType="int">
+        select count(*) from rental where user_id= #{userId} and return_time = '0'
+    </select>
+
+    <!--  返回借阅较多的书籍  -->
+    <select id="getHotBooksId" resultType="int">
+        select book_id from (select book_id,count(*) as number from rental group by book_id) aa ORDER BY number desc limit 3
+    </select>
+</mapper>

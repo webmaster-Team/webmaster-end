@@ -15,6 +15,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
 
+@Deprecated
 @Repository
 public class UserDao {
     //phone和delete_time默认值都是0
@@ -93,18 +94,18 @@ public class UserDao {
     }
 
 
-    /**
-     * 删除一个用户
-     * @param id 用户的id
-     * @param time 注销时间
-     * @return 返回是否成功
-     */
-    public boolean deleteUser(int id, String time) throws SQLException {
-        QueryRunner queryRunner=new QueryRunner(dataSource);
-        String sql="update user set delete_time= ? where id = ? and delete_time = '0'";
-        Object[] params={time,id};
-        return queryRunner.update(sql,params)>=1?true:false;
-    }
+//    /**
+//     * 删除一个用户
+//     * @param id 用户的id
+//     * @param time 注销时间
+//     * @return 返回是否成功
+//     */
+//    public boolean deleteUser(int id, String time) throws SQLException {
+//        QueryRunner queryRunner=new QueryRunner(dataSource);
+//        String sql="update user set delete_time= ? where id = ? and delete_time = '0'";
+//        Object[] params={time,id};
+//        return queryRunner.update(sql,params)>=1?true:false;
+//    }
 
 
     /**

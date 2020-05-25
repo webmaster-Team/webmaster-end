@@ -1,32 +1,38 @@
 package com.webmaster.end.Service;
 
-import com.webmaster.end.Dao.BookDao;
-import com.webmaster.end.Dao.PasswordDao;
-import com.webmaster.end.Dao.RentalDao;
-import com.webmaster.end.Dao.UserDao;
 import com.webmaster.end.Entity.Book;
 import com.webmaster.end.Entity.Rental;
 import com.webmaster.end.Entity.ResultMap;
 import com.webmaster.end.Entity.User;
+import com.webmaster.end.IMapper.IBookMapper;
+import com.webmaster.end.IMapper.IPasswordMapper;
+import com.webmaster.end.IMapper.IRentalMapper;
+import com.webmaster.end.IMapper.IUserMapper;
 import com.webmaster.end.Utils.MD5Util;
 import com.webmaster.end.Utils.MyDateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLException;
 import java.util.*;
 
 @Service
 public class UserService {
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
-    private UserDao userDao;
+    private IUserMapper iUserMapper;
+
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
-    private BookDao bookDao;
+    private IBookMapper iBookMapper;
+
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
-    private PasswordDao passwordDao;
+    private IPasswordMapper iPasswordMapper;
+
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
-    private RentalDao rentalDao;
+    private IRentalMapper iRentalMapper;
 
     /**
      * 用户的登录
@@ -36,10 +42,10 @@ public class UserService {
      */
     public Map<String,Object> login(String card, String password){
         try {
-            if (userDao.isExistByCard(card)) {
-                int id = userDao.getUserIdByCard(card);
-                String salt = passwordDao.getSalt(id);
-                String truePassword = passwordDao.getPassword(id);
+            if (iUserMapper.isExistByCard(card)) {
+                int id = iUserMapper.getUserIdByCard(card);
+                String salt = iPasswordMapper.getSalt(id);
+                String truePassword = iPasswordMapper.getPassword(id);
                 String currentPassword = MD5Util.getMD5String(password, salt);
                 if (currentPassword.equals(truePassword))
                     return ResultMap.getResultMap(true,"登录成功");
@@ -63,16 +69,16 @@ public class UserService {
     @Transactional
     public Map<String,Object> register(User user,String password){
         try {
-            if (!userDao.isExistByCard(user.getCard())) {
-                if (!userDao.isExistByName(user.getName())) {
-                    if (!userDao.isExistByEmail(user.getEmail()) || user.getEmail().equals("无")) {
-                        if (userDao.addUser(user)) {
+            if (!iUserMapper.isExistByCard(user.getCard())) {
+                if (!iUserMapper.isExistByName(user.getName())) {
+                    if (!iUserMapper.isExistByEmail(user.getEmail()) || user.getEmail().equals("无")) {
+                        if (iUserMapper.addUser(user)) {
                             //根据card获得id
-                            int id = userDao.getUserIdByCard(user.getCard());
+                            int id = iUserMapper.getUserIdByCard(user.getCard());
                             //产生盐值
                             String salt = "" + (new Date()).getTime();
                             //增加密码
-                            if (passwordDao.addPassword(id, salt, MD5Util.getMD5String(password, salt)))
+                            if (iPasswordMapper.addPassword(id, salt, MD5Util.getMD5String(password, salt)))
                                 return ResultMap.getResultMap(true,"注册成功");
                             else
                                 return ResultMap.getResultMap(false,"增加密码失败");
@@ -92,31 +98,31 @@ public class UserService {
     }
 
 
-    /**
-     * 用户删除
-     * @param id 用户的id
-     * @return 0为失败，1为成功，-1为系统错误
-     */
-    @Transactional
-    public Map<String,Object> deleteUser(int id) {
-        HashMap<String, Object> map = new HashMap<>();
-        try {
-            if(userDao.isExist(id)) {
-                if(passwordDao.deletePassword(id)){
-                    if(userDao.deleteUser(id, MyDateUtil.getCurrentString()))
-                        return ResultMap.getResultMap(true,"删除成功");
-                    else
-                        return ResultMap.getResultMap(false,"删除失败");
-                } else
-                    return ResultMap.getResultMap(false,"删除密码失败");
-            }
-            else
-                return ResultMap.getResultMap(false,"用户不存在");
-        }catch (Exception e){
-            e.printStackTrace();
-            return ResultMap.getResultMap(false,"服务器内部错误");
-        }
-    }
+//    /**
+//     * 用户删除
+//     * @param id 用户的id
+//     * @return 0为失败，1为成功，-1为系统错误
+//     */
+//    @Transactional
+//    public Map<String,Object> deleteUser(int id) {
+//        HashMap<String, Object> map = new HashMap<>();
+//        try {
+//            if(iUserMapper.isExist(id)) {
+//                if(iPasswordMapper.deletePassword(id)){
+//                    if(iUserMapper.deleteUser(id, MyDateUtil.getCurrentString()))
+//                        return ResultMap.getResultMap(true,"删除成功");
+//                    else
+//                        return ResultMap.getResultMap(false,"删除失败");
+//                } else
+//                    return ResultMap.getResultMap(false,"删除密码失败");
+//            }
+//            else
+//                return ResultMap.getResultMap(false,"用户不存在");
+//        }catch (Exception e){
+//            e.printStackTrace();
+//            return ResultMap.getResultMap(false,"服务器内部错误");
+//        }
+//    }
 
 
     /**
@@ -127,8 +133,8 @@ public class UserService {
     public Map<String,Object> getUser(int id){
         HashMap<String, Object> map = new HashMap<>();
         try {
-            if (userDao.isExist(id)) {
-                User user = userDao.getUser(id);
+            if (iUserMapper.isExist(id)) {
+                User user = iUserMapper.getUser(id);
                 if(user==null)
                     return ResultMap.getResultMap(null,"获取用户失败");
                 else
@@ -150,9 +156,9 @@ public class UserService {
     public Map<String,Object> getUserByCard(String card) {
         HashMap<String, Object> map = new HashMap<>();
         try {
-            if (userDao.isExistByCard(card)){
-                int id=userDao.getUserIdByCard(card);
-                User user = userDao.getUser(id);
+            if (iUserMapper.isExistByCard(card)){
+                int id=iUserMapper.getUserIdByCard(card);
+                User user = iUserMapper.getUser(id);
                 if(user==null)
                     return ResultMap.getResultMap(null,"获取用户失败");
                 else
@@ -174,7 +180,7 @@ public class UserService {
     public Map<String,Object> getBorrowBooksByUserId(int userId){
         List<Integer> borrowBooks=new ArrayList<>();
         try {
-            int count = rentalDao.getHasBorrowedBooksByUserId(userId);
+            int count = iRentalMapper.getHasBorrowedBooksByUserId(userId);
             borrowBooks.add(count);
         }catch (Exception e){
             e.printStackTrace();
@@ -182,7 +188,7 @@ public class UserService {
         }
 
         try {
-            int count = rentalDao.getIsBorrowingBooksByUserId(userId);
+            int count = iRentalMapper.getIsBorrowingBooksByUserId(userId);
             borrowBooks.add(count);
             return ResultMap.getResultMap(borrowBooks,"获取借书数量成功");
         }catch (Exception e) {
@@ -199,11 +205,11 @@ public class UserService {
     public Map<String,Object> getIsRentalsingByUserId(int userId){
         List<Map<String,Object>> result = new ArrayList<>();
         try{
-            List<Rental> isRentalsingData = rentalDao.getIsRentalsingByUserId(userId);
+            List<Rental> isRentalsingData = iRentalMapper.getIsRentalsingByUserId(userId);
             for (Rental isRentalsingDatum : isRentalsingData) {
                 Map<String, Object> data = new HashMap<>();
                 int bookId = isRentalsingDatum.getBookId();
-                Book book = bookDao.getBook(bookId);
+                Book book = iBookMapper.getBook(bookId);
                 if(book!=null){
                     data.put("book",book);
                     data.put("distance",MyDateUtil.reckonDateDistance(isRentalsingDatum));
@@ -228,10 +234,10 @@ public class UserService {
     public Map<String,Object> getHasRentalsedByUserId(int userId){
         List<Book> result = new ArrayList<>();
         try{
-            List<Rental> isRentalsingData = rentalDao.getHasRentalsedByUserId(userId);
+            List<Rental> isRentalsingData = iRentalMapper.getHasRentalsedByUserId(userId);
             for (Rental isRentalsingDatum : isRentalsingData) {
                 int bookId = isRentalsingDatum.getBookId();
-                Book book = bookDao.getBook(bookId);
+                Book book = iBookMapper.getBook(bookId);
                 if(book!=null)
                     result.add(book);
                 else
@@ -252,8 +258,8 @@ public class UserService {
     public Map<String,Object> getUserIdByName(String name){
         HashMap<String, Object> map = new HashMap<>();
         try {
-            if(userDao.isExistByName(name)){
-                int id = userDao.getUserIdByName(name);
+            if(iUserMapper.isExistByName(name)){
+                int id = iUserMapper.getUserIdByName(name);
                 return ResultMap.getResultMap(id,"获取用户id成功");
             }
             else
@@ -273,10 +279,10 @@ public class UserService {
     public Map<String,Object> setPassword(int userId,String password){
         HashMap<String, Object> map = new HashMap<>();
         try {
-            if (passwordDao.isExist(userId)) {
+            if (iPasswordMapper.isExist(userId)) {
                 String salt = MD5Util.getSalt();
                 String truePassword = MD5Util.getMD5String(password, salt);
-                if(passwordDao.updatePassword(userId, salt, truePassword))
+                if(iPasswordMapper.updatePassword(userId, salt, truePassword))
                     return ResultMap.getResultMap(true,"设置密码成功");
                 else
                     return ResultMap.getResultMap(false,"设置密码失败");
@@ -299,10 +305,10 @@ public class UserService {
     public Map<String,Object> checkPassword(int userId,String password){
         HashMap<String, Object> map = new HashMap<>();
         try {
-            if (passwordDao.isExist(userId)) {
-                String salt = passwordDao.getSalt(userId);
+            if (iPasswordMapper.isExist(userId)) {
+                String salt = iPasswordMapper.getSalt(userId);
                 String currentPassword = MD5Util.getMD5String(password, salt);
-                if (currentPassword.equals(passwordDao.getPassword(userId)))
+                if (currentPassword.equals(iPasswordMapper.getPassword(userId)))
                     return ResultMap.getResultMap(true,"旧密码正确");
                 else
                     return ResultMap.getResultMap(false,"旧密码错误");

@@ -2,6 +2,7 @@ package com.webmaster.end.Service;
 
 import com.webmaster.end.Dao.*;
 import com.webmaster.end.Entity.*;
+import com.webmaster.end.IMapper.*;
 import com.webmaster.end.Utils.MyDateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,16 +13,25 @@ import java.util.*;
 public class BookServiceCore {
     //错误返回最差预期
 
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
-    protected BookDao bookDao;
+    protected IBookMapper iBookMapper;
+
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
-    protected UserDao userDao;
+    protected IUserMapper iUserMapper;
+
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
-    protected RentalDao rentalDao;
+    protected IRentalMapper iRentalMapper;
+
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
-    protected BookTypeDao bookTypeDao;
+    protected IBookTypeMapper iBookTypeMapper;
+
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
-    protected LibraryDao libraryDao;
+    protected ILibraryMapper iLibraryMapper;
 
     /**
      * 返回书籍是否存在
@@ -30,11 +40,11 @@ public class BookServiceCore {
      */
     public Map<String,Object> isExist(int id) {
         try {
-            if(bookDao.isExist(id))
+            if(iBookMapper.isExist(id))
                 return ResultMap.getResultMap(true,"书籍存在");
             else
                 return ResultMap.getResultMap(false,"书籍不存在");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultMap.getResultMap(false,"系统内部错误");
         }
@@ -48,8 +58,8 @@ public class BookServiceCore {
      */
     public Map<String,Object> getBook(int id) {
         try {
-            if (bookDao.isExist(id)){
-                Book book = bookDao.getBook(id);
+            if (iBookMapper.isExist(id)){
+                Book book = iBookMapper.getBook(id);
                 if(book==null)
                     return ResultMap.getResultMap(null,"获取书籍失败");
                 else
@@ -70,8 +80,8 @@ public class BookServiceCore {
      */
     public Map<String,Object> getBookBorrowedTimes(int id) {
         try {
-            if (bookDao.isExist(id)){
-                List<Rental> rentals = rentalDao.getRentalsByBookId(id);
+            if (iBookMapper.isExist(id)){
+                List<Rental> rentals = iRentalMapper.getRentalsByBookId(id);
                 if(rentals==null)
                     return ResultMap.getResultMap(null,"获取书籍被借阅次数失败");
                 else
@@ -92,12 +102,12 @@ public class BookServiceCore {
      */
     public Map<String,Object> getBookTypes(){
         try {
-            List<BookType> types = bookTypeDao.getBookTypes();
+            List<BookType> types = iBookTypeMapper.getAllBookTypes();
             if(types==null)
                 return ResultMap.getResultMap(null,"获取所有书籍类型失败");
             else
                 return ResultMap.getResultMap(types,"获取所有书籍类型成功");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultMap.getResultMap(null,"系统内部错误");
         }
@@ -109,12 +119,12 @@ public class BookServiceCore {
      */
     public Map<String,Object> getLibraries(){
         try {
-            List<Library> libraries = libraryDao.getLibraries();
+            List<Library> libraries = iLibraryMapper.getLibraries();
             if(libraries==null)
                 return ResultMap.getResultMap(null,"获取图书馆类型失败");
             else
                 return ResultMap.getResultMap(libraries,"获取图书馆类型成功");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultMap.getResultMap(null,"系统内部错误");
         }
@@ -126,12 +136,12 @@ public class BookServiceCore {
      */
     public Map<String,Object> getAuthors(){
         try {
-            List<String> authors = bookDao.getAuthors();
+            List<String> authors = iBookMapper.getAuthors();
             if(authors==null)
                 return ResultMap.getResultMap(null,"获取所有作者失败");
             else
                 return ResultMap.getResultMap(authors,"获取所有作者成功");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultMap.getResultMap(null,"系统内部错误");
         }
@@ -143,12 +153,12 @@ public class BookServiceCore {
      */
     public Map<String,Object> getPublishers(){
         try {
-            List<String> publishers = bookDao.getPublishers();
+            List<String> publishers = iBookMapper.getPublishers();
             if(publishers==null)
                 return ResultMap.getResultMap(null,"获取所有出版社失败");
             else
                 return ResultMap.getResultMap(publishers,"获取所有出版社成功");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultMap.getResultMap(null,"系统内部错误");
         }
@@ -160,15 +170,15 @@ public class BookServiceCore {
      */
     public Map<String,Object> getHotBooks(){
         try {
-            List<Integer> hotBooksId = rentalDao.getHotBooksId();
+            List<Integer> hotBooksId = iRentalMapper.getHotBooksId();
             List<String> hotBooksName=new ArrayList<>();
             for (Integer integer : hotBooksId) {
                 int bookId=integer.intValue();
-                Book book = bookDao.getBook(bookId);
+                Book book = iBookMapper.getBook(bookId);
                 hotBooksName.add(book.getName());
             }
             return ResultMap.getResultMap(hotBooksName,"查询成功");
-        }catch (SQLException e){
+        }catch (Exception e){
             e.printStackTrace();
             return ResultMap.getResultMap(null,"系统内部错误");
         }
@@ -181,12 +191,12 @@ public class BookServiceCore {
      */
     public Map<String,Object> getTitleByType(String type){
         try {
-            String s = bookTypeDao.getBookTypeByTypeid(type).getTitle();
+            String s = iBookTypeMapper.getBookTypeByTypeid(type).getTitle();
             if(s==null)
                 return ResultMap.getResultMap(null,"获取类别名称失败");
             else
                 return ResultMap.getResultMap(s,"获取类别名称成功");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResultMap.getResultMap(null,"系统内部错误");
         }

@@ -22,20 +22,20 @@ public class BookBorrowService extends BookServiceCore {
     public Map<String, Object> borrow(int userId, int bookId) {
         try {
             //1.用户是否存在
-            if (userDao.isExist(userId)) {
-                if (bookDao.isExist(bookId)) {
-                    User user = userDao.getUser(userId);
-                    Book book = bookDao.getBook(bookId);
-                    if(!rentalDao.isExist(bookId,userId)) {
-                        if(bookDao.getState(bookId)>0) {
-                            if (bookDao.declineState(bookId)) {
+            if (iUserMapper.isExist(userId)) {
+                if (iBookMapper.isExist(bookId)) {
+                    User user = iUserMapper.getUser(userId);
+                    Book book = iBookMapper.getBook(bookId);
+                    if(!iRentalMapper.isExistByUserBook(bookId,userId)) {
+                        if(iBookMapper.getState(bookId)>0) {
+                            if (iBookMapper.declineState(bookId)) {
                                 Rental rental = new Rental();
                                 rental.setBookId(bookId);
                                 rental.setUserId(userId);
                                 rental.setBorrowTime(MyDateUtil.getCurrentString());
                                 rental.setDuration(user.getIdentity() == 0 ? 30 : 180);
                                 rental.setIsReborrow(0);
-                                if (rentalDao.addRental(rental)) {
+                                if (iRentalMapper.addRental(rental)) {
                                     BorrowInfo info = new BorrowInfo();
                                     info.setBookId(bookId);
                                     info.setUserId(userId);

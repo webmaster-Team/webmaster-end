@@ -10,6 +10,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
 
+@Deprecated
 @Repository
 public class LibraryDao {
     @Autowired
