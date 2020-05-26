@@ -377,32 +377,7 @@ public class BookController {
                         if (books == null)
                             return MyJsonConverter.convertErrorToJson(searchData).toJSONString();
                     }
-                    //需要进行时间排序
-                    if (map.get("dateSort") != null) {
-                        Integer dateSortInt = (Integer) map.get("dateSort");
-                        if (dateSortInt == null || (dateSortInt.intValue() != 1) && (dateSortInt.intValue() != 0))
-                            return MyJsonConverter.createErrorToJson("时间排序规则不符合要求").toJSONString();
-                        else {
-                            boolean dateSort = dateSortInt == 1 ? true : false;
-                            Map<String, Object> searchData = bookSearchService.bookSortByDate(books, dateSort);
-                            books = (List<Book>) searchData.get("state");
-                            if (books == null)
-                                return MyJsonConverter.convertErrorToJson(searchData).toJSONString();
-                        }
-                    }
-                    //需要进行名字排序
-                    if (map.get("nameSort") != null) {
-                        Integer nameSortInt = (Integer) map.get("nameSort");
-                        if (nameSortInt == null || (nameSortInt.intValue() != 1) && (nameSortInt.intValue() != 0))
-                            return MyJsonConverter.createErrorToJson("名字排序规则不符合要求").toJSONString();
-                        else {
-                            boolean nameSort = nameSortInt == 1 ? true : false;
-                            Map<String, Object> searchData = bookSearchService.bookSortByName(books, nameSort);
-                            books = (List<Book>) searchData.get("state");
-                            if (books == null)
-                                return MyJsonConverter.convertErrorToJson(searchData).toJSONString();
-                        }
-                    }
+
                     //需要借阅状态查询
                     if (map.get("state") != null) {
                         Integer stateInt = (Integer) map.get("state");
@@ -416,21 +391,7 @@ public class BookController {
                                 return MyJsonConverter.convertErrorToJson(searchData).toJSONString();
                         }
                     }
-                    //进行页数筛选
-                    if (map.get("perpage") != null && map.get("pageIndex") != null) {
-                        Integer perpageInt = (Integer) map.get("perpage");
-                        Integer pageIndexInt = (Integer) map.get("pageIndex");
-                        if (perpageInt == null || perpageInt.intValue() <= 0)
-                            return MyJsonConverter.createErrorToJson("每页页数不符合要求").toJSONString();
-                        else if (pageIndexInt == null || pageIndexInt.intValue() <= 0)
-                            return MyJsonConverter.createErrorToJson("页索引不符合要求").toJSONString();
-                        else {
-                            Map<String, Object> searchData = bookSearchService.filterBooksByPage(books, perpageInt.intValue(), pageIndexInt.intValue(),isLast);
-                            books = (List<Book>) searchData.get("state");
-                            if (books == null)
-                                return MyJsonConverter.convertErrorToJson(searchData).toJSONString();
-                        }
-                    }
+
                     //需要类别筛选
                     if (map.get("type") != null) {
                         String title = (String) map.get("type");
@@ -507,6 +468,50 @@ public class BookController {
                                 return MyJsonConverter.convertErrorToJson(searchData).toJSONString();
                         }
                     }
+
+                    //进行页数筛选
+                    if (map.get("perpage") != null && map.get("pageIndex") != null) {
+                        Integer perpageInt = (Integer) map.get("perpage");
+                        Integer pageIndexInt = (Integer) map.get("pageIndex");
+                        if (perpageInt == null || perpageInt.intValue() <= 0)
+                            return MyJsonConverter.createErrorToJson("每页页数不符合要求").toJSONString();
+                        else if (pageIndexInt == null || pageIndexInt.intValue() <= 0)
+                            return MyJsonConverter.createErrorToJson("页索引不符合要求").toJSONString();
+                        else {
+                            Map<String, Object> searchData = bookSearchService.filterBooksByPage(books, perpageInt.intValue(), pageIndexInt.intValue(),isLast);
+                            books = (List<Book>) searchData.get("state");
+                            if (books == null)
+                                return MyJsonConverter.convertErrorToJson(searchData).toJSONString();
+                        }
+                    }
+
+                    //需要进行时间排序
+                    if (map.get("dateSort") != null) {
+                        Integer dateSortInt = (Integer) map.get("dateSort");
+                        if (dateSortInt == null || (dateSortInt.intValue() != 1) && (dateSortInt.intValue() != 0))
+                            return MyJsonConverter.createErrorToJson("时间排序规则不符合要求").toJSONString();
+                        else {
+                            boolean dateSort = dateSortInt == 1 ? true : false;
+                            Map<String, Object> searchData = bookSearchService.bookSortByDate(books, dateSort);
+                            books = (List<Book>) searchData.get("state");
+                            if (books == null)
+                                return MyJsonConverter.convertErrorToJson(searchData).toJSONString();
+                        }
+                    }
+                    //需要进行名字排序
+                    if (map.get("nameSort") != null) {
+                        Integer nameSortInt = (Integer) map.get("nameSort");
+                        if (nameSortInt == null || (nameSortInt.intValue() != 1) && (nameSortInt.intValue() != 0))
+                            return MyJsonConverter.createErrorToJson("名字排序规则不符合要求").toJSONString();
+                        else {
+                            boolean nameSort = nameSortInt == 1 ? true : false;
+                            Map<String, Object> searchData = bookSearchService.bookSortByName(books, nameSort);
+                            books = (List<Book>) searchData.get("state");
+                            if (books == null)
+                                return MyJsonConverter.convertErrorToJson(searchData).toJSONString();
+                        }
+                    }
+
                 }
                 if (books == null)
                     return MyJsonConverter.createErrorToJson("书籍查询失败").toJSONString();

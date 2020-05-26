@@ -4,13 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.stereotype.Component;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 @Configuration
 public class MyMail {
@@ -19,7 +19,7 @@ public class MyMail {
     private String myEmail;
 
     @Autowired
-    private MailSender mailSender;
+    private JavaMailSenderImpl mailSender;
 
     @Bean
     public MyMail createMymail(){
@@ -39,6 +39,14 @@ public class MyMail {
         simpleMailMessage.setTo(targetEmail);
         simpleMailMessage.setText(text);
         simpleMailMessage.setSubject(subject);
+        Properties properties = new Properties();
+        //设置超时时间
+        properties.setProperty("mail.smtp.timeout", "1000");
+        //设置通过ssl协议使用465端口发送、使用默认端口（25）时下面三行不需要
+        properties.setProperty("mail.smtp.auth", "true");//开启认证
+        properties.setProperty("mail.smtp.socketFactory.port", "465");//设置ssl端口
+        properties.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        mailSender.setJavaMailProperties(properties);
         try {
             mailSender.send(simpleMailMessage);
             return true;

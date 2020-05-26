@@ -24,7 +24,7 @@
 
     <!-- 根据用户名查询用户是否存在   -->
     <insert id="addUser" useGeneratedKeys="true">
-        insert into user(card,name,sex,email,phone,cover,sign_time,identity) values (#{card},#{name},#{sex},#{email},#{phone},#{phone},#{cover},#{signTime})
+        insert into user(card,name,sex,email,phone,cover,sign_time,identity) values (#{card},#{name},#{sex},#{email},#{phone},#{cover},#{signTime},#{identity})
     </insert>
 
     <!-- 更新一个用户信息   -->
@@ -51,4 +51,5 @@
     <select id="getUserIdByName" resultType="int">
         select id from user where name =#{name} and delete_time = '0'
     </select>
+
 </mapper>

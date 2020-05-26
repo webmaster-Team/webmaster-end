@@ -438,7 +438,7 @@ public class UserController {
      * @param session
      * @return 返回是否成功
      */
-    @CrossOrigin
+    @CrossOrigin(allowCredentials = "true")
     @PostMapping("sendVerificationCode")
     public String sendVerificationCode(@RequestBody Map<String,String> map,HttpSession session){
         try {
@@ -474,7 +474,7 @@ public class UserController {
      * @param session
      * @return 是否成功
      */
-    @CrossOrigin
+    @CrossOrigin(allowCredentials = "true")
     @PostMapping("checkVerificationCode")
     public String checkVerificationCode(@RequestBody Map<String,String> map,HttpSession session){
         try {
@@ -589,7 +589,7 @@ public class UserController {
      * @param session
      * @param response
      */
-    @CrossOrigin
+    @CrossOrigin(allowCredentials = "true")
     @GetMapping("drawImage")
     public void drawImage(HttpSession session, HttpServletResponse response) {
         try {
@@ -630,7 +630,7 @@ public class UserController {
      * @param session
      * @return
      */
-    @CrossOrigin
+    @CrossOrigin(allowCredentials = "true")
     @PostMapping("checkImage")
     public String checkImage(@RequestBody Map<String,String> map, HttpSession session){
         try {
