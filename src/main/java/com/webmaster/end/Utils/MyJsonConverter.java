@@ -1,8 +1,10 @@
 package com.webmaster.end.Utils;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.webmaster.end.Dao.BookTypeDao;
 import com.webmaster.end.Entity.Book;
+import com.webmaster.end.Entity.Order;
 import com.webmaster.end.Entity.User;
 
 import java.util.Map;
@@ -61,6 +63,58 @@ public class MyJsonConverter {
         return object;
     }
 
+
+    /**
+     * 将简单的订单信息，生成SON
+     * @param order 订单对象
+     * @return JSONObject
+     */
+    public static JSONObject convertSimpleOrderToJson(Order order){
+        JSONObject jsonObject = new JSONObject(true);
+        jsonObject.put("id",order.getId()+"");
+        jsonObject.put("userId",order.getUserId());
+        jsonObject.put("createTime",order.getCreateTime());
+        jsonObject.put("completeTime",order.getCompleteTime());
+        jsonObject.put("state",order.getState());
+        jsonObject.put("qrcode",order.getQrcode());
+        JSONArray array = new JSONArray();
+        for (Book book : order.getBooks()) {
+            JSONObject temp = new JSONObject(true);
+            temp.put("id",book.getId());
+            temp.put("name",book.getName());
+            temp.put("author",book.getAuthor());
+            temp.put("publisher",book.getPublisher());
+            temp.put("cover",book.getCover());
+            array.add(temp);
+        }
+        jsonObject.put("books",array);
+        return jsonObject;
+    }
+
+    /**
+     * 将订单信息，生成复杂的json
+     * @param order 订单对象
+     * @return JSONObject
+     */
+    public static JSONObject convertComplexOrderToJson(Order order){
+        JSONObject jsonObject = new JSONObject(true);
+        jsonObject.put("id",order.getId()+"");
+        jsonObject.put("userId",order.getUserId());
+        jsonObject.put("createTime",order.getCreateTime());
+        jsonObject.put("state",order.getState());
+        JSONArray array = new JSONArray();
+        for (Book book : order.getBooks()) {
+            JSONObject temp = new JSONObject(true);
+            temp.put("id",book.getId());
+            temp.put("name",book.getName());
+            temp.put("cover",book.getCover());
+            array.add(temp);
+        }
+        jsonObject.put("books",array);
+        return jsonObject;
+    }
+
+
     /**
      * 将正确信息转换成JSON
      * @param map 正确信息对
@@ -72,6 +126,7 @@ public class MyJsonConverter {
         object.put("msg",(String)map.get("msg"));
         return object;
     }
+
 
     /**
      * 将错误信息转换成JSON

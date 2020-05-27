@@ -46,7 +46,7 @@ public class MyRedisUtil {
      */
     public void putOrder(Order order){
         //设置超时时间和值
-        redisTemplate.opsForValue().set(order.getSerial(),order,200, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(order.getSerial(),order,180, TimeUnit.SECONDS);
     }
 
 

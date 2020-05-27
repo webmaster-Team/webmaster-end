@@ -1,6 +1,5 @@
 package com.webmaster.end.IMapper;
 
-import com.webmaster.end.Entity.Book;
 import com.webmaster.end.Entity.Order;
 import com.webmaster.end.Entity.Rental;
 import org.apache.ibatis.annotations.Param;
@@ -8,6 +7,20 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface IOrderMapper {
+    /**
+     * 根据订单id判断订单是否存在
+     * @param id 订单的id
+     * @return 返回是否存在
+     */
+    public boolean isExist(int id);
+
+    /**
+     * 根据订单编号判断订单是否存在
+     * @param serial 订单的编号
+     * @return 返回是否存在
+     */
+    public boolean isExistBySerial(String serial);
+
     /**
      * 增加一条书单
      * @param order 书单

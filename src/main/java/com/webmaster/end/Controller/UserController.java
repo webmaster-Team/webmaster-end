@@ -549,12 +549,12 @@ public class UserController {
     @CrossOrigin
     @LoginAccess
     @PostMapping("resetPassword")
-    public String resetPassword(@RequestBody Map<String,Object> map){
+    public String resetPassword(@RequestBody Map<String,Object> map,HttpSession session){
         try {
-            Integer userId = (Integer) map.get("userId");
-            String oldPassword = (String) map.get("oldPassword");
-            String newPassword = (String) map.get("newPassword");
-            if (userId != null) {
+            Integer userId = (Integer) session.getAttribute("userId");
+            if(userId!=null) {
+                String oldPassword = (String) map.get("oldPassword");
+                String newPassword = (String) map.get("newPassword");
                 if (oldPassword != null) {
                     if (newPassword != null) {
                         Map<String, Object> passwordData = userService.checkPassword(userId, oldPassword);
@@ -572,8 +572,8 @@ public class UserController {
                     return MyJsonConverter.createErrorToJson("新密码不能为空").toJSONString();
                 } else
                     return MyJsonConverter.createErrorToJson("旧密码不能为空").toJSONString();
-            } else
-                return MyJsonConverter.createErrorToJson("用户id不能为空").toJSONString();
+            }else
+                return MyJsonConverter.createErrorToJson("用户未登录").toJSONString();
         }catch (ClassCastException e){
             e.printStackTrace();
             return MyJsonConverter.createErrorToJson("参数类型错误").toJSONString();
