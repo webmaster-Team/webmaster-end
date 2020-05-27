@@ -4,7 +4,7 @@
 <mapper namespace="com.webmaster.end.IMapper.IOrderMapper">
     <!-- 增加一条书单   -->
     <insert id="addOrder" parameterType="com.webmaster.end.Entity.Order" useGeneratedKeys="true" keyProperty="id">
-        insert into orders (user_id,create_time,complete_time,state,qrcode) values (#{userId},#{createTime},#{completeTime},#{state},#{qrcode});
+        insert into orders (user_id,create_time,complete_time,state,qrcode,serial) values (#{userId},#{createTime},#{completeTime},#{state},#{qrcode},#{serial});
     </insert>
 
     <!--  插入对应的关系表数据  -->
@@ -15,7 +15,42 @@
     </insert>
 
     <!--  获得一个书单  -->
-<!--    <select id="getOrder" resultType="com.webmaster.end.Entity.Order">-->
-<!--        select * from orders-->
-<!--    </select>-->
+    <resultMap id="MyOrder" type="com.webmaster.end.Entity.Order">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="completeTime" column="complete_time"/>
+        <result property="state" column="state" />
+        <result property="qrcode" column="qrcode"/>
+        <result property="serial" column="serial"/>
+        <collection property="books"
+                    ofType="com.webmaster.end.Entity.Book"
+                    select="com.webmaster.end.IMapper.IBookMapper.getBooksByOrderId"
+                    column="{orderId=id}">
+        </collection>
+    </resultMap>
+    <select id="getOrder" resultMap="MyOrder">
+        select * from orders where id=#{orderId}
+    </select>
+
+    <!--  根据用户id获得所有的订单id  -->
+    <select id="getSimpleOrdersByUserId" resultMap="MySimpleOrder">
+        select * from orders where user_id=#{userId}
+    </select>
+
+    <!--  根据编号获得OrderId  -->
+    <select id="getOrderIdBySerial" resultType="int">
+        select id from orders where serial=#{serial}
+    </select>
+
+    <!--  更新完成时间  -->
+    <update id="updateCompleteTime">
+        update orders set complete_time=#{completeTime} where id =#{orderId}
+    </update>
+
+    <!-- 获得书单的状态    -->
+    <select id="getSate" resultType="int">
+        select state from orders where id=#{id}
+    </select>
+
 </mapper>

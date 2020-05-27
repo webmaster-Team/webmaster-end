@@ -589,7 +589,7 @@ public class UserController {
      * @param session
      * @param response
      */
-    @CrossOrigin(allowCredentials = "true",origins ={"http://www.solingjees.site:11010"})
+    @CrossOrigin
     @GetMapping("drawImage")
     public void drawImage(HttpSession session, HttpServletResponse response) {
         try {
@@ -630,7 +630,7 @@ public class UserController {
      * @param session
      * @return
      */
-    @CrossOrigin(allowCredentials = "true",origins ={"http://www.solingjees.site:11010"})
+    @CrossOrigin
     @PostMapping("checkImage")
     public String checkImage(@RequestBody Map<String,String> map, HttpSession session){
         try {
@@ -639,7 +639,7 @@ public class UserController {
                 String image1 = image.toUpperCase();
                 String trueImage = (String) session.getAttribute("image");
                 if (trueImage != null){
-                    if (image.equals(trueImage)) {
+                    if (image1.equals(trueImage)) {
                         session.removeAttribute("image");
                         return MyJsonConverter.createSuccessrToJson("校验成功").toJSONString();
                     } else

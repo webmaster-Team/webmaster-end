@@ -1,5 +1,6 @@
 package com.webmaster.end.IMapper;
 
+import com.webmaster.end.Entity.Book;
 import com.webmaster.end.Entity.Order;
 import com.webmaster.end.Entity.Rental;
 import org.apache.ibatis.annotations.Param;
@@ -13,6 +14,13 @@ public interface IOrderMapper {
      * @return 返回是否增加成功
      */
     public boolean addOrder(Order order);
+
+    /**
+     * 根据对应的订单编号获得Order的id
+     * @param serial 订单编号
+     * @return 返回OrderId
+     */
+    public int getOrderIdBySerial(String serial);
 
     /**
      * 增加对应的关系表数据以及根据情况增加流水
@@ -30,6 +38,17 @@ public interface IOrderMapper {
      */
     public Order getOrder(int id);
 
+
+    /**
+     * 获得某个用户的所有订单
+     * @param usrId 用户的id
+     * @return 返回对应的书单
+     */
+    public List<Order> getSimpleOrdersByUserId(int usrId);
+
+
+
+
 //    /**
 //     * 添加全部的订单
 //     * @param orders 订单集
@@ -43,7 +62,8 @@ public interface IOrderMapper {
      * @param completeTime 完成时间
      * @return 更新完成的时间
      */
-    public boolean updateCompleteTime(int orderId,String completeTime);
+    public boolean updateCompleteTime(@Param("orderId") int orderId,@Param("completeTime") String completeTime);
+
 
     /**
      * 获得对应的书单的状态
@@ -51,5 +71,8 @@ public interface IOrderMapper {
      * @return 返回对应的状态
      */
     public int getSate(int orderId);
+
+
+
 
 }

@@ -6,23 +6,25 @@ public class Order {
     private int id;
     private int userId;
     private String createTime;
-    private String compeleteTime="0";
+    private String completeTime="0";
     //0为在准备，1为代取阅，2为已完成，3为未取书失败，4为取消订阅
     private int state;
     private String qrcode="0";
     private List<Book> books;
+    private String serial;//订单编号
 
     public Order() {
     }
 
-    public Order(int id, int userId, String createTime, String compeleteTime, int state, String qrcode, List<Book> books) {
+    public Order(int id, int userId, String createTime, String completeTime, int state, String qrcode, List<Book> books, String serial) {
         this.id = id;
         this.userId = userId;
         this.createTime = createTime;
-        this.compeleteTime = compeleteTime;
+        this.completeTime = completeTime;
         this.state = state;
         this.qrcode = qrcode;
         this.books = books;
+        this.serial = serial;
     }
 
     @Override
@@ -31,10 +33,11 @@ public class Order {
                 "id=" + id +
                 ", userId=" + userId +
                 ", createTime='" + createTime + '\'' +
-                ", compeleteTime='" + compeleteTime + '\'' +
+                ", completeTime='" + completeTime + '\'' +
                 ", state=" + state +
                 ", qrcode='" + qrcode + '\'' +
                 ", books=" + books +
+                ", serial='" + serial + '\'' +
                 '}';
     }
 
@@ -62,12 +65,12 @@ public class Order {
         this.createTime = createTime;
     }
 
-    public String getCompeleteTime() {
-        return compeleteTime;
+    public String getCompleteTime() {
+        return completeTime;
     }
 
-    public void setCompeleteTime(String compeleteTime) {
-        this.compeleteTime = compeleteTime;
+    public void setCompleteTime(String completeTime) {
+        this.completeTime = completeTime;
     }
 
     public int getState() {
@@ -92,5 +95,13 @@ public class Order {
 
     public void setBooks(List<Book> books) {
         this.books = books;
+    }
+
+    public String getSerial() {
+        return serial;
+    }
+
+    public void setSerial(String serial) {
+        this.serial = serial;
     }
 }

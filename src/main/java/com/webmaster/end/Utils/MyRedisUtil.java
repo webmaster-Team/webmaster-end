@@ -32,35 +32,33 @@ public class MyRedisUtil {
 
 
     /**
-     * 往Redis里存储对应的Order数据
-     * @param order 订单
-     */
-    public String putOrder(Order order){
-        String number = RandomUtil.getRandomNumber(6);
-        while(this.get(number)!=null){
-            number=RandomUtil.getRandomNumber(6);
-        }
-        //设置超时时间和值
-        redisTemplate.opsForValue().set(number,order,200, TimeUnit.SECONDS);
-        return number;
-    }
-
-
-    /**
-     * 从Redis中取出对应的Order
-     * @param key 键
-     * @return 订单对象
-     */
-    public Order getOrder(String key){
-        return (Order) redisTemplate.opsForValue().get(key);
-    }
-
-
-    /**
      * 删除指定的键值对
      * @param key 对应的键
      */
     public void remove(String key){
         redisTemplate.delete(key);
     }
+
+
+    /**
+     * 往Redis里存储对应的Order数据
+     * @param order 订单
+     */
+    public void putOrder(Order order){
+        //设置超时时间和值
+        redisTemplate.opsForValue().set(order.getSerial(),order,200, TimeUnit.SECONDS);
+    }
+
+
+    /**
+     * 从Redis中取出对应的Order
+     * @param serial 订单的编号
+     * @return 订单对象
+     */
+    public Order getOrder(String serial){
+        return (Order) redisTemplate.opsForValue().get(serial);
+    }
+
+
+
 }

@@ -101,6 +101,19 @@ public interface IBookMapper {
      */
     public List<Book> getAllBooks();
 
+    /**
+     * 获得当前的订单对应的所有书籍
+     * @param orderId 书单的ID
+     * @return 返回该书单所有的书籍
+     */
+    public List<Book> getBooksByOrderId(int orderId);
+
+    /**
+     * 获得当前的Id对应的所有书籍ID
+     * @param orderId 书单的ID
+     * @return 返回该书单所有的书籍Id
+     */
+    public List<Integer> getBookIdsByOrderId(int orderId);
 
     /**
      * 返回类别的对应的书籍

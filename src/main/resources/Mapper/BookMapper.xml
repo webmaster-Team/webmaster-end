@@ -53,6 +53,18 @@
         select * from books where delete_time = '0'
     </select>
 
+    <!-- 返回书单Id对应的书籍  -->
+    <select id="getBooksByOrderId" resultType="com.webmaster.end.Entity.Book">
+        select books.id, name, author, Isbn, publisher, price, version, typeId, summary, cover, library, layer, origin, entail, state, entry_time, delete_time
+            from books left join order_assoic on order_assoic.book_id=books.id
+            where delete_time = '0' and order_assoic.order_id=#{orderId}
+    </select>
+
+    <!--  搜索出书单id对应的所有书籍的id  -->
+    <select id="getBookIdsByOrderId" resultType="int">
+        select book_id from order_assoic where order_id=#{orderId}
+    </select>
+
     <!-- 返回类别的对应的书籍  -->
     <select id="getBooksByTypeId" resultType="com.webmaster.end.Entity.Book">
         select * from books where typeid= #{typeId} and delete_time = '0'
