@@ -4,67 +4,67 @@
 <mapper namespace="com.webmaster.end.IMapper.IBookMapper">
     <!--  据书籍Id,查询该类书籍是否还存在  -->
     <select id="isExist" resultType="boolean">
-        select count(*) from book where id = #{id} and delete_time = '0'
+        select count(*) from books where id = #{id} and delete_time = '0'
     </select>
 
     <!--  增加一类书籍  -->
-    <insert id="addBook" useGeneratedKeys="true">
-        insert into book (name,author,isbn,publisher,price,version,typeid,summary,cover,library,layer,origin,entail,state,entry_time)
+    <insert id="addBook">
+        insert into books (name,author,isbn,publisher,price,version,typeid,summary,cover,library,layer,origin,entail,state,entry_time)
                     values (#{name},#{author},#{ISBN},#{publisher},#{price},#{version},#{typeId},#{summary},#{cover},#{library},#{layer},#{origin},#{entail},#{state},#{entryTime})
     </insert>
 
     <!--  根据书籍id来返回对应的书籍  -->
     <select id="getBook" resultType="com.webmaster.end.Entity.Book">
-        select * from book where id =#{id} and delete_time = '0'
+        select * from books where id =#{id} and delete_time = '0'
     </select>
 
     <!-- 查看书籍的所剩数量-->
     <select id="getState" resultType="int">
-        select state from book where id = #{id} and delete_time = '0'
+        select state from books where id = #{id} and delete_time = '0'
     </select>
 
     <!-- 修改书籍的所剩数量-->
     <update id="updateState">
-        update book set state = #{state} where id = #{id} and delete_time = '0'
+        update books set state = #{state} where id = #{id} and delete_time = '0'
     </update>
 
     <!--  (借书)将对应的书籍的数量减1  -->
     <update id="declineState">
-        update book set state = state-1 where id = #{id} and delete_time = '0'
+        update books set state = state-1 where id = #{id} and delete_time = '0'
     </update>
 
     <!-- (还书)将对应的书籍的数量加1   -->
     <update id="increaseState">
-        update book set state = state+1 where id = #{id} and delete_time = '0'
+        update books set state = state+1 where id = #{id} and delete_time = '0'
     </update>
 
     <!-- 获得所有的书籍作者  -->
     <select id="getAuthors" resultType="String">
-        select distinct author from book
+        select distinct author from books
     </select>
 
     <!-- 获得所有的出版社  -->
     <select id="getPublishers" resultType="String">
-        select distinct publisher from book
+        select distinct publisher from books
     </select>
 
     <!-- 返回所有的书籍  -->
     <select id="getAllBooks" resultType="com.webmaster.end.Entity.Book">
-        select * from book where delete_time = '0'
+        select * from books where delete_time = '0'
     </select>
 
     <!-- 返回类别的对应的书籍  -->
     <select id="getBooksByTypeId" resultType="com.webmaster.end.Entity.Book">
-        select * from book where typeid= #{typeId} and delete_time = '0'
+        select * from books where typeid= #{typeId} and delete_time = '0'
     </select>
 
     <!-- 根据ISBN返回对应的书籍  -->
     <select id="getBookByISBN" resultType="com.webmaster.end.Entity.Book">
-        select * from book where isbn= ? and delete_time = '0'
+        select * from books where isbn= ? and delete_time = '0'
     </select>
 
     <!-- 根据ISBN返回对应的书籍  -->
     <select id="getBooksByKey" resultType="com.webmaster.end.Entity.Book">
-        select * from book where delete_time = '0' and (name like '%${key}%' or author like '%${key}%' or publisher like '%${key}%')
+        select * from books where delete_time = '0' and (name like '%${key}%' or author like '%${key}%' or publisher like '%${key}%')
     </select>
 </mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webmaster.end.IMapper.IOrderMapper">
+    <!-- 增加一条书单   -->
+    <insert id="addOrder" parameterType="com.webmaster.end.Entity.Order" useGeneratedKeys="true" keyProperty="id">
+        insert into orders (user_id,create_time,complete_time,state,qrcode) values (#{userId},#{createTime},#{completeTime},#{state},#{qrcode});
+    </insert>
+
+    <!--  插入对应的关系表数据  -->
+    <insert id="addOrderAssoic" parameterType="com.webmaster.end.Entity.Order">
+        <foreach collection="rentals" item="rental">
+            insert into order_assoic (order_id, rental_id, book_id) values (#{id},#{rental.id},#{rental.book_id})
+        </foreach>
+    </insert>
+
+    <!--  获得一个书单  -->
+<!--    <select id="getOrder" resultType="com.webmaster.end.Entity.Order">-->
+<!--        select * from orders-->
+<!--    </select>-->
+</mapper>

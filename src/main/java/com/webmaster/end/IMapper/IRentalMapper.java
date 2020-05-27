@@ -37,6 +37,13 @@ public interface IRentalMapper {
     public boolean addRental(Rental rental);
 
     /**
+     * 新增一些借书记录
+     * @param rentals 表示需要添加的的所有Rental
+     * @return 返回是否成功
+     */
+    public boolean addAllRentals(List<Rental> rentals);
+
+    /**
      * 归还书籍，记录对应的归还时间
      * @param id 流水id
      * @param date 归还的时间

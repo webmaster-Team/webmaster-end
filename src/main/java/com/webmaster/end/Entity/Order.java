@@ -6,10 +6,10 @@ public class Order {
     private int id;
     private int userId;
     private String createTime;
-    private String compeleteTime;
-    //0为在准备，1为代取阅，2为已完成，3为失败
+    private String compeleteTime="0";
+    //0为在准备，1为代取阅，2为已完成，3为未取书失败，4为取消订阅
     private int state;
-    private String qrcode;
+    private String qrcode="0";
     private List<Book> books;
 
     public Order() {

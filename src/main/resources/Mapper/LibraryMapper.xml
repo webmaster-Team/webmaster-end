@@ -4,6 +4,6 @@
 <mapper namespace="com.webmaster.end.IMapper.ILibraryMapper">
     <!--  获得所有的图书馆信息  -->
     <select id="getLibraries" resultType="com.webmaster.end.Entity.Library">
-        select * from library
+        select * from librarys
     </select>
 </mapper>

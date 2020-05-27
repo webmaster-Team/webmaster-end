@@ -589,7 +589,7 @@ public class UserController {
      * @param session
      * @param response
      */
-    @CrossOrigin(allowCredentials = "true")
+    @CrossOrigin(allowCredentials = "true",origins ={"http://www.solingjees.site:11010"})
     @GetMapping("drawImage")
     public void drawImage(HttpSession session, HttpServletResponse response) {
         try {
@@ -630,7 +630,7 @@ public class UserController {
      * @param session
      * @return
      */
-    @CrossOrigin(allowCredentials = "true")
+    @CrossOrigin(allowCredentials = "true",origins ={"http://www.solingjees.site:11010"})
     @PostMapping("checkImage")
     public String checkImage(@RequestBody Map<String,String> map, HttpSession session){
         try {
