@@ -438,7 +438,7 @@ public class UserController {
      * @param session
      * @return 返回是否成功
      */
-    @CrossOrigin(allowCredentials = "true")
+    @CrossOrigin
     @PostMapping("sendVerificationCode")
     public String sendVerificationCode(@RequestBody Map<String,String> map,HttpSession session){
         try {
@@ -474,7 +474,7 @@ public class UserController {
      * @param session
      * @return 是否成功
      */
-    @CrossOrigin(allowCredentials = "true")
+    @CrossOrigin
     @PostMapping("checkVerificationCode")
     public String checkVerificationCode(@RequestBody Map<String,String> map,HttpSession session){
         try {

@@ -34,7 +34,7 @@
     </select>
 
     <!--  根据用户id获得所有的订单id  -->
-    <select id="getSimpleOrdersByUserId" resultMap="MySimpleOrder">
+    <select id="getSimpleOrdersByUserId" resultType="com.webmaster.end.Entity.Order">
         select * from orders where user_id=#{userId}
     </select>
 
