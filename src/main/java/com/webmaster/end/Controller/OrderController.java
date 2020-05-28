@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -34,15 +35,20 @@ public class OrderController {
                 Map<String, Object> orderData = orderService.getOrdersByUserId(userId);
                 List<Order> orders = (List<Order>) orderData.get("state");
                 if (orders != null) {
-                    JSONObject result = new JSONObject(true);
-                    result.put("result", 1);
-                    JSONArray array = new JSONArray();
-                    for (Order order : orders) {
-                        JSONObject temp = MyJsonConverter.convertSimpleOrderToJson(order);
-                        array.add(temp);
-                    }
-                    result.put("data", array);
-                    return result.toJSONString();
+                    Map<String, Object> objectMap = orderService.orderSortByDate(orders, false);
+                    List<Order> orders1= (List<Order>) objectMap.get("state");
+                    if(orders1!=null) {
+                        JSONObject result = new JSONObject(true);
+                        result.put("result", 1);
+                        JSONArray array = new JSONArray();
+                        for (Order order : orders1) {
+                            JSONObject temp = MyJsonConverter.convertSimpleOrderToJson(order);
+                            array.add(temp);
+                        }
+                        result.put("data", array);
+                        return result.toJSONString();
+                    }else
+                        return MyJsonConverter.convertErrorToJson(objectMap).toJSONString();
                 } else
                     return MyJsonConverter.convertErrorToJson(orderData).toJSONString();
             } else

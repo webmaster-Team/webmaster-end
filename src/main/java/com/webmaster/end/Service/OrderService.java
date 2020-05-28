@@ -13,10 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class OrderService {
@@ -287,8 +284,33 @@ public class OrderService {
         }
     }
 
+    public Map<String,Object> orderSortByDate(List<Order> orders,boolean dateSort){
+        try {
+            Collections.sort(orders,new OrderService().new OrderDateCompartor(dateSort));
+            if(orders==null)
+                return ResultMap.getResultMap(null,"时间排序失败");
+            else
+                return ResultMap.getResultMap(orders,"时间排序成功");
+        }catch (Exception e){
+            return ResultMap.getResultMap(null,"系统内部错误");
+        }
+    }
 
+    //日期排序
+    class OrderDateCompartor implements Comparator<Order> {
+        private boolean isUpSort=true;
+        public OrderDateCompartor(boolean isUpSort) {
+            this.isUpSort=isUpSort;
+        }
 
+        @Override
+        public int compare(Order o1, Order o2) {
+            if(isUpSort)
+                return MyDateUtil.isFirstDatePrevious(o1.getCreateTime(),o2.getCreateTime())?-1:1;
+            else
+                return MyDateUtil.isFirstDatePrevious(o1.getCreateTime(),o2.getCreateTime())?1:-1;
+        }
+    }
 
 
 }
