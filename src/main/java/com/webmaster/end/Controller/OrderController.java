@@ -6,7 +6,6 @@ import com.webmaster.end.Entity.Order;
 import com.webmaster.end.Service.OrderService;
 import com.webmaster.end.Utils.LoginAccess;
 import com.webmaster.end.Utils.MyJsonConverter;
-import org.apache.logging.log4j.message.ReusableMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -96,4 +95,38 @@ public class OrderController {
         }
     }
 
+
+    /**
+     * 取消对应的书单
+     * @param map 数据集
+     * @param session
+     * @return 返回是否成功
+     */
+    @CrossOrigin
+    @LoginAccess
+    @PostMapping("cancelOrder")
+    public String cancelOrder(@RequestBody Map<String,String > map,HttpSession session){
+        try {
+            Integer userId = (Integer) session.getAttribute("userId");
+            String serial = map.get("serial");
+            if(userId!=null){
+                if(serial!=null){
+                    Map<String, Object> orderData = orderService.cancelOrder(serial);
+                    boolean flag= (boolean) orderData.get("state");
+                    if(!flag)
+                        return MyJsonConverter.createSuccessrToJson("取消书单成功").toJSONString();
+                    else
+                        return MyJsonConverter.createErrorToJson("取消书单失败").toJSONString();
+                }
+                else {
+                    return MyJsonConverter.createErrorToJson("订单的编号不能未空").toJSONString();
+                }
+            }
+            else
+                return MyJsonConverter.createErrorToJson("用户未登录").toJSONString();
+        }catch (Exception e){
+            e.printStackTrace();
+            return MyJsonConverter.createErrorToJson("系统内部错误").toJSONString();
+        }
+    }
 }

@@ -116,6 +116,7 @@ public class OrderService {
             if(order!=null)
                 return ResultMap.getResultMap(order,"缓存中有此订单直接返回");
             else{
+                order = new Order();
                 order.setId(iOrderMapper.getOrderIdBySerial(serail));
                 Order trueOrder = iOrderMapper.getOrder(order.getId());
                 if(trueOrder!=null)
@@ -208,32 +209,66 @@ public class OrderService {
                     if (b) {
                         //获得OrderId
                         order.setId(iOrderMapper.getOrderIdBySerial(serial));
-                        List<Rental> rentals = new ArrayList<>();
-                        for (Book book : order.getBooks()) {
-                            Rental rental = new Rental();
-                            rental.setBookId(book.getId());
-                            rental.setUserId(order.getUserId());
-                            rental.setBorrowTime(order.getCreateTime());
-                            rental.setDuration(user.getIdentity() == 0 ? 30 : 180);
-                            rental.setIsReborrow(0);
-                            rentals.add(rental);
+
+
+                        //非取消订单的情况
+                        if(order.getState()!=4) {
+                            List<Rental> rentals = new ArrayList<>();
+                            for (Book book : order.getBooks()) {
+                                Rental rental = new Rental();
+                                rental.setBookId(book.getId());
+                                rental.setUserId(order.getUserId());
+                                rental.setBorrowTime(order.getCreateTime());
+                                rental.setDuration(user.getIdentity() == 0 ? 30 : 180);
+                                rental.setIsReborrow(0);
+                                rentals.add(rental);
+                            }
+                            //添加流水
+                            boolean b1 = iRentalMapper.addAllRentals(rentals);
+                            if(b1) {
+                                //添加联系
+                                boolean b2 = iOrderMapper.addOrderAssoic(order.getId(), rentals);
+                                if (b2){
+                                    redisUtil.remove(order.getSerial());
+                                    return ResultMap.getResultMap(true, "推送书单成功");
+                                }
+                                else {
+                                    //添加失败就回滚
+                                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                                    return ResultMap.getResultMap(false, "添加联系失败");
+                                }
+                            }
+                            else {
+                                //添加失败就回滚
+                                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                                return ResultMap.getResultMap(false, "推送书单失败");
+                            }
                         }
-                        boolean b1 = iRentalMapper.addAllRentals(rentals);
-                        if(b1) {
+
+
+                        //如果是一个已经取消的订单
+                        else{
+                            List<Rental> rentals=new ArrayList<>();
+                            for (Book book : order.getBooks()) {
+                                Rental rental=new Rental();
+                                rental.setId(0);
+                                rental.setBookId(book.getId());
+                                rentals.add(rental);
+                            }
                             //添加联系
-                            boolean b2 = iOrderMapper.addOrderAssoic(order.getId(), rentals);
-                            if (b2){
+                            boolean b1 = iOrderMapper.addOrderAssoic(order.getId(), rentals);
+                            if (b1){
                                 redisUtil.remove(order.getSerial());
                                 return ResultMap.getResultMap(true, "推送书单成功");
                             }
-                            else
+                            else {
+                                //添加失败就回滚
+                                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                                 return ResultMap.getResultMap(false, "添加联系失败");
+                            }
                         }
-                        else {
-                            //添加失败就回滚
-                            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                            return ResultMap.getResultMap(false, "推送书单失败");
-                        }
+
+
                     } else
                         return ResultMap.getResultMap(false, "添加书单失败");
                 }else

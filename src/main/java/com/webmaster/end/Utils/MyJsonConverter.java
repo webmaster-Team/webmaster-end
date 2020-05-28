@@ -63,13 +63,36 @@ public class MyJsonConverter {
         return object;
     }
 
+    /**
+     * 将订单信息，生成简单的json
+     * @param order 订单对象
+     * @return JSONObject
+     */
+    public static JSONObject convertSimpleOrderToJson(Order order){
+        JSONObject jsonObject = new JSONObject(true);
+        jsonObject.put("id",order.getId()+"");
+        jsonObject.put("userId",order.getUserId());
+        jsonObject.put("createTime",order.getCreateTime());
+        jsonObject.put("state",order.getState());
+        JSONArray array = new JSONArray();
+        for (Book book : order.getBooks()) {
+            JSONObject temp = new JSONObject(true);
+            temp.put("id",book.getId());
+            temp.put("name",book.getName());
+            temp.put("cover",book.getCover());
+            array.add(temp);
+        }
+        jsonObject.put("books",array);
+        return jsonObject;
+    }
+
 
     /**
      * 将简单的订单信息，生成SON
      * @param order 订单对象
      * @return JSONObject
      */
-    public static JSONObject convertSimpleOrderToJson(Order order){
+    public static JSONObject convertComplexOrderToJson(Order order){
         JSONObject jsonObject = new JSONObject(true);
         jsonObject.put("id",order.getId()+"");
         jsonObject.put("userId",order.getUserId());
@@ -91,28 +114,7 @@ public class MyJsonConverter {
         return jsonObject;
     }
 
-    /**
-     * 将订单信息，生成复杂的json
-     * @param order 订单对象
-     * @return JSONObject
-     */
-    public static JSONObject convertComplexOrderToJson(Order order){
-        JSONObject jsonObject = new JSONObject(true);
-        jsonObject.put("id",order.getId()+"");
-        jsonObject.put("userId",order.getUserId());
-        jsonObject.put("createTime",order.getCreateTime());
-        jsonObject.put("state",order.getState());
-        JSONArray array = new JSONArray();
-        for (Book book : order.getBooks()) {
-            JSONObject temp = new JSONObject(true);
-            temp.put("id",book.getId());
-            temp.put("name",book.getName());
-            temp.put("cover",book.getCover());
-            array.add(temp);
-        }
-        jsonObject.put("books",array);
-        return jsonObject;
-    }
+
 
 
     /**

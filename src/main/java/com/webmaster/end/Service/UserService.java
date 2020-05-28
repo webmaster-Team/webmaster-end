@@ -70,25 +70,22 @@ public class UserService {
     public Map<String,Object> register(User user,String password){
         try {
             if (!iUserMapper.isExistByCard(user.getCard())) {
-                if (!iUserMapper.isExistByName(user.getName())) {
-                    if (!iUserMapper.isExistByEmail(user.getEmail()) || user.getEmail().equals("无")) {
-                        if (iUserMapper.addUser(user)) {
-                            //根据card获得id
-                            int id = iUserMapper.getUserIdByCard(user.getCard());
-                            //产生盐值
-                            String salt = "" + (new Date()).getTime();
-                            //增加密码
-                            if (iPasswordMapper.addPassword(id, salt, MD5Util.getMD5String(password, salt)))
-                                return ResultMap.getResultMap(true,"注册成功");
-                            else
-                                return ResultMap.getResultMap(false,"增加密码失败");
-                        }
+                if (!iUserMapper.isExistByEmail(user.getEmail()) || user.getEmail().equals("无")) {
+                    if (iUserMapper.addUser(user)) {
+                        //根据card获得id
+                        int id = iUserMapper.getUserIdByCard(user.getCard());
+                        //产生盐值
+                        String salt = "" + (new Date()).getTime();
+                        //增加密码
+                        if (iPasswordMapper.addPassword(id, salt, MD5Util.getMD5String(password, salt)))
+                            return ResultMap.getResultMap(true,"注册成功");
                         else
-                            return ResultMap.getResultMap(false,"增加用户失败");
-                    } else
-                        return ResultMap.getResultMap(false,"邮箱已被使用");
+                            return ResultMap.getResultMap(false,"增加密码失败");
+                    }
+                    else
+                        return ResultMap.getResultMap(false,"增加用户失败");
                 } else
-                    return ResultMap.getResultMap(false,"用户名已被使用");
+                    return ResultMap.getResultMap(false,"邮箱已被使用");
             } else
                 return ResultMap.getResultMap(false,"学号已存在");
         }catch (Exception e){
@@ -255,15 +252,14 @@ public class UserService {
      * @param name 用户昵称
      * @return int类型
      */
-    public Map<String,Object> getUserIdByName(String name){
-        HashMap<String, Object> map = new HashMap<>();
+    public Map<String,Object> getWeiboUserIdByName(String name){
         try {
-            if(iUserMapper.isExistByName(name)){
-                int id = iUserMapper.getUserIdByName(name);
-                return ResultMap.getResultMap(id,"获取用户id成功");
+            if(iUserMapper.isExistWeiboByName(name)){
+                int id = iUserMapper.getWeiboUserIdByName(name);
+                return ResultMap.getResultMap(id,"获取微博用户id成功");
             }
             else
-                return ResultMap.getResultMap(-1,"用户不存在");
+                return ResultMap.getResultMap(-1,"该微博用户不存在");
         }catch (Exception e){
             e.printStackTrace();
             return ResultMap.getResultMap(-1,"服务器内部错误");

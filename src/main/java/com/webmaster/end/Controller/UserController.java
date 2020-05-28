@@ -372,7 +372,7 @@ public class UserController {
             JSONObject data=(JSONObject)MyHttpClient.get("https://api.weibo.com/2/users/show.json",map);
             //判断用户是否存在
             String name=(String)data.get("name");
-            Map<String, Object> info = userService.getUserIdByName(name);
+            Map<String, Object> info = userService.getWeiboUserIdByName(name);
             int userId= (int) info.get("state");
             String msg= (String) info.get("msg");
             if(userId==-1){

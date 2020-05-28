@@ -24,7 +24,7 @@ public interface IUserMapper {
      * @param name 用户名
      * @return 返回是否存在
      */
-    public boolean isExistByName(String name);
+    public boolean isExistWeiboByName(String name);
 
     /**
      * 判断邮箱是否存在
@@ -87,5 +87,5 @@ public interface IUserMapper {
      * @param name 用户名
      * @return 返回用户的id
      */
-    public int getUserIdByName(String name);
+    public int getWeiboUserIdByName(String name);
 }

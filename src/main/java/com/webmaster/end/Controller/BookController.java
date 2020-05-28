@@ -5,10 +5,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.webmaster.end.Entity.*;
 import com.webmaster.end.Service.*;
-import com.webmaster.end.Utils.ImageUtil;
-import com.webmaster.end.Utils.LoginAccess;
-import com.webmaster.end.Utils.MyDateUtil;
-import com.webmaster.end.Utils.MyJsonConverter;
+import com.webmaster.end.Utils.*;
+import io.netty.handler.codec.json.JsonObjectDecoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -16,7 +14,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.print.DocFlavor;
 import javax.servlet.http.HttpSession;
+import java.lang.reflect.Array;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -45,40 +45,41 @@ public class BookController {
     @CrossOrigin
     @LoginAccess
     @PostMapping("borrow")
-    public String borrow(@RequestBody Map<String,Integer> map, HttpSession session){
+    public String borrow(@RequestBody Map<String,List<Integer>> map, HttpSession session){
         try {
-            Integer userId = map.get("userId");
-            Integer bookId = map.get("bookId");
+            List<Integer> bookIds = map.get("bookId");
+            Integer userId= (Integer) session.getAttribute("userId");
             if (userId != null) {
-                if (bookId != null) {
-                    Map<String, Object> info = bookBorrowService.borrow(userId, bookId);
-                    BorrowInfo borrowInfo = (BorrowInfo) info.get("state");
-                    if (borrowInfo != null) {
-                        Map<String, Object> qrCodeData = ImageUtil.createQRCode(userId, bookId);
-                        String path= (String) qrCodeData.get("state");
-                        if(path!=null) {
-                            JSONObject result = new JSONObject(true);
-                            result.put("result", 1);
-                            JSONObject data = new JSONObject(true);
-                            data.put("bookid", borrowInfo.getBookId() + "");
-                            data.put("uid", borrowInfo.getUserId() + "");
-                            data.put("username", borrowInfo.getUsername());
-                            data.put("bookname", borrowInfo.getBookname());
-                            data.put("borrowtime", borrowInfo.getBorrowtime());
-                            data.put("duration", borrowInfo.getDuration());
-                            data.put("QRCode",path);
-                            data.put("isReborrow", borrowInfo.getIsReborrow() == 1 ? true : false);
-                            result.put("data", data);
-                            return result.toJSONString();
-                        }
+                if (bookIds != null) {
+                    Order order = new Order();
+                    order.setUserId(userId);;
+                    order.setCreateTime(MyDateUtil.getCurrentString());
+                    order.setState(0);;
+                    List<Book> books=new ArrayList<>();
+                    for (Integer bookId : bookIds) {
+                        Map<String, Object> bookData = bookSearchService.getBook(bookId);
+                        Book book= (Book) bookData.get("state");
+                        if(book!=null)
+                            books.add(book);
                         else
-                            return MyJsonConverter.convertErrorToJson(qrCodeData).toJSONString();
-                    } else
-                        return MyJsonConverter.convertErrorToJson(info).toJSONString();
+                            return MyJsonConverter.convertErrorToJson(bookData).toJSONString();
+                    }
+                    order.setBooks(books);
+                    order.setSerial(RandomUtil.getRandomUUID());
+                    Map<String, Object> borrowData = bookBorrowService.borrow(order);
+                    String serial= (String) borrowData.get("state");
+                    if(serial!=null){
+                        JSONObject result = new JSONObject();
+                        result.put("result",1);
+                        result.put("serial",serial);
+                        return result.toJSONString();
+                    }
+                    else
+                        return MyJsonConverter.convertErrorToJson(borrowData).toJSONString();
                 } else
-                    return MyJsonConverter.createErrorToJson("书籍id不能为空").toJSONString();
+                    return MyJsonConverter.createErrorToJson("借阅书籍不能为空").toJSONString();
             } else
-                return MyJsonConverter.createErrorToJson("用户id不能为空").toJSONString();
+                return MyJsonConverter.createErrorToJson("用户未登录").toJSONString();
         }catch (ClassCastException e){
             e.printStackTrace();
             return MyJsonConverter.createErrorToJson("参数类型错误").toJSONString();
@@ -99,39 +100,31 @@ public class BookController {
     @PostMapping("extendBorrow")
     public String extendBorrow(@RequestBody Map<String,Integer> map,  HttpSession session){
         try {
-            Integer userId = map.get("userId");
             Integer bookId = map.get("bookId");
-            Integer trueUserId = (Integer) (session.getAttribute(userId + ""));
+            Integer userId = (Integer) (session.getAttribute("userId"));
             if (userId != null) {
                 if (bookId != null) {
-                    if(trueUserId!=null) {
-                        if (trueUserId.intValue() == userId.intValue()) {
-                            Map<String, Object> info = bookExtendborrowService.extendBorrow(userId, bookId);
-                            BorrowInfo borrowInfo = (BorrowInfo) info.get("state");
-                            if (borrowInfo != null) {
-                                JSONObject result = new JSONObject(true);
-                                result.put("result", 1);
-                                JSONObject data = new JSONObject(true);
-                                data.put("bookid", borrowInfo.getBookId() + "");
-                                data.put("uid", borrowInfo.getUserId() + "");
-                                data.put("username", borrowInfo.getUsername());
-                                data.put("bookname", borrowInfo.getBookname());
-                                data.put("borrowtime", borrowInfo.getBorrowtime());
-                                data.put("duration", borrowInfo.getDuration());
-                                data.put("isReborrow", borrowInfo.getIsReborrow() == 1 ? true : false);
-                                result.put("data", data);
-                                return result.toJSONString();
-                            } else
-                                return MyJsonConverter.convertErrorToJson(info).toJSONString();
-                        } else
-                            return MyJsonConverter.createErrorToJson("续借用户信息与登录用户信息不符").toJSONString();
-                    }
-                    else
-                        return MyJsonConverter.createErrorToJson("用户未登录").toJSONString();
+                    Map<String, Object> info = bookExtendborrowService.extendBorrow(userId, bookId);
+                    BorrowInfo borrowInfo = (BorrowInfo) info.get("state");
+                    if (borrowInfo != null) {
+                        JSONObject result = new JSONObject(true);
+                        result.put("result", 1);
+                        JSONObject data = new JSONObject(true);
+                        data.put("bookid", borrowInfo.getBookId() + "");
+                        data.put("uid", borrowInfo.getUserId() + "");
+                        data.put("username", borrowInfo.getUsername());
+                        data.put("bookname", borrowInfo.getBookname());
+                        data.put("borrowtime", borrowInfo.getBorrowtime());
+                        data.put("duration", borrowInfo.getDuration());
+                        data.put("isReborrow", borrowInfo.getIsReborrow() == 1 ? true : false);
+                        result.put("data", data);
+                        return result.toJSONString();
+                    } else
+                        return MyJsonConverter.convertErrorToJson(info).toJSONString();
                 } else
                     return MyJsonConverter.createErrorToJson("书籍id不能为空").toJSONString();
             } else
-                return MyJsonConverter.createErrorToJson("用户id不能为空").toJSONString();
+                return MyJsonConverter.createErrorToJson("用户未登录").toJSONString();
         }catch (ClassCastException e){
             e.printStackTrace();
             return MyJsonConverter.createErrorToJson("参数类型错误").toJSONString();
@@ -142,56 +135,56 @@ public class BookController {
     }
 
 
-    /**
-     * 归还书籍
-     * @param map 用户id和书籍的id
-     * @return 返回相关信息
-     */
-    @CrossOrigin
-    @LoginAccess
-    @PostMapping("returnBook")
-    public String returnBook(@RequestBody Map<String,Integer> map,  HttpSession session){
-        try {
-            Integer userId = map.get("userId");
-            Integer bookId = map.get("bookId");
-            Integer trueUserId = (Integer) (session.getAttribute(userId + ""));
-            if (userId != null) {
-                if (bookId != null) {
-                    if(trueUserId!=null) {
-                        if(trueUserId.intValue()==userId.intValue()) {
-                            Map<String, Object> info = bookReturnService.returnBook(userId, bookId);
-                            BorrowInfo borrowInfo = (BorrowInfo) info.get("state");
-                            if (borrowInfo != null) {
-                                JSONObject result = new JSONObject(true);
-                                result.put("result", 1);
-                                JSONObject data = new JSONObject(true);
-                                data.put("bookid", borrowInfo.getBookId() + "");
-                                data.put("uid", borrowInfo.getUserId() + "");
-                                data.put("username", borrowInfo.getUsername());
-                                data.put("bookname", borrowInfo.getBookname());
-                                data.put("borrowtime", borrowInfo.getBorrowtime());
-                                data.put("returntime",borrowInfo.getReturntime());
-                                result.put("data", data);
-                                return result.toJSONString();
-                            } else
-                                return MyJsonConverter.convertErrorToJson(info).toJSONString();
-                        }else
-                            return MyJsonConverter.createErrorToJson("还书用户信息与登录用户信息不符").toJSONString();
-                    }
-                    else
-                        return MyJsonConverter.createErrorToJson("用户未登录").toJSONString();
-                } else
-                    return MyJsonConverter.createErrorToJson("书籍id不能为空").toJSONString();
-            } else
-                return MyJsonConverter.createErrorToJson("用户id不能为空").toJSONString();
-        }catch (ClassCastException e){
-            e.printStackTrace();
-            return MyJsonConverter.createErrorToJson("参数类型错误").toJSONString();
-        }catch (Exception e){
-            e.printStackTrace();
-            return MyJsonConverter.createErrorToJson("系统内部错误").toJSONString();
-        }
-    }
+//    /**
+//     * 归还书籍
+//     * @param map 用户id和书籍的id
+//     * @return 返回相关信息
+//     */
+//    @CrossOrigin
+//    @LoginAccess
+//    @PostMapping("returnBook")
+//    public String returnBook(@RequestBody Map<String,Integer> map,  HttpSession session){
+//        try {
+//            Integer userId = map.get("userId");
+//            Integer bookId = map.get("bookId");
+//            Integer trueUserId = (Integer) (session.getAttribute(userId + ""));
+//            if (userId != null) {
+//                if (bookId != null) {
+//                    if(trueUserId!=null) {
+//                        if(trueUserId.intValue()==userId.intValue()) {
+//                            Map<String, Object> info = bookReturnService.returnBook(userId, bookId);
+//                            BorrowInfo borrowInfo = (BorrowInfo) info.get("state");
+//                            if (borrowInfo != null) {
+//                                JSONObject result = new JSONObject(true);
+//                                result.put("result", 1);
+//                                JSONObject data = new JSONObject(true);
+//                                data.put("bookid", borrowInfo.getBookId() + "");
+//                                data.put("uid", borrowInfo.getUserId() + "");
+//                                data.put("username", borrowInfo.getUsername());
+//                                data.put("bookname", borrowInfo.getBookname());
+//                                data.put("borrowtime", borrowInfo.getBorrowtime());
+//                                data.put("returntime",borrowInfo.getReturntime());
+//                                result.put("data", data);
+//                                return result.toJSONString();
+//                            } else
+//                                return MyJsonConverter.convertErrorToJson(info).toJSONString();
+//                        }else
+//                            return MyJsonConverter.createErrorToJson("还书用户信息与登录用户信息不符").toJSONString();
+//                    }
+//                    else
+//                        return MyJsonConverter.createErrorToJson("用户未登录").toJSONString();
+//                } else
+//                    return MyJsonConverter.createErrorToJson("书籍id不能为空").toJSONString();
+//            } else
+//                return MyJsonConverter.createErrorToJson("用户id不能为空").toJSONString();
+//        }catch (ClassCastException e){
+//            e.printStackTrace();
+//            return MyJsonConverter.createErrorToJson("参数类型错误").toJSONString();
+//        }catch (Exception e){
+//            e.printStackTrace();
+//            return MyJsonConverter.createErrorToJson("系统内部错误").toJSONString();
+//        }
+//    }
 
     /**
      * 查询前三的热门书籍

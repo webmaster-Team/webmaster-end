@@ -107,17 +107,16 @@ public class ImageUtil {
 
     /**
      * 生成二维码
-     * @param userId 用户Id
-     * @param bookId 书籍Id
+     * @param  serial 书籍的编号
      * @return String
      * @throws WriterException
      * @throws IOException
      */
-    public static Map<String,Object> createQRCode(int userId, int bookId){
+    public static Map<String,Object> createQRCode(String serial){
         try {
             String QRCodeImagePath = "/home/image/QR" + MyDateUtil.getCurrentTime() + ".png";
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
-            String text = "userId:" + userId + ",bookId:" + bookId ;
+            String text = "userId:" + serial;
             BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, 300, 300);
             Path path = FileSystems.getDefault().getPath(QRCodeImagePath);
             MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);

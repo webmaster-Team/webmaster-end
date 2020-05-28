@@ -33,6 +33,7 @@ public class BookServiceCore {
     @Autowired
     protected ILibraryMapper iLibraryMapper;
 
+
     /**
      * 返回书籍是否存在
      * @param id 书籍的id
@@ -54,7 +55,7 @@ public class BookServiceCore {
     /**
      * 返回书籍对象
      * @param id 书籍的id
-     * @return boolean类型
+     * @return book
      */
     public Map<String,Object> getBook(int id) {
         try {
