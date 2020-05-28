@@ -278,6 +278,8 @@ public class OrderService {
                 return ResultMap.getResultMap(false, "缓存中无该书单");
         }catch (Exception e){
             e.printStackTrace();
+            //添加失败就回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultMap.getResultMap(false, "系统内部错误");
         }
     }
