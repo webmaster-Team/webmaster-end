@@ -5,6 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -60,5 +63,20 @@ public class MyRedisUtil {
     }
 
 
+    /**
+     * 根据用户Id，从Redis中获得对应的Order
+     * @param userId 用户Id
+     * @return Redis中返回该用户的所有订单
+     */
+    public List<Order> getOrdersByUserId(int userId){
+        List<Order> orders = new ArrayList<>();
+        Set<String> keys = redisTemplate.keys("*");
+        for (String key : keys) {
+            Order order = (Order) redisTemplate.opsForValue().get(key);
+            if (order.getUserId() == userId && order.getState()!=4)
+                orders.add(order);
+        }
+        return orders;
+    }
 
 }

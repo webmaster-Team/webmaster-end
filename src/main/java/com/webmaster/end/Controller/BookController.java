@@ -35,6 +35,9 @@ public class BookController {
     @Autowired
     private BookSearchService bookSearchService;
 
+    @Autowired
+    private UserService userService;
+
 
 
     /**
@@ -50,34 +53,48 @@ public class BookController {
             List<Integer> bookIds = map.get("books");
             Integer userId= (Integer) session.getAttribute("userId");
             if (userId != null) {
-                if (bookIds != null) {
-                    Order order = new Order();
-                    order.setUserId(userId);;
-                    order.setCreateTime(MyDateUtil.getCurrentString());
-                    order.setState(0);;
-                    List<Book> books=new ArrayList<>();
-                    for (Integer bookId : bookIds) {
-                        Map<String, Object> bookData = bookSearchService.getBook(bookId);
-                        Book book= (Book) bookData.get("state");
-                        if(book!=null)
-                            books.add(book);
-                        else
-                            return MyJsonConverter.convertErrorToJson(bookData).toJSONString();
-                    }
-                    order.setBooks(books);
-                    order.setSerial(RandomUtil.getRandomUUID());
-                    Map<String, Object> borrowData = bookBorrowService.borrow(order);
-                    String serial= (String) borrowData.get("state");
-                    if(serial!=null){
-                        JSONObject result = new JSONObject();
-                        result.put("result",1);
-                        result.put("serial",serial);
-                        return result.toJSONString();
-                    }
-                    else
-                        return MyJsonConverter.convertErrorToJson(borrowData).toJSONString();
-                } else
-                    return MyJsonConverter.createErrorToJson("借阅书籍不能为空").toJSONString();
+                Map<String, Object> userData = userService.getUser(userId);
+                User user= (User) userData.get("state");
+                if (user!=null) {
+                    if (bookIds != null) {
+                        Map<String, Object> borrowData = userService.getBorrowBooksByUserId(userId);
+                        List<Integer> numbers = (List<Integer>) borrowData.get("state");
+                        if (numbers != null) {
+                            int cnt = numbers.get(1);
+                            if ((cnt + bookIds.size()) <=(user.getIdentity()==0?User.STUDENT_NUMBER:User.TEACHER_NUMBER)) {
+                                Order order = new Order();
+                                order.setUserId(userId);
+                                order.setCreateTime(MyDateUtil.getCurrentString());
+                                order.setState(0);
+
+                                List<Book> books = new ArrayList<>();
+                                for (Integer bookId : bookIds) {
+                                    Map<String, Object> bookData = bookSearchService.getBook(bookId);
+                                    Book book = (Book) bookData.get("state");
+                                    if (book != null)
+                                        books.add(book);
+                                    else
+                                        return MyJsonConverter.convertErrorToJson(bookData).toJSONString();
+                                }
+                                order.setBooks(books);
+                                order.setSerial(RandomUtil.getRandomUUID());
+                                Map<String, Object> borrowData2 = bookBorrowService.borrow(order);
+                                String serial = (String) borrowData2.get("state");
+                                if (serial != null) {
+                                    JSONObject result = new JSONObject();
+                                    result.put("result", 1);
+                                    result.put("serial", serial);
+                                    return result.toJSONString();
+                                } else
+                                    return MyJsonConverter.convertErrorToJson(borrowData2).toJSONString();
+                            }else
+                                return MyJsonConverter.createErrorToJson("借阅数量超过可借数量").toString();
+                        } else
+                            return MyJsonConverter.convertErrorToJson(borrowData).toJSONString();
+                    } else
+                        return MyJsonConverter.createErrorToJson("借阅书籍不能为空").toJSONString();
+                }else
+                    return MyJsonConverter.convertErrorToJson(userData).toString();
             } else
                 return MyJsonConverter.createErrorToJson("用户未登录").toJSONString();
         }catch (ClassCastException e){

@@ -33,22 +33,24 @@ public class BookExtendborrowService extends BookServiceCore {
                     if(iRentalMapper.isExistByUserBook(bookId,userId)) {
                         Rental rental = iRentalMapper.getRentalByUserBook(bookId,userId);
                         if (rental!=null) {
-                            if (iRentalMapper.updateReborrow(rental.getId())) {
-                                BorrowInfo info = new BorrowInfo();
-                                info.setBookId(bookId);
-                                info.setUserId(userId);
-                                info.setUsername(user.getName());
-                                info.setBookname(book.getName());
-                                info.setBorrowtime(rental.getBorrowTime());
-                                info.setDuration(rental.getDuration());
-                                info.setIsReborrow(rental.getIsReborrow());
-                                return ResultMap.getResultMap(info, "续借成功");
-                            } else
-                                return ResultMap.getResultMap(null, "更新续借字段失败");
+                            if(rental.getIsReborrow()==0) {
+                                if (iRentalMapper.updateReborrow(rental.getId())) {
+                                    BorrowInfo info = new BorrowInfo();
+                                    info.setBookId(bookId);
+                                    info.setUserId(userId);
+                                    info.setUsername(user.getName());
+                                    info.setBookname(book.getName());
+                                    info.setBorrowtime(rental.getBorrowTime());
+                                    info.setDuration(rental.getDuration());
+                                    info.setIsReborrow(rental.getIsReborrow());
+                                    return ResultMap.getResultMap(info, "续借成功");
+                                } else
+                                    return ResultMap.getResultMap(null, "更新续借字段失败");
+                            }else
+                                return ResultMap.getResultMap(null,"该书籍已经续借过了");
                         }else
                             return ResultMap.getResultMap(null, "流水获取失败");
-                    }
-                    else
+                    } else
                         return ResultMap.getResultMap(null, "该用户未借阅过此书");
                 } else
                     return ResultMap.getResultMap(null, "书籍不存在");

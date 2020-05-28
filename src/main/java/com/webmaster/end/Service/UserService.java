@@ -1,16 +1,15 @@
 package com.webmaster.end.Service;
 
-import com.webmaster.end.Entity.Book;
-import com.webmaster.end.Entity.Rental;
-import com.webmaster.end.Entity.ResultMap;
-import com.webmaster.end.Entity.User;
+import com.webmaster.end.Entity.*;
 import com.webmaster.end.IMapper.IBookMapper;
 import com.webmaster.end.IMapper.IPasswordMapper;
 import com.webmaster.end.IMapper.IRentalMapper;
 import com.webmaster.end.IMapper.IUserMapper;
 import com.webmaster.end.Utils.MD5Util;
 import com.webmaster.end.Utils.MyDateUtil;
+import com.webmaster.end.Utils.MyRedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +32,9 @@ public class UserService {
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private IRentalMapper iRentalMapper;
+
+    @Autowired
+    private MyRedisUtil myRedisUtil;
 
     /**
      * 用户的登录
@@ -175,10 +177,16 @@ public class UserService {
      * @return List<Integer>类型
      */
     public Map<String,Object> getBorrowBooksByUserId(int userId){
+        //获得缓存中的Orderz中的书籍的数量
+        List<Order> orders = myRedisUtil.getOrdersByUserId(userId);
+        int num=0;
+        for (Order order : orders)
+            num+=order.getBooks().size();
+
         List<Integer> borrowBooks=new ArrayList<>();
         try {
             int count = iRentalMapper.getHasBorrowedBooksByUserId(userId);
-            borrowBooks.add(count);
+            borrowBooks.add(count+num);
         }catch (Exception e){
             e.printStackTrace();
             return ResultMap.getResultMap(-1,"获得总借书数量失败");
@@ -186,7 +194,7 @@ public class UserService {
 
         try {
             int count = iRentalMapper.getIsBorrowingBooksByUserId(userId);
-            borrowBooks.add(count);
+            borrowBooks.add(count+num);
             return ResultMap.getResultMap(borrowBooks,"获取借书数量成功");
         }catch (Exception e) {
             e.printStackTrace();
@@ -214,6 +222,16 @@ public class UserService {
                 }
                 else
                     return ResultMap.getResultMap(null, "获取书籍失败");
+            }
+            //将缓存中的书籍放到对应的集合中
+            List<Order> orders = myRedisUtil.getOrdersByUserId(userId);
+            for (Order order : orders) {
+                for (Book book : order.getBooks()) {
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("book",book);
+                    data.put("distance",30);
+                    result.add(data);
+                }
             }
             return ResultMap.getResultMap(result,"获取用户正在借阅的书籍成功");
         }catch (Exception e) {

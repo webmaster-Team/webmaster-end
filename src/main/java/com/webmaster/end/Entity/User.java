@@ -2,6 +2,9 @@ package com.webmaster.end.Entity;
 
 
 public class User {
+    public static int STUDENT_NUMBER=15;
+    public static int TEACHER_NUMBER=30;
+
     private int id;
     private String card;
     private String name;
