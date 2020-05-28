@@ -47,7 +47,7 @@ public class BookController {
     @PostMapping("borrow")
     public String borrow(@RequestBody Map<String,List<Integer>> map, HttpSession session){
         try {
-            List<Integer> bookIds = map.get("bookId");
+            List<Integer> bookIds = map.get("books");
             Integer userId= (Integer) session.getAttribute("userId");
             if (userId != null) {
                 if (bookIds != null) {
