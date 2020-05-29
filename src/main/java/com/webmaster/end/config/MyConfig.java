@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.net.UnknownHostException;
 
@@ -21,6 +22,7 @@ public class MyConfig {
     @Bean
     public RedisTemplate<Object, Order> redisTemplate(RedisConnectionFactory redisConnectionFactory) throws UnknownHostException {
         RedisTemplate<Object, Order> template = new RedisTemplate<>();
+        template.setKeySerializer(new StringRedisSerializer());
         template.setConnectionFactory(redisConnectionFactory);
         Jackson2JsonRedisSerializer<Order> ser = new Jackson2JsonRedisSerializer<Order>(Order.class);
         template.setDefaultSerializer(ser);

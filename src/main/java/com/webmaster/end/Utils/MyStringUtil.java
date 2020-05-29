@@ -10,4 +10,6 @@ public class MyStringUtil {
     public static String toSimpleString(String str){
         return str.trim().replaceAll("[./ ,\\\\]","");
     }
+
+
 }

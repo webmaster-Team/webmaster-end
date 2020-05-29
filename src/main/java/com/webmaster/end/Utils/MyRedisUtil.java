@@ -72,7 +72,7 @@ public class MyRedisUtil {
         List<Order> orders = new ArrayList<>();
         Set<String> keys = redisTemplate.keys("*");
         for (String key : keys) {
-            Order order = (Order) redisTemplate.opsForValue().get(key);
+            Order order = (Order)getOrder( key);
             if (order.getUserId() == userId && order.getState()!=4)
                 orders.add(order);
         }
