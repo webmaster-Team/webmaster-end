@@ -43,7 +43,7 @@ public class MyInterceptor extends HandlerInterceptorAdapter {
                     }
             }
             PrintWriter writer = response.getWriter();
-            writer.print("{\"result\":0}");
+            writer.print("{\"result\":0,\"msg\":\"授权认证未通过\"}");
             return false;
         }
     }

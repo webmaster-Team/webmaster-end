@@ -101,12 +101,14 @@ public class UserController {
                         JSONObject tempBook = new JSONObject();
                         Book book = (Book) objectMap.get("book");
                         int distance=(int)objectMap.get("distance");
+                        boolean isReborrow= (boolean) objectMap.get("isReborrow");
                         tempBook.put("id",book.getId()+"");
                         tempBook.put("name",book.getName());
                         tempBook.put("author",book.getAuthor());
                         tempBook.put("publisher",book.getPublisher());
                         tempBook.put("cover",book.getCover());
                         tempBook.put("distance",distance);
+                        tempBook.put("isReborrow",isReborrow);
                         array.add(tempBook);
                     }
                     result.put("data",array);

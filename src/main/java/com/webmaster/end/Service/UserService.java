@@ -218,6 +218,7 @@ public class UserService {
                 if(book!=null){
                     data.put("book",book);
                     data.put("distance",MyDateUtil.reckonDateDistance(isRentalsingDatum));
+                    data.put("isReborrow",isRentalsingDatum.getIsReborrow());
                     result.add(data);
                 }
                 else
