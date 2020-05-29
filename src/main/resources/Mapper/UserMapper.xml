@@ -14,7 +14,7 @@
 
     <!-- 根据微博用户名查询用户是否存在   -->
     <select id="isExistWeiboByName" resultType="boolean">
-        select count(*) from users where name = #{name} and delete_time = '0' and id like '9999%'
+        select count(*) from users where name = #{name} and delete_time = '0' and card like '9999%'
     </select>
 
     <!-- 根据用户名查询用户是否存在   -->
@@ -49,7 +49,7 @@
 
     <!-- 根据传入的微博name来返回用户对应的name   -->
     <select id="getWeiboUserIdByName" resultType="int">
-        select id from users where name =#{name} and delete_time = '0' and id like '9999%'
+        select id from users where name =#{name} and delete_time = '0' and card like '9999%'
     </select>
 
 </mapper>

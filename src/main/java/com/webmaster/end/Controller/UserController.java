@@ -360,8 +360,8 @@ public class UserController {
             String app_id="323275235";
             String app_secret="1409df204947454234cf764953ac6549";
             String redirect_uri="http://123.56.3.135:8080/api/user/weiboThreeLogin";
-            JSONObject jsonObject=MyHttpClient.post("https://api.weibo.com/oauth2/access_token?client_id="
-                    +app_id+
+            JSONObject jsonObject=MyHttpClient.post("https://api.weibo.com/oauth2/access_token?client_id="+
+                    app_id+
                     "&client_secret="+app_secret+
                     "&grant_type=authorization_code"+
                     "&redirect_uri="+redirect_uri+
@@ -428,8 +428,18 @@ public class UserController {
             }
         }catch (ClassCastException e){
             e.printStackTrace();
+            try {
+                response.sendRedirect("http://www.solingjees.site:11010/#/login");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         } catch (IOException e) {
             e.printStackTrace();
+            try {
+                response.sendRedirect("http://www.solingjees.site:11010/#/login");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
