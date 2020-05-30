@@ -25,8 +25,7 @@
     <!--  新增许多  -->
     <insert id="addAllRentals">
         <foreach collection="list" item="rental">
-            insert into rentals (book_id,user_id,borrow_time,return_time,duration,is_reborrow)
-                values (#{rental.bookId},#{rental.userId},#{rental.borrowTime},#{rental.returnTime},#{rental.duration},#{rental.isReborrow})
+            insert into rentals (book_id,user_id,borrow_time,return_time,duration,is_reborrow) values (#{rental.bookId},#{rental.userId},#{rental.borrowTime},#{rental.returnTime},#{rental.duration},#{rental.isReborrow})
         </foreach>
     </insert>
 
