@@ -19,8 +19,9 @@
 
     <!--  插入对应的关系表数据  -->
     <insert id="addOrderAssoic" parameterType="com.webmaster.end.Entity.Order">
-        <foreach collection="rentals" item="rental">
-            insert into order_assoic (order_id, rental_id, book_id) values (#{id},#{rental.id},#{rental.bookId})
+        insert into order_assoic (order_id, rental_id, book_id) values
+        <foreach collection="rentals" item="rental" separator=",">
+             (#{id},#{rental.id},#{rental.bookId})
         </foreach>
     </insert>
 
