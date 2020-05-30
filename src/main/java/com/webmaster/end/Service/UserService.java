@@ -231,6 +231,7 @@ public class UserService {
                     Map<String, Object> data = new HashMap<>();
                     data.put("book",book);
                     data.put("distance",30);
+                    data.put("isReborrow",true);
                     result.add(data);
                 }
             }
