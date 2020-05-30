@@ -421,7 +421,7 @@ public class UserController {
                         {put("id",trueUser.getId());}
                     };
                     String token=JwtUtil.encode(param);
-                    response.sendRedirect("http://www.solingjees.site:11010/#/index?token="+access_token);
+                    response.sendRedirect("http://www.solingjees.site:11010/#/index/search?token="+access_token);
                 }
                 else
                     response.sendRedirect("http://www.solingjees.site:11010/#/login?msg="+registerMsg);
