@@ -37,7 +37,7 @@
 
     <!-- 更改对应的续借状态   -->
     <update id="updateReborrow">
-        update rentals set is_reborrow= 1 where id= #{id} and return_time = '0'
+        update rentals set is_reborrow= 1 ,duration = duration+30 where id= #{id} and return_time = '0'
     </update>
 
     <!-- 根据流水id查询对应的流水   -->
