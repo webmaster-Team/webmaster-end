@@ -9,7 +9,6 @@ import com.webmaster.end.Utils.MD5Util;
 import com.webmaster.end.Utils.MyDateUtil;
 import com.webmaster.end.Utils.MyRedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,32 +96,26 @@ public class UserService {
     }
 
 
-//    /**
-//     * 用户删除
-//     * @param id 用户的id
-//     * @return 0为失败，1为成功，-1为系统错误
-//     */
-//    @Transactional
-//    public Map<String,Object> deleteUser(int id) {
-//        HashMap<String, Object> map = new HashMap<>();
-//        try {
-//            if(iUserMapper.isExist(id)) {
-//                if(iPasswordMapper.deletePassword(id)){
-//                    if(iUserMapper.deleteUser(id, MyDateUtil.getCurrentString()))
-//                        return ResultMap.getResultMap(true,"删除成功");
-//                    else
-//                        return ResultMap.getResultMap(false,"删除失败");
-//                } else
-//                    return ResultMap.getResultMap(false,"删除密码失败");
-//            }
-//            else
-//                return ResultMap.getResultMap(false,"用户不存在");
-//        }catch (Exception e){
-//            e.printStackTrace();
-//            return ResultMap.getResultMap(false,"服务器内部错误");
-//        }
-//    }
-
+    /**
+     * 更新对应的用户的信息
+     * @param user 更新后的用户信息
+     * @return boolean
+     */
+    public Map<String,Object> update(User user){
+        try {
+            if(iUserMapper.isExist(user.getId())){
+                boolean b = iUserMapper.updateUser(user);
+                if(b)
+                    return ResultMap.getResultMap(true,"用户信息修改成功");
+                else
+                    return ResultMap.getResultMap(false,"用户信息修改失败");
+            }else
+                return ResultMap.getResultMap(false,"该用户不存在");
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultMap.getResultMap(false,"服务器内部错误");
+        }
+    }
 
     /**
      * 根据用户的id来返回对应的用户信息
@@ -130,7 +123,6 @@ public class UserService {
      * @return User对象
      */
     public Map<String,Object> getUser(int id){
-        HashMap<String, Object> map = new HashMap<>();
         try {
             if (iUserMapper.isExist(id)) {
                 User user = iUserMapper.getUser(id);

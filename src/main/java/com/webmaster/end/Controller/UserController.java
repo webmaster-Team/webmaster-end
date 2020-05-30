@@ -56,6 +56,10 @@ public class UserController {
                     JSONObject result = new JSONObject();
                     result.put("result", 1);
                     JSONObject temp = MyJsonConverter.convertUserToJson(user);
+                    temp.put("sex",user.getSex());
+                    temp.put("email",user.getEmail());
+                    temp.put("phone",user.getPhone());
+                    temp.put("signTime",user.getSignTime());
                     Map<String, Object> borrowData = userService.getBorrowBooksByUserId(trueUserId);
                     List<Integer> borrowBooks = (List<Integer>) borrowData.get("state");
                     if (borrowBooks != null) {
@@ -293,8 +297,50 @@ public class UserController {
         }
     }
 
-
-
+    /**
+     * 更新对应的用户信息
+     * @param map 存有对应的用户信息的map
+     * @param session
+     * @return 是否修改成功
+     */
+    public String update(@RequestBody Map<String,Object> map,HttpSession session){
+        try{
+            Object userId = session.getAttribute("userId");
+            if(userId!=null){
+                String name = (String) map.get("name");
+                Integer sex = (Integer) map.get("sex");
+                String phone = (String) map.get("phone");
+                String cover = (String) map.get("cover");
+                if(!(name==null && sex==null && phone==null && cover==null)) {
+                    int trueUserId = (int) userId;
+                    Map<String, Object> userData = userService.getUser(trueUserId);
+                    User user = (User) userData.get("state");
+                    if (user != null) {
+                        if (name != null)
+                            user.setName(name);
+                        if (sex != null)
+                            user.setSex(sex);
+                        if (phone != null)
+                            user.setPhone(phone);
+                        if (cover != null)
+                            user.setCover(cover);
+                        Map<String, Object> updateData = userService.update(user);
+                        Boolean flag = (Boolean) updateData.get("state");
+                        if (flag)
+                            return MyJsonConverter.convertSuccessToJson(updateData).toString();
+                        else
+                            return MyJsonConverter.convertErrorToJson(updateData).toString();
+                    } else
+                        return MyJsonConverter.convertErrorToJson(userData).toString();
+                }else
+                    return MyJsonConverter.createErrorToJson("没有任何修改信息").toString();
+            }else
+                return MyJsonConverter.createErrorToJson("用户未登录").toJSONString();
+        }catch (Exception e){
+            e.printStackTrace();
+            return MyJsonConverter.createErrorToJson("系统内部错误").toJSONString();
+        }
+    }
 
     /**
      * 用户注销
@@ -400,7 +446,7 @@ public class UserController {
                                 {put("id",trueUser.getId());}
                             };
                             String token=JwtUtil.encode(param);
-                            response.sendRedirect("http://www.solingjees.site:11010/#/index/search?token="+access_token);
+                            response.sendRedirect("http://www.solingjees.site:11010/#/index/search?token="+token);
                         }
                         else
                             response.sendRedirect("http://www.solingjees.site:11010/#/login?msg="+registerMsg);
@@ -421,7 +467,7 @@ public class UserController {
                         {put("id",trueUser.getId());}
                     };
                     String token=JwtUtil.encode(param);
-                    response.sendRedirect("http://www.solingjees.site:11010/#/index/search?token="+access_token);
+                    response.sendRedirect("http://www.solingjees.site:11010/#/index/search?token="+token);
                 }
                 else
                     response.sendRedirect("http://www.solingjees.site:11010/#/login?msg="+registerMsg);

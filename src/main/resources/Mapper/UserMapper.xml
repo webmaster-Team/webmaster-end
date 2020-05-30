@@ -29,7 +29,7 @@
 
     <!-- 更新一个用户信息   -->
     <update id="updateUser">
-        update users set card = #{card} , name = #{name} , sex = #{sex} , email = #{email} , phone = #{phone} , cover = #{cover} , sign_time = #{signTime} , delete_time = #{deleteTime} , identity = #{identity } where id = #{id} and delete_time = '0'
+        update users set  name = #{name} , sex = #{sex}  , phone = #{phone} , cover = #{cover}  where id = #{id} and delete_time = '0'
     </update>
 
     <!-- 根据用户id来返回对应的值   -->
