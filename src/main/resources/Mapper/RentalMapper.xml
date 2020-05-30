@@ -19,14 +19,14 @@
 
     <!--  新增一个借书记录  -->
     <insert id="addRental" >
-        insert into rentals (book_id,user_id,borrow_time,return_time,duration,is_reborrow) values (#{bookId},#{userId},#{borrowTime},#{returnTime},#{duration},#{isReborrow})
+        insert into rentals (book_id,user_id,borrow_time,duration,is_reborrow) values (#{bookId},#{userId},#{borrowTime},#{duration},#{isReborrow})
     </insert>
 
     <!--  新增许多  -->
     <insert id="addAllRentals">
-        insert into rentals (book_id,user_id,borrow_time,return_time,duration,is_reborrow) values
+        insert into rentals (book_id,user_id,borrow_time,duration,is_reborrow) values
         <foreach collection="list" item="rental" separator=",">
-             (#{rental.bookId},#{rental.userId},#{rental.borrowTime},#{rental.returnTime},#{rental.duration},#{rental.isReborrow})
+             (#{rental.bookId},#{rental.userId},#{rental.borrowTime},#{rental.duration},#{rental.isReborrow})
         </foreach>
     </insert>
 
