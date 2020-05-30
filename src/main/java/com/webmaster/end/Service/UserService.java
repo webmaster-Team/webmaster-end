@@ -226,16 +226,21 @@ public class UserService {
             }
             //将缓存中的书籍放到对应的集合中
             List<Order> orders = myRedisUtil.getOrdersByUserId(userId);
-            for (Order order : orders) {
-                for (Book book : order.getBooks()) {
-                    Map<String, Object> data = new HashMap<>();
-                    data.put("book",book);
-                    data.put("distance",30);
-                    data.put("isReborrow",true);
-                    result.add(data);
+            User user = iUserMapper.getUser(userId);
+            if(user!=null) {
+                for (Order order : orders) {
+                    for (Book book : order.getBooks()) {
+                        Map<String, Object> data = new HashMap<>();
+                        data.put("book", book);
+                        data.put("distance", (user.getIdentity()+1)*30);
+                        data.put("isReborrow", true);
+                        result.add(data);
+                    }
                 }
+                return ResultMap.getResultMap(result,"获取用户正在借阅的书籍成功");
             }
-            return ResultMap.getResultMap(result,"获取用户正在借阅的书籍成功");
+            else
+                return ResultMap.getResultMap(null,"用户不存在");
         }catch (Exception e) {
             e.printStackTrace();
             return ResultMap.getResultMap(null, "服务器内部错误");
