@@ -303,6 +303,9 @@ public class UserController {
      * @param session
      * @return 是否修改成功
      */
+    @CrossOrigin
+    @LoginAccess
+    @PostMapping("update")
     public String update(@RequestBody Map<String,Object> map,HttpSession session){
         try{
             Object userId = session.getAttribute("userId");
