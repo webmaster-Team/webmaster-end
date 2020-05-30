@@ -311,25 +311,31 @@ public class UserController {
                 Integer sex = (Integer) map.get("sex");
                 String phone = (String) map.get("phone");
                 String cover = (String) map.get("cover");
-                if(!(name==null && sex==null && phone==null && cover==null)) {
+                String password = (String) map.get("password");
+                if(!(name==null && sex==null && phone==null && cover==null && password==null)) {
                     int trueUserId = (int) userId;
                     Map<String, Object> userData = userService.getUser(trueUserId);
                     User user = (User) userData.get("state");
                     if (user != null) {
-                        if (name != null)
-                            user.setName(name);
-                        if (sex != null)
-                            user.setSex(sex);
-                        if (phone != null)
-                            user.setPhone(phone);
-                        if (cover != null)
-                            user.setCover(cover);
-                        Map<String, Object> updateData = userService.update(user);
-                        Boolean flag = (Boolean) updateData.get("state");
-                        if (flag)
-                            return MyJsonConverter.convertSuccessToJson(updateData).toString();
-                        else
-                            return MyJsonConverter.convertErrorToJson(updateData).toString();
+                        Map<String, Object> loginData = userService.login(user.getCard(), password);
+                        Boolean b= (Boolean) loginData.get("state");
+                        if(b) {
+                            if (name != null)
+                                user.setName(name);
+                            if (sex != null)
+                                user.setSex(sex);
+                            if (phone != null)
+                                user.setPhone(phone);
+                            if (cover != null)
+                                user.setCover(cover);
+                            Map<String, Object> updateData = userService.update(user);
+                            Boolean flag = (Boolean) updateData.get("state");
+                            if (flag)
+                                return MyJsonConverter.convertSuccessToJson(updateData).toString();
+                            else
+                                return MyJsonConverter.convertErrorToJson(updateData).toString();
+                        }else
+                            return MyJsonConverter.createErrorToJson("密码错误").toString();
                     } else
                         return MyJsonConverter.convertErrorToJson(userData).toString();
                 }else
