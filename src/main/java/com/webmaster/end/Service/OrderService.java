@@ -222,10 +222,10 @@ public class OrderService {
                             }
                             //添加流水
                             boolean b1 = iRentalMapper.addAllRentals(rentals);
-                            //给所有添加后的流水添加id
-                            for (Rental rental : rentals)
-                                rental.setId(iRentalMapper.getRentalId(rental.getBookId(),rental.getUserId()));
                             if(b1) {
+                                //给所有添加后的流水添加id
+                                for (Rental rental : rentals)
+                                    rental.setId(iRentalMapper.getRentalId(rental.getBookId(),rental.getUserId()));
                                 //添加联系
                                 boolean b2 = iOrderMapper.addOrderAssoic(order.getId(), rentals);
                                 if (b2){

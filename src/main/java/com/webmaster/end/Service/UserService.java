@@ -225,7 +225,7 @@ public class UserService {
                         Map<String, Object> data = new HashMap<>();
                         data.put("book", book);
                         data.put("distance", (user.getIdentity()+1)*30);
-                        data.put("isReborrow", true);
+                        data.put("isReborrow", false);
                         result.add(data);
                     }
                 }
