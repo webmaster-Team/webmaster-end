@@ -73,6 +73,7 @@ public class MyJsonConverter {
         jsonObject.put("id",order.getId()+"");
         jsonObject.put("userId",order.getUserId());
         jsonObject.put("createTime",order.getCreateTime());
+        jsonObject.put("serial",order.getSerial());
         jsonObject.put("state",order.getState());
         JSONArray array = new JSONArray();
         for (Book book : order.getBooks()) {
@@ -98,6 +99,7 @@ public class MyJsonConverter {
         jsonObject.put("userId",order.getUserId());
         jsonObject.put("createTime",order.getCreateTime());
         jsonObject.put("completeTime",order.getCompleteTime());
+        jsonObject.put("serial",order.getSerial());
         jsonObject.put("state",order.getState());
         jsonObject.put("qrcode",order.getQrcode());
         JSONArray array = new JSONArray();
