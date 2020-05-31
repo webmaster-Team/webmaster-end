@@ -106,12 +106,14 @@ public class UserController {
                         Book book = (Book) objectMap.get("book");
                         int distance=(int)objectMap.get("distance");
                         boolean isReborrow= (boolean)objectMap.get("isReborrow");
+                        String borrowTime= (String) objectMap.get("borrowTime");
                         tempBook.put("id",book.getId()+"");
                         tempBook.put("name",book.getName());
                         tempBook.put("author",book.getAuthor());
                         tempBook.put("publisher",book.getPublisher());
                         tempBook.put("cover",book.getCover());
                         tempBook.put("distance",distance);
+                        tempBook.put("borrowTime",borrowTime);
                         tempBook.put("isReborrow",isReborrow);
                         array.add(tempBook);
                     }
@@ -146,13 +148,18 @@ public class UserController {
             else {
                 int trueUserId = (int) userId;
                 Map<String, Object> hasRentalsedData = userService.getHasRentalsedByUserId(trueUserId);
-                List<Book> hasRentaled= (List<Book>) hasRentalsedData.get("state");
-                if(hasRentaled!=null){
+                List<Map<String,Object>> hasRentalsed= (List<Map<String, Object>>) hasRentalsedData.get("state");
+                if(hasRentalsed!=null){
                     JSONObject result = new JSONObject();
                     result.put("result", 1);
                     JSONArray array = new JSONArray();
-                    for (Book book : hasRentaled) {
+                    for (Map<String, Object> objectMap : hasRentalsed) {
+                        Book book = (Book) objectMap.get("book");
+                        String borrowTime= (String) objectMap.get("borrowTime");
+                        String returnTime= (String) objectMap.get("returnTime");
                         JSONObject jsonObject = MyJsonConverter.convertSimpleBookToJson(book);
+                        jsonObject.put("borrowTime",borrowTime);
+                        jsonObject.put("returnTime",returnTime);
                         jsonObject.remove("state");
                         array.add(jsonObject);
                     }

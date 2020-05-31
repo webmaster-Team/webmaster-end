@@ -211,6 +211,7 @@ public class UserService {
                     data.put("book",book);
                     data.put("distance",MyDateUtil.reckonDateDistance(isRentalsingDatum));
                     data.put("isReborrow",isRentalsingDatum.getIsReborrow()==0?false:true);
+                    data.put("borrowTime",isRentalsingDatum.getBorrowTime());
                     result.add(data);
                 }
                 else
@@ -226,6 +227,7 @@ public class UserService {
                         data.put("book", book);
                         data.put("distance", (user.getIdentity()+1)*30);
                         data.put("isReborrow", false);
+                        data.put("borrowTime",order.getCreateTime());
                         result.add(data);
                     }
                 }
@@ -246,14 +248,19 @@ public class UserService {
      * @return List<Map<String,Object>>
      */
     public Map<String,Object> getHasRentalsedByUserId(int userId){
-        List<Book> result = new ArrayList<>();
+        List<Map<String,Object>> result = new ArrayList<>();
         try{
             List<Rental> isRentalsingData = iRentalMapper.getHasRentalsedByUserId(userId);
             for (Rental isRentalsingDatum : isRentalsingData) {
+                HashMap<String, Object> data = new HashMap<>();
                 int bookId = isRentalsingDatum.getBookId();
                 Book book = iBookMapper.getBook(bookId);
-                if(book!=null)
-                    result.add(book);
+                if(book!=null) {
+                    data.put("book",book);
+                    data.put("borrowTime",isRentalsingDatum.getBorrowTime());
+                    data.put("returnTime",isRentalsingDatum.getReturnTime());
+                    result.add(data);
+                }
                 else
                     return ResultMap.getResultMap(null, "获取书籍失败");
             }
