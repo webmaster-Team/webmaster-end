@@ -6,6 +6,7 @@ import com.webmaster.end.Entity.Order;
 import com.webmaster.end.Service.OrderService;
 import com.webmaster.end.Utils.LoginAccess;
 import com.webmaster.end.Utils.MyJsonConverter;
+import com.webmaster.end.Utils.MyRedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,8 @@ import java.util.Map;
 public class OrderController {
     @Autowired
     private OrderService orderService;
-
+    @Autowired
+    private MyRedisUtil redisUtil;
     /**
      * 根据用户id返回该用户的所有订单的简略信息
      * @param session
@@ -41,8 +43,15 @@ public class OrderController {
                         JSONObject result = new JSONObject(true);
                         result.put("result", 1);
                         JSONArray array = new JSONArray();
+                        List<Order> ordersByUserId = redisUtil.getOrdersByUserId(userId);
+                        for (Order order : ordersByUserId) {
+                            JSONObject temp = MyJsonConverter.convertSimpleOrderToJson(order);
+                            temp.put("canCancel",true);
+                            array.add(temp);
+                        }
                         for (Order order : orders1) {
                             JSONObject temp = MyJsonConverter.convertSimpleOrderToJson(order);
+                            temp.put("canCancel",false);
                             array.add(temp);
                         }
                         result.put("data", array);

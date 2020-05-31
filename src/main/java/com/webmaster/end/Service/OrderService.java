@@ -56,7 +56,7 @@ public class OrderService {
                 if(!result)
                     throw new RuntimeException();
             }
-        }, new Date(MyDateUtil.getCurrentTime()+1000*10));//先设置为10s，查看效果
+        }, new Date(MyDateUtil.getCurrentTime()+1000*30));//先设置为10s，查看效果
         return "创建完毕";
     }
 
