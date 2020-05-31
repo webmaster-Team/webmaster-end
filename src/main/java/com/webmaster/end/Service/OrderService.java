@@ -175,7 +175,13 @@ public class OrderService {
                     order.setState(4);
                     //重新设置数值，由于在第一次添加的时候有触发器了，所以这个地方不用添加定时任务
                     redisUtil.putOrder(order);
-                    return ResultMap.getResultMap(true, "书单取消成功");
+                    //直接将数据推到数据库中
+                    Map<String, Object> pushData = pushOrdertoDB(serial);
+                    Boolean flag= (Boolean) pushData.get("state");
+                    if(flag)
+                        return ResultMap.getResultMap(true, "书单取消成功");
+                    else
+                        return pushData;
                 } else
                     return ResultMap.getResultMap(false, "该用户不存在");
             } else
