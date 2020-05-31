@@ -128,7 +128,7 @@ public class OrderController {
                 if(serial!=null){
                     Map<String, Object> orderData = orderService.cancelOrder(serial);
                     boolean flag= (boolean) orderData.get("state");
-                    if(!flag)
+                    if(flag)
                         return MyJsonConverter.createSuccessrToJson("取消书单成功").toJSONString();
                     else
                         return MyJsonConverter.createErrorToJson("取消书单失败").toJSONString();
