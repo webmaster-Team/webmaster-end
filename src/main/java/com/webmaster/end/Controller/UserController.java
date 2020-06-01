@@ -462,13 +462,13 @@ public class UserController {
                                 {put("id",trueUser.getId());}
                             };
                             String token=JwtUtil.encode(param);
-                            response.sendRedirect("http://www.solingjees.site:11010/#/index/search?token="+token);
+                            response.sendRedirect("http://comtlibrary.site/#/index/search?token="+token);
                         }
                         else
-                            response.sendRedirect("http://www.solingjees.site:11010/#/login?msg="+registerMsg);
+                            response.sendRedirect("http://comtlibrary.site/#/login?msg="+registerMsg);
                     }
                     else
-                        response.sendRedirect("http://www.solingjees.site:11010/#/login?msg="+registerMsg);
+                        response.sendRedirect("http://comtlibrary.site/#/login?msg="+registerMsg);
                 }
                 else
                     return;
@@ -483,22 +483,22 @@ public class UserController {
                         {put("id",trueUser.getId());}
                     };
                     String token=JwtUtil.encode(param);
-                    response.sendRedirect("http://www.solingjees.site:11010/#/index/search?token="+token);
+                    response.sendRedirect("http://comtlibrary.site/#/index/search?token="+token);
                 }
                 else
-                    response.sendRedirect("http://www.solingjees.site:11010/#/login?msg="+registerMsg);
+                    response.sendRedirect("http://comtlibrary.site/#/login?msg="+registerMsg);
             }
         }catch (ClassCastException e){
             e.printStackTrace();
             try {
-                response.sendRedirect("http://www.solingjees.site:11010/#/login");
+                response.sendRedirect("http://comtlibrary.site/#/login");
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         } catch (IOException e) {
             e.printStackTrace();
             try {
-                response.sendRedirect("http://www.solingjees.site:11010/#/login");
+                response.sendRedirect("http://comtlibrary.site/#/login");
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
