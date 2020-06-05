@@ -34,6 +34,31 @@ public class UserController {
     private ImageUtil imageUtil;
 
     /**
+     * 判断用户是否存在
+     * @param map 用户的id
+     * @return 返回用户是否存在
+     */
+    @CrossOrigin
+    @PostMapping("isExist")
+    public String isExist(@RequestBody Map<String,String> map){
+        try {
+            String card = map.get("card");
+            if(card!=null){
+                Map<String, Object> exist = userService.isExistByCard(card);
+                Boolean flag= (Boolean) exist.get("state");
+                if(flag)
+                    return MyJsonConverter.convertSuccessToJson(exist).toJSONString();
+                else
+                    return MyJsonConverter.convertErrorToJson(exist).toJSONString();
+            }
+            else
+                return MyJsonConverter.createErrorToJson("用户id不能为空").toJSONString();
+        }catch (Exception e){
+            e.printStackTrace();
+            return MyJsonConverter.createErrorToJson("系统内部错误").toJSONString();
+        }
+    }
+    /**
      * 获得用户信息
      * @param session
      * @return 用户的相关信息

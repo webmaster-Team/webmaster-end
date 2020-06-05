@@ -36,6 +36,24 @@ public class UserService {
     private MyRedisUtil myRedisUtil;
 
     /**
+     * 判断用户是否存在
+     * @param card 用户的卡号
+     * @return boolean
+     */
+    public Map<String,Object> isExistByCard(String card){
+        try {
+            boolean card1 = iUserMapper.isExistByCard(card);
+            if(card1)
+                return ResultMap.getResultMap(true,"用户存在");
+            else
+                return ResultMap.getResultMap(false,"用户不存在");
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultMap.getResultMap(false,"系统内部错误");
+        }
+    }
+
+    /**
      * 用户的登录
      * @param card 用户输入的卡号
      * @param password 用户的密码
